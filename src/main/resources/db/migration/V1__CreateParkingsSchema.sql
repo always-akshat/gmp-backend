@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parkings` (
   `checkin_time` TIMESTAMP NOT NULL,
   `checkout_time` TIMESTAMP NULL,
   `parking_lot_id` INT NOT NULL,
+  `parking_serial_number` VARCHAR(100) NOT NULL,
   `cost` INT NULL,
   `status` VARCHAR(50) NOT NULL,
   `valid_till_time` TIMESTAMP NULL,

@@ -1,7 +1,5 @@
 package com.getMyParking.entities;
 
-import com.aem.api.AEMPrinter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
@@ -18,9 +16,14 @@ public class Parking {
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
-    @NotNull
     private Integer id;
+
+    @Column(name = "parking_serial_number", nullable = false, length = 45)
+    @JsonProperty("parking_serial_number")
+    @NotNull
+    private String parkingSerialNumber;
 
     @Column(name = "type", nullable = false, length = 45)
     @JsonProperty("type")
@@ -60,8 +63,6 @@ public class Parking {
     @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime validTillTime;
 
-    AEMPrinter printer;
-
     @JsonProperty("vehicle_status")
     @NotNull
     @Column(name = "status")
@@ -79,6 +80,7 @@ public class Parking {
         this.cost = parking.getCost();
         this.validTillTime = parking.getValidTillTime();
         this.status = parking.getStatus();
+        this.parkingSerialNumber = parking.getParkingSerialNumber();
     }
 
     public Integer getId() {
@@ -159,5 +161,13 @@ public class Parking {
 
     public void setCost(Integer cost) {
         this.cost = cost;
+    }
+
+    public String getParkingSerialNumber() {
+        return parkingSerialNumber;
+    }
+
+    public void setParkingSerialNumber(String parkingSerialNumber) {
+        this.parkingSerialNumber = parkingSerialNumber;
     }
 }

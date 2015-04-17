@@ -39,13 +39,6 @@
             <artifactId>usertype.core</artifactId>
             <version>3.0.0.CR1</version>
         </dependency>
-        <dependency>
-            <groupId>sample</groupId>
-            <artifactId>com.sample</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../GetMyParking/app/libs/AEM_SCRYBE_SEP_2014.jar</systemPath>
-        </dependency>
     </dependencies>
 
 

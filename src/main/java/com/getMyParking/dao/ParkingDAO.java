@@ -33,9 +33,9 @@ public class ParkingDAO extends AbstractDAO<Parking> {
 
     public void saveParking(List<Parking> parkingList, Integer parkingLotId) {
         for (Parking parking : parkingList) {
-            Parking p = (Parking) currentSession().get(Parking.class, parking.getId());
+            Parking p = (Parking) currentSession().createCriteria(Parking.class)
+                    .add(Restrictions.eq("parkingSerialNumber",parking.getParkingSerialNumber())).uniqueResult();
             if (p == null) {
-                parking.setParkingLotId(parkingLotId);
                 persist(parking);
             } else {
                 p.copy(parking);
