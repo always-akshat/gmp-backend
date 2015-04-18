@@ -50,7 +50,7 @@ database:
   password: gmpgmp2015
 
   # the JDBC URL
-  url: jdbc:mysql://get-my-parking.c7hxh3osnv0g.ap-southeast-1.rds.amazonaws.com:3306/get_my_parking?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://gmp-db.cfiwv9ppfo9p.us-west-1.rds.amazonaws.com:3306/get_my_parking?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
