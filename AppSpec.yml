@@ -1,0 +1,19 @@
+os: linux
+files:
+  - source: /
+    destination: ~/
+  - source: package/var/log/getMyParking
+    destination: /var/log/getMyParking
+permissions:
+  - object: /var/log/getMyParking
+    pattern: "*.log"
+    owner: ubuntu
+    mode: 644
+    type:
+      - file
+hooks:
+  BeforeInstall:
+    - location: package/scripts/preInstall.sh
+  ApplicationStart:
+    - location: package/scripts/run.sh
+      timeout: 3600
