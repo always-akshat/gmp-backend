@@ -9,17 +9,17 @@ logging:
       threshold: INFO
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/getMyParking/services-info.log
+      currentLogFilename: /var/log/gmp/services-info.log
       archive: true
-      archivedLogFilenamePattern: /var/log/getMyParking/services-info-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp/services-info-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
     - type: file
       threshold: ERROR
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/getMyParking/services-error.log
+      currentLogFilename: /var/log/gmp/services-error.log
       archive: true
-      archivedLogFilenamePattern: /var/log/getMyParking/services-error-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
 
 database:

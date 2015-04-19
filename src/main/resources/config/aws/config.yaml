@@ -9,14 +9,14 @@ server:
     timeZone: IST
     appenders:
       - type: file
-        currentLogFilename: /var/log/getMyParking/requests.log
+        currentLogFilename: /var/log/gmp/requests.log
         archive: true
-        archivedLogFilenamePattern: /var/log/getMyParking/requests-%d{yyyy-MM-dd}.log.gz
+        archivedLogFilenamePattern: /var/log/gmp/requests-%d{yyyy-MM-dd}.log.gz
         archivedFileCount: 50
 
 
 logging:
-  level: DEBUG
+  level: INFO
   appenders:
     - type: console
       threshold: INFO
@@ -26,17 +26,17 @@ logging:
       threshold: INFO
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/getMyParking/services-info.log
+      currentLogFilename: /var/log/gmp/services-info.log
       archive: true
-      archivedLogFilenamePattern: /var/log/getMyParking/services-info-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp/services-info-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
     - type: file
       threshold: ERROR
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/getMyParking/services-error.log
+      currentLogFilename: /var/log/gmp/services-error.log
       archive: true
-      archivedLogFilenamePattern: /var/log/getMyParking/services-error-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
 
 database:
@@ -50,7 +50,7 @@ database:
   password: gmpgmp2015
 
   # the JDBC URL
-  url: jdbc:mysql://gmp-db.cloi0woonilh.us-west-2.rds.amazonaws.com:3306/get_my_parking?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://gmp-db.c7hxh3osnv0g.ap-southeast-1.rds.amazonaws.com:3306/get_my_parking?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:

@@ -2,10 +2,10 @@ os: linux
 files:
   - source: /
     destination: ~/
-  - source: package/var/log/getMyParking
-    destination: /var/log/getMyParking
+  - source: package/var/log/gmp
+    destination: /var/log/gmp
 permissions:
-  - object: /var/log/getMyParking
+  - object: /var/log/gmp
     pattern: "*.log"
     owner: ubuntu
     mode: 644
