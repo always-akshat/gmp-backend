@@ -62,6 +62,8 @@ database:
   # the SQL query to run when validating a connection's liveness
   validationQuery: "/* MyService Health Check */ SELECT 1"
 
+  checkConnectionOnBorrow: true
+
   # the minimum number of connections to keep open
   minSize: 8
 
