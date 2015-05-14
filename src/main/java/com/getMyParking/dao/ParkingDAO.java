@@ -2,12 +2,14 @@ package com.getMyParking.dao;
 
 import com.getMyParking.entities.Parking;
 import com.getMyParking.entities.ParkingLot;
+import com.getMyParking.entities.ParkingReport;
 import com.getMyParking.entities.UpdateParkingRequest;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
@@ -44,4 +46,43 @@ public class ParkingDAO extends AbstractDAO<Parking> {
         }
     }
 
+    public ParkingReport createReport(Integer parkingLotId, DateTime fromDate, DateTime toDate) {
+
+        List cars = currentSession().createCriteria(Parking.class)
+                .add(Restrictions.eq("parkingLotId",parkingLotId))
+                .add(Restrictions.between("checkInTime", fromDate, toDate))
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("type", "CAR")).list();
+
+        Integer carNumbers = (Integer) cars.get(0);
+
+        List bikes = currentSession().createCriteria(Parking.class)
+                .add(Restrictions.eq("parkingLotId", parkingLotId))
+                .add(Restrictions.between("checkInTime", fromDate, toDate))
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("type", "BIKE")).list();
+
+        Integer bikeNumbers = (Integer) bikes.get(0);
+
+        List carsRevenue = currentSession().createCriteria(Parking.class)
+                .add(Restrictions.eq("parkingLotId", parkingLotId))
+                .add(Restrictions.between("checkInTime", fromDate, toDate))
+                .setProjection(Projections.sum("cost"))
+                .add(Restrictions.eq("type", "CAR")).list();
+
+        Integer carsTotal = (Integer) carsRevenue.get(0);
+
+        List bikesRevenue = currentSession().createCriteria(Parking.class)
+                .add(Restrictions.eq("parkingLotId", parkingLotId))
+                .add(Restrictions.between("checkInTime", fromDate, toDate))
+                .setProjection(Projections.sum("cost"))
+                .add(Restrictions.eq("type", "BIKE")).list();
+
+        Integer bikeTotal = (Integer) bikesRevenue.get(0);
+
+        return new ParkingReport(carNumbers,bikeNumbers,carsTotal,bikeTotal);
+
+
+
+    }
 }

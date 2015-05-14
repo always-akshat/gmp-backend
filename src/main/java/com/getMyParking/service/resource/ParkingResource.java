@@ -6,7 +6,9 @@ import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entities.Parking;
 import com.getMyParking.entities.ParkingLot;
+import com.getMyParking.entities.ParkingReport;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -60,6 +62,16 @@ public class ParkingResource {
     @UnitOfWork
     public void createParking(@Valid List<Parking> parking, @PathParam("parkingLotId") Integer parkingLotId) {
         parkingDAO.saveParking(parking, parkingLotId);
+    }
+
+    @Path("/{parkingLotId}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+
+        return parkingDAO.createReport(parkingLotId,fromDate.get(),toDate.get());
     }
 
 
