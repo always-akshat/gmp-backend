@@ -54,7 +54,7 @@ public class ParkingDAO extends AbstractDAO<Parking> {
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("type", "CAR")).list();
 
-        Integer carNumbers = (Integer) cars.get(0);
+        Long carNumbers = (Long) cars.get(0);
 
         List bikes = currentSession().createCriteria(Parking.class)
                 .add(Restrictions.eq("parkingLotId", parkingLotId))
@@ -62,7 +62,7 @@ public class ParkingDAO extends AbstractDAO<Parking> {
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("type", "BIKE")).list();
 
-        Integer bikeNumbers = (Integer) bikes.get(0);
+        Long bikeNumbers = (Long) bikes.get(0);
 
         List carsRevenue = currentSession().createCriteria(Parking.class)
                 .add(Restrictions.eq("parkingLotId", parkingLotId))
@@ -70,7 +70,7 @@ public class ParkingDAO extends AbstractDAO<Parking> {
                 .setProjection(Projections.sum("cost"))
                 .add(Restrictions.eq("type", "CAR")).list();
 
-        Integer carsTotal = (Integer) carsRevenue.get(0);
+        Long carsTotal = (Long) carsRevenue.get(0);
 
         List bikesRevenue = currentSession().createCriteria(Parking.class)
                 .add(Restrictions.eq("parkingLotId", parkingLotId))
@@ -78,9 +78,9 @@ public class ParkingDAO extends AbstractDAO<Parking> {
                 .setProjection(Projections.sum("cost"))
                 .add(Restrictions.eq("type", "BIKE")).list();
 
-        Integer bikeTotal = (Integer) bikesRevenue.get(0);
+        Long bikeTotal = (Long) bikesRevenue.get(0);
 
-        return new ParkingReport(carNumbers,bikeNumbers,carsTotal,bikeTotal);
+        return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
 
 
 
