@@ -59,10 +59,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
     @Override
     public void run(GetMyParkingConfiguration getMyParkingConfiguration, Environment environment) throws Exception {
 
-        ParkingDAO parkingDAO = new ParkingDAO(hibernateBundle.getSessionFactory());
-        ParkingLotDAO parkingLotDAO = new ParkingLotDAO(hibernateBundle.getSessionFactory());
-        ParkingResource parkingResource = new ParkingResource(parkingDAO,parkingLotDAO);
-        environment.jersey().register(parkingResource);
 
     }
 }
