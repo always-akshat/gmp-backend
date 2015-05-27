@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking_event` (
   `parking_pass_id` INT NULL,
   `serial_number` VARCHAR(500) NOT NULL,
   `shift_number` VARCHAR(500) NOT NULL,
-  `updated_time` TIMESTAMP NOT NULL,
+  `updated_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX `fk_parkings_parking_lot1_idx` (`parking_lot_id` ASC),
   INDEX `fk_parkings_parking_pass1_idx` (`parking_pass_id` ASC),
