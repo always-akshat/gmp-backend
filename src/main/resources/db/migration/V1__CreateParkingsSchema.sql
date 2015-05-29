@@ -5,7 +5,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema get_my_parking
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `get_my_parking` ;
 CREATE SCHEMA IF NOT EXISTS `get_my_parking` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
 USE `get_my_parking` ;
 

@@ -1,11 +1,7 @@
 package com.getMyParking.service;
 
-import com.getMyParking.dao.ParkingDAO;
-import com.getMyParking.dao.ParkingLotDAO;
-import com.getMyParking.entities.Parking;
-import com.getMyParking.entities.ParkingLot;
+import com.getMyParking.entity.*;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
-import com.getMyParking.service.resource.ParkingResource;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
@@ -45,7 +41,12 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
             }
         };
 
-        hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(Parking.class, ParkingLot.class) {
+        hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
+                CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
+                ParkingLotHasUserB2BEntity.class, ParkingLotHasUserB2BEntityPK.class, ParkingPassEntity.class,
+                ParkingPassEntityPK.class, ParkingPassMasterEntity.class, PriceGridEntity.class, PricingSlotEntity.class,
+                ReceiptContentEntity.class, SessionEntity.class, UserB2BEntity.class
+        ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
                 return getMyParkingConfiguration.getDataSourceFactory();
