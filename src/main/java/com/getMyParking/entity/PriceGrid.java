@@ -7,7 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "price_grid", schema = "", catalog = "get_my_parking")
-public class PriceGridEntity {
+public class PriceGrid {
     private int id;
     private String priceStructure;
     private Integer startHour;
@@ -91,7 +91,7 @@ public class PriceGridEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PriceGridEntity that = (PriceGridEntity) o;
+        PriceGrid that = (PriceGrid) o;
 
         if (cost != that.cost) return false;
         if (id != that.id) return false;

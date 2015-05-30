@@ -7,11 +7,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "parking_lot_has_user_b2b", schema = "", catalog = "get_my_parking")
-@IdClass(ParkingLotHasUserB2BEntityPK.class)
-public class ParkingLotHasUserB2BEntity {
+@IdClass(ParkingLotHasUserB2BPK.class)
+public class ParkingLotHasUserB2B {
     private int parkingLotId;
     private String userB2BUsername;
-    private ParkingLotEntity parkingLotByParkingLotId;
+    private ParkingLot parkingLotByParkingLotId;
 
     @Id
     @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
@@ -38,7 +38,7 @@ public class ParkingLotHasUserB2BEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingLotHasUserB2BEntity that = (ParkingLotHasUserB2BEntity) o;
+        ParkingLotHasUserB2B that = (ParkingLotHasUserB2B) o;
 
         if (parkingLotId != that.parkingLotId) return false;
         if (userB2BUsername != null ? !userB2BUsername.equals(that.userB2BUsername) : that.userB2BUsername != null)
@@ -56,11 +56,11 @@ public class ParkingLotHasUserB2BEntity {
 
     @ManyToOne
     @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingLotEntity getParkingLotByParkingLotId() {
+    public ParkingLot getParkingLotByParkingLotId() {
         return parkingLotByParkingLotId;
     }
 
-    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
+    public void setParkingLotByParkingLotId(ParkingLot parkingLotByParkingLotId) {
         this.parkingLotByParkingLotId = parkingLotByParkingLotId;
     }
 }

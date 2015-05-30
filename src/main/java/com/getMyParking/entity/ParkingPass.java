@@ -8,8 +8,8 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "parking_pass", schema = "", catalog = "get_my_parking")
-@IdClass(ParkingPassEntityPK.class)
-public class ParkingPassEntity {
+@IdClass(ParkingPassPK.class)
+public class ParkingPass {
     private int id;
     private String registrationNumber;
     private Timestamp validTime;
@@ -60,7 +60,7 @@ public class ParkingPassEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingPassEntity that = (ParkingPassEntity) o;
+        ParkingPass that = (ParkingPass) o;
 
         if (id != that.id) return false;
         if (parkingPassMasterId != that.parkingPassMasterId) return false;

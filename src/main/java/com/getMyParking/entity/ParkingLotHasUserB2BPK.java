@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by rahulgupta.s on 30/05/15.
  */
-public class ParkingLotHasUserB2BEntityPK implements Serializable {
+public class ParkingLotHasUserB2BPK implements Serializable {
     private int parkingLotId;
     private String userB2BUsername;
 
@@ -36,7 +36,7 @@ public class ParkingLotHasUserB2BEntityPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingLotHasUserB2BEntityPK that = (ParkingLotHasUserB2BEntityPK) o;
+        ParkingLotHasUserB2BPK that = (ParkingLotHasUserB2BPK) o;
 
         if (parkingLotId != that.parkingLotId) return false;
         if (userB2BUsername != null ? !userB2BUsername.equals(that.userB2BUsername) : that.userB2BUsername != null)

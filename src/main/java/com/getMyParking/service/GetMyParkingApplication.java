@@ -1,7 +1,10 @@
 package com.getMyParking.service;
 
+import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
+import com.getMyParking.service.guice.GMPModule;
+import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
@@ -25,6 +28,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
     private HibernateBundle<GetMyParkingConfiguration> hibernateBundle;
     private FlywayBundle<GetMyParkingConfiguration> flywayBundle;
+    private GuiceBundle<GetMyParkingConfiguration> guiceBundle;
 
     @Override
     public void initialize(Bootstrap<GetMyParkingConfiguration> bootstrap) {
@@ -42,16 +46,24 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         };
 
         hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
-                CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
-                ParkingLotHasUserB2BEntity.class, ParkingLotHasUserB2BEntityPK.class, ParkingPassEntity.class,
-                ParkingPassEntityPK.class, ParkingPassMasterEntity.class, PriceGridEntity.class, PricingSlotEntity.class,
-                ReceiptContentEntity.class, SessionEntity.class, UserB2BEntity.class
+                Company.class, Parking.class, ParkingEvent.class, ParkingLot.class,
+                ParkingLotHasUserB2B.class, ParkingLotHasUserB2BPK.class, ParkingPass.class,
+                ParkingPassPK.class, ParkingPassMaster.class, PriceGrid.class, PricingSlot.class,
+                ReceiptContent.class, Session.class, UserB2B.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
                 return getMyParkingConfiguration.getDataSourceFactory();
             }
         };
+
+        guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
+                                .addModule(new GMPModule())
+                                .enableAutoConfig(getClass().getPackage().getName())
+                                .setConfigClass(GetMyParkingConfiguration.class)
+                                .build();
+
+        guiceBundle.getInjector().injectMembers(hibernateBundle.getSessionFactory());
 
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(flywayBundle);

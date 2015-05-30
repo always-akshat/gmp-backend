@@ -9,14 +9,14 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "pricing_slot", schema = "", catalog = "get_my_parking")
-public class PricingSlotEntity {
+public class PricingSlot {
     private int id;
     private String vehicleType;
     private String day;
     private Time startTime;
     private Time endTime;
     private int parkingLotId;
-    private Collection<PriceGridEntity> priceGridsById;
+    private Collection<PriceGrid> priceGridsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -83,7 +83,7 @@ public class PricingSlotEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PricingSlotEntity that = (PricingSlotEntity) o;
+        PricingSlot that = (PricingSlot) o;
 
         if (id != that.id) return false;
         if (parkingLotId != that.parkingLotId) return false;
@@ -107,11 +107,11 @@ public class PricingSlotEntity {
     }
 
     @OneToMany(mappedBy = "pricingSlotByPricingId")
-    public Collection<PriceGridEntity> getPriceGridsById() {
+    public Collection<PriceGrid> getPriceGridsById() {
         return priceGridsById;
     }
 
-    public void setPriceGridsById(Collection<PriceGridEntity> priceGridsById) {
+    public void setPriceGridsById(Collection<PriceGrid> priceGridsById) {
         this.priceGridsById = priceGridsById;
     }
 }

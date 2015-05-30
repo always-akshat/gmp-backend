@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking` (
   CONSTRAINT `fk_parking_company1`
   FOREIGN KEY (`company_id`)
   REFERENCES `get_my_parking`.`company` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking_lot` (
   CONSTRAINT `fk_parking_lot_parking1`
   FOREIGN KEY (`parking_id`)
   REFERENCES `get_my_parking`.`parking` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking_pass_master` (
   CONSTRAINT `fk_parking_pass_parking_lot1`
   FOREIGN KEY (`parking_lot_id`)
   REFERENCES `get_my_parking`.`parking_lot` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`pricing_slot` (
   CONSTRAINT `fk_pricing_parking_lot1`
   FOREIGN KEY (`parking_lot_id`)
   REFERENCES `get_my_parking`.`parking_lot` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`price_grid` (
   CONSTRAINT `fk_price_grid_parking_lot_price1`
   FOREIGN KEY (`pricing_id`)
   REFERENCES `get_my_parking`.`pricing_slot` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 
@@ -226,12 +226,12 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking_lot_has_user_b2b` (
   CONSTRAINT `fk_parking_lot_has_user_b2b_parking_lot1`
   FOREIGN KEY (`parking_lot_id`)
   REFERENCES `get_my_parking`.`parking_lot` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_parking_lot_has_user_b2b_user_b2b1`
   FOREIGN KEY (`user_b2b_username`)
   REFERENCES `get_my_parking`.`user_b2b` (`username`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`receipt_content` (
   CONSTRAINT `fk_receipt_content_parking_lot1`
   FOREIGN KEY (`parking_lot_id`)
   REFERENCES `get_my_parking`.`parking_lot` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
 

@@ -8,7 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "session", schema = "", catalog = "get_my_parking")
-public class SessionEntity {
+public class Session {
     private int id;
     private String username;
     private String authToken;
@@ -59,7 +59,7 @@ public class SessionEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SessionEntity that = (SessionEntity) o;
+        Session that = (Session) o;
 
         if (id != that.id) return false;
         if (authToken != null ? !authToken.equals(that.authToken) : that.authToken != null) return false;

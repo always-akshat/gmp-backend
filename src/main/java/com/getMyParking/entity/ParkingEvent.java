@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking")
-public class ParkingEventEntity {
+public class ParkingEvent {
     private int id;
     private String vehicleType;
     private String type;
@@ -148,7 +148,7 @@ public class ParkingEventEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingEventEntity that = (ParkingEventEntity) o;
+        ParkingEvent that = (ParkingEvent) o;
 
         if (id != that.id) return false;
         if (parkingLotId != that.parkingLotId) return false;

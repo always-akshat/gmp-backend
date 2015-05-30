@@ -6,18 +6,18 @@
   <session-factory>
     <property name="connection.url">jdbc:mysql://localhost:3306/get_my_parking</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-      <mapping class="com.getMyParking.entity.CompanyEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingEventEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingLotEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingLotHasUserB2BEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingPassEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingPassMasterEntity"/>
-      <mapping class="com.getMyParking.entity.PriceGridEntity"/>
-      <mapping class="com.getMyParking.entity.PricingSlotEntity"/>
-      <mapping class="com.getMyParking.entity.ReceiptContentEntity"/>
-      <mapping class="com.getMyParking.entity.SessionEntity"/>
-      <mapping class="com.getMyParking.entity.UserB2BEntity"/>
+      <mapping class="com.getMyParking.entity.Company"/>
+      <mapping class="com.getMyParking.entity.Parking"/>
+      <mapping class="com.getMyParking.entity.ParkingEvent"/>
+      <mapping class="com.getMyParking.entity.ParkingLot"/>
+      <mapping class="com.getMyParking.entity.ParkingLotHasUserB2B"/>
+      <mapping class="com.getMyParking.entity.ParkingPass"/>
+      <mapping class="com.getMyParking.entity.ParkingPassMaster"/>
+      <mapping class="com.getMyParking.entity.PriceGrid"/>
+      <mapping class="com.getMyParking.entity.PricingSlot"/>
+      <mapping class="com.getMyParking.entity.ReceiptContent"/>
+      <mapping class="com.getMyParking.entity.Session"/>
+      <mapping class="com.getMyParking.entity.UserB2B"/>
       <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>

@@ -7,7 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "parking_pass_master", schema = "", catalog = "get_my_parking")
-public class ParkingPassMasterEntity {
+public class ParkingPassMaster {
     private int id;
     private String name;
     private String passType;
@@ -102,7 +102,7 @@ public class ParkingPassMasterEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingPassMasterEntity that = (ParkingPassMasterEntity) o;
+        ParkingPassMaster that = (ParkingPassMaster) o;
 
         if (id != that.id) return false;
         if (numbers != that.numbers) return false;

@@ -10,7 +10,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "parking_lot", schema = "", catalog = "get_my_parking")
-public class ParkingLotEntity {
+public class ParkingLot {
     private int id;
     private String name;
     private Time openTime;
@@ -22,8 +22,8 @@ public class ParkingLotEntity {
     private String licenseNo;
     private int parkingId;
     private String collectionModel;
-    private Collection<PricingSlotEntity> pricingSlotsById;
-    private Collection<ReceiptContentEntity> receiptContentsById;
+    private Collection<PricingSlot> pricingSlotsById;
+    private Collection<ReceiptContent> receiptContentsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -140,7 +140,7 @@ public class ParkingLotEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingLotEntity that = (ParkingLotEntity) o;
+        ParkingLot that = (ParkingLot) o;
 
         if (bikeCapacity != that.bikeCapacity) return false;
         if (carCapacity != that.carCapacity) return false;
@@ -175,20 +175,20 @@ public class ParkingLotEntity {
     }
 
     @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<PricingSlotEntity> getPricingSlotsById() {
+    public Collection<PricingSlot> getPricingSlotsById() {
         return pricingSlotsById;
     }
 
-    public void setPricingSlotsById(Collection<PricingSlotEntity> pricingSlotsById) {
+    public void setPricingSlotsById(Collection<PricingSlot> pricingSlotsById) {
         this.pricingSlotsById = pricingSlotsById;
     }
 
     @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<ReceiptContentEntity> getReceiptContentsById() {
+    public Collection<ReceiptContent> getReceiptContentsById() {
         return receiptContentsById;
     }
 
-    public void setReceiptContentsById(Collection<ReceiptContentEntity> receiptContentsById) {
+    public void setReceiptContentsById(Collection<ReceiptContent> receiptContentsById) {
         this.receiptContentsById = receiptContentsById;
     }
 }

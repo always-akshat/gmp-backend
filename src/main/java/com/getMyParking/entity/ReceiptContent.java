@@ -7,7 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "receipt_content", schema = "", catalog = "get_my_parking")
-public class ReceiptContentEntity {
+public class ReceiptContent {
     private int id;
     private String content;
     private String ordering;
@@ -69,7 +69,7 @@ public class ReceiptContentEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ReceiptContentEntity that = (ReceiptContentEntity) o;
+        ReceiptContent that = (ReceiptContent) o;
 
         if (id != that.id) return false;
         if (parkingLotId != that.parkingLotId) return false;

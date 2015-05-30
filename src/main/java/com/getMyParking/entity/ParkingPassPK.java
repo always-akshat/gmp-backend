@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by rahulgupta.s on 30/05/15.
  */
-public class ParkingPassEntityPK implements Serializable {
+public class ParkingPassPK implements Serializable {
     private int id;
     private int parkingPassMasterId;
 
@@ -36,7 +36,7 @@ public class ParkingPassEntityPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingPassEntityPK that = (ParkingPassEntityPK) o;
+        ParkingPassPK that = (ParkingPassPK) o;
 
         if (id != that.id) return false;
         if (parkingPassMasterId != that.parkingPassMasterId) return false;
