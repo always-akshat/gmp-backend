@@ -1,21 +1,23 @@
 package com.getMyParking.entity;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
 @Table(name = "parking_pass_master", schema = "", catalog = "get_my_parking")
-public class ParkingPassMaster {
+public class ParkingPassMasterEntity {
     private int id;
     private String name;
     private String passType;
     private int numbers;
     private int price;
-    private int parkingLotId;
     private String vehicleType;
     private String isActive;
+    private Collection<ParkingPassEntity> parkingPassesById;
+    private ParkingLotEntity parkingLotByParkingLotId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -68,16 +70,6 @@ public class ParkingPassMaster {
     }
 
     @Basic
-    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingLotId() {
-        return parkingLotId;
-    }
-
-    public void setParkingLotId(int parkingLotId) {
-        this.parkingLotId = parkingLotId;
-    }
-
-    @Basic
     @Column(name = "vehicle_type", nullable = false, insertable = true, updatable = true, length = 45)
     public String getVehicleType() {
         return vehicleType;
@@ -102,11 +94,10 @@ public class ParkingPassMaster {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingPassMaster that = (ParkingPassMaster) o;
+        ParkingPassMasterEntity that = (ParkingPassMasterEntity) o;
 
         if (id != that.id) return false;
         if (numbers != that.numbers) return false;
-        if (parkingLotId != that.parkingLotId) return false;
         if (price != that.price) return false;
         if (isActive != null ? !isActive.equals(that.isActive) : that.isActive != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -123,9 +114,27 @@ public class ParkingPassMaster {
         result = 31 * result + (passType != null ? passType.hashCode() : 0);
         result = 31 * result + numbers;
         result = 31 * result + price;
-        result = 31 * result + parkingLotId;
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (isActive != null ? isActive.hashCode() : 0);
         return result;
+    }
+
+    @OneToMany(mappedBy = "parkingPassMasterByParkingPassMasterId")
+    public Collection<ParkingPassEntity> getParkingPassesById() {
+        return parkingPassesById;
+    }
+
+    public void setParkingPassesById(Collection<ParkingPassEntity> parkingPassesById) {
+        this.parkingPassesById = parkingPassesById;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
+    public ParkingLotEntity getParkingLotByParkingLotId() {
+        return parkingLotByParkingLotId;
+    }
+
+    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
+        this.parkingLotByParkingLotId = parkingLotByParkingLotId;
     }
 }

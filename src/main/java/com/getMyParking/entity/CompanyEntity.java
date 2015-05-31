@@ -1,22 +1,41 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
-@Table(name = "parking", schema = "", catalog = "get_my_parking")
-public class Parking {
+@Table(name = "company", schema = "", catalog = "get_my_parking")
+public class CompanyEntity {
+
     private int id;
+
+    @NotNull
     private String name;
+
+    @NotNull
     private String address;
+
+    @NotNull
     private String city;
+
+    private String email;
+
     private String contactNumber;
-    private int companyId;
+
+    private String website;
+
+    @JsonIgnore
+    private Collection<ParkingEntity> parkingsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -26,7 +45,7 @@ public class Parking {
     }
 
     @Basic
-    @Column(name = "name", nullable = false, insertable = true, updatable = true, length = 45)
+    @Column(name = "name", nullable = false, insertable = true, updatable = true, length = 500)
     public String getName() {
         return name;
     }
@@ -36,7 +55,7 @@ public class Parking {
     }
 
     @Basic
-    @Column(name = "address", nullable = false, insertable = true, updatable = true, length = 45)
+    @Column(name = "address", nullable = false, insertable = true, updatable = true, length = 500)
     public String getAddress() {
         return address;
     }
@@ -46,7 +65,7 @@ public class Parking {
     }
 
     @Basic
-    @Column(name = "city", nullable = false, insertable = true, updatable = true, length = 45)
+    @Column(name = "city", nullable = false, insertable = true, updatable = true, length = 500)
     public String getCity() {
         return city;
     }
@@ -56,7 +75,17 @@ public class Parking {
     }
 
     @Basic
-    @Column(name = "contact_number", nullable = true, insertable = true, updatable = true, length = 45)
+    @Column(name = "email", nullable = true, insertable = true, updatable = true, length = 500)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Basic
+    @Column(name = "contact_number", nullable = true, insertable = true, updatable = true, length = 500)
     public String getContactNumber() {
         return contactNumber;
     }
@@ -66,13 +95,13 @@ public class Parking {
     }
 
     @Basic
-    @Column(name = "company_id", nullable = false, insertable = true, updatable = true)
-    public int getCompanyId() {
-        return companyId;
+    @Column(name = "website", nullable = true, insertable = true, updatable = true, length = 500)
+    public String getWebsite() {
+        return website;
     }
 
-    public void setCompanyId(int companyId) {
-        this.companyId = companyId;
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     @Override
@@ -80,15 +109,16 @@ public class Parking {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Parking that = (Parking) o;
+        CompanyEntity that = (CompanyEntity) o;
 
-        if (companyId != that.companyId) return false;
         if (id != that.id) return false;
         if (address != null ? !address.equals(that.address) : that.address != null) return false;
         if (city != null ? !city.equals(that.city) : that.city != null) return false;
         if (contactNumber != null ? !contactNumber.equals(that.contactNumber) : that.contactNumber != null)
             return false;
+        if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (website != null ? !website.equals(that.website) : that.website != null) return false;
 
         return true;
     }
@@ -99,8 +129,18 @@ public class Parking {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (contactNumber != null ? contactNumber.hashCode() : 0);
-        result = 31 * result + companyId;
+        result = 31 * result + (website != null ? website.hashCode() : 0);
         return result;
+    }
+
+    @OneToMany(mappedBy = "companyByCompanyId", fetch = FetchType.LAZY)
+    public Collection<ParkingEntity> getParkingsById() {
+        return parkingsById;
+    }
+
+    public void setParkingsById(Collection<ParkingEntity> parkingsById) {
+        this.parkingsById = parkingsById;
     }
 }

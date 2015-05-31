@@ -4,17 +4,17 @@ import javax.persistence.*;
 import java.util.Collection;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
 @Table(name = "user_b2b", schema = "", catalog = "get_my_parking")
-public class UserB2B {
+public class UserB2BEntity {
     private String username;
     private String password;
     private String name;
     private String contactNumber;
     private String role;
-    private Collection<ParkingLotHasUserB2B> parkingLotHasUserB2BsByUsername;
+    private Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername;
 
     @Id
     @Column(name = "username", nullable = false, insertable = true, updatable = true, length = 255)
@@ -71,7 +71,7 @@ public class UserB2B {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserB2B that = (UserB2B) o;
+        UserB2BEntity that = (UserB2BEntity) o;
 
         if (contactNumber != null ? !contactNumber.equals(that.contactNumber) : that.contactNumber != null)
             return false;
@@ -94,11 +94,11 @@ public class UserB2B {
     }
 
     @OneToMany(mappedBy = "userB2BByUserB2BUsername")
-    public Collection<ParkingLotHasUserB2B> getParkingLotHasUserB2BsByUsername() {
+    public Collection<ParkingLotHasUserB2BEntity> getParkingLotHasUserB2BsByUsername() {
         return parkingLotHasUserB2BsByUsername;
     }
 
-    public void setParkingLotHasUserB2BsByUsername(Collection<ParkingLotHasUserB2B> parkingLotHasUserB2BsByUsername) {
+    public void setParkingLotHasUserB2BsByUsername(Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername) {
         this.parkingLotHasUserB2BsByUsername = parkingLotHasUserB2BsByUsername;
     }
 }

@@ -3,16 +3,16 @@ package com.getMyParking.entity;
 import javax.persistence.*;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
 @Table(name = "receipt_content", schema = "", catalog = "get_my_parking")
-public class ReceiptContent {
+public class ReceiptContentEntity {
     private int id;
     private String content;
     private String ordering;
     private String placement;
-    private int parkingLotId;
+    private ParkingLotEntity parkingLotByParkingLotId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -54,25 +54,14 @@ public class ReceiptContent {
         this.placement = placement;
     }
 
-    @Basic
-    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingLotId() {
-        return parkingLotId;
-    }
-
-    public void setParkingLotId(int parkingLotId) {
-        this.parkingLotId = parkingLotId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ReceiptContent that = (ReceiptContent) o;
+        ReceiptContentEntity that = (ReceiptContentEntity) o;
 
         if (id != that.id) return false;
-        if (parkingLotId != that.parkingLotId) return false;
         if (content != null ? !content.equals(that.content) : that.content != null) return false;
         if (ordering != null ? !ordering.equals(that.ordering) : that.ordering != null) return false;
         if (placement != null ? !placement.equals(that.placement) : that.placement != null) return false;
@@ -86,7 +75,16 @@ public class ReceiptContent {
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + (ordering != null ? ordering.hashCode() : 0);
         result = 31 * result + (placement != null ? placement.hashCode() : 0);
-        result = 31 * result + parkingLotId;
         return result;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
+    public ParkingLotEntity getParkingLotByParkingLotId() {
+        return parkingLotByParkingLotId;
+    }
+
+    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
+        this.parkingLotByParkingLotId = parkingLotByParkingLotId;
     }
 }

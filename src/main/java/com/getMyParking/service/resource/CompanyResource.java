@@ -3,10 +3,8 @@ package com.getMyParking.service.resource;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.CompanyDAO;
-import com.getMyParking.entity.Company;
-import com.google.common.base.Optional;
-import com.google.inject.Inject;
-import io.dropwizard.jersey.params.IntParam;
+import com.getMyParking.entity.CompanyEntity;
+import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -23,7 +21,6 @@ public class CompanyResource {
 
     private CompanyDAO companyDAO;
 
-    @Inject
     public CompanyResource(CompanyDAO companyDAO) {
         this.companyDAO = companyDAO;
     }
@@ -32,18 +29,20 @@ public class CompanyResource {
     @Path("/{companyId}")
     @Timed
     @ExceptionMetered
-    public Company getCompanyById(@PathParam("companyId")Optional<IntParam> companyId) {
-        if (companyId.isPresent()) {
-            return companyDAO.findById(companyId.get().get());
-        } else {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity("Company Id Empty").build());
+    @UnitOfWork
+    public CompanyEntity getCompanyById(@PathParam("companyId")int id) {
+        CompanyEntity companyEntity = companyDAO.findById(id);
+        if (companyEntity == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
+        return companyEntity;
     }
 
     @POST
     @Timed
     @ExceptionMetered
-    public void saveOrUpdateCompany(@Valid Company company) {
+    @UnitOfWork
+    public void saveOrUpdateCompany(@Valid CompanyEntity company) {
         companyDAO.saveOrUpdateCompany(company);
     }
 
@@ -51,12 +50,9 @@ public class CompanyResource {
     @Path("/{companyId}")
     @Timed
     @ExceptionMetered
-    public void deleteCompany(@PathParam("companyId")Optional<IntParam> companyId) {
-        if (companyId.isPresent()) {
-            companyDAO.deleteById(companyId.get().get());
-        } else {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity("Company Id Empty").build());
-        }
+    @UnitOfWork
+    public void deleteCompany(@PathParam("companyId")int companyId) {
+        companyDAO.deleteById(companyId);
     }
 
 

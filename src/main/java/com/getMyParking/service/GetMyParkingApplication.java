@@ -1,10 +1,11 @@
 package com.getMyParking.service;
 
 import com.getMyParking.dao.CompanyDAO;
+import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
-import com.getMyParking.service.guice.GMPModule;
-import com.hubspot.dropwizard.guice.GuiceBundle;
+import com.getMyParking.service.resource.CompanyResource;
+import com.getMyParking.service.resource.ParkingResource;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
@@ -28,7 +29,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
     private HibernateBundle<GetMyParkingConfiguration> hibernateBundle;
     private FlywayBundle<GetMyParkingConfiguration> flywayBundle;
-    private GuiceBundle<GetMyParkingConfiguration> guiceBundle;
 
     @Override
     public void initialize(Bootstrap<GetMyParkingConfiguration> bootstrap) {
@@ -46,24 +46,16 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         };
 
         hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
-                Company.class, Parking.class, ParkingEvent.class, ParkingLot.class,
-                ParkingLotHasUserB2B.class, ParkingLotHasUserB2BPK.class, ParkingPass.class,
-                ParkingPassPK.class, ParkingPassMaster.class, PriceGrid.class, PricingSlot.class,
-                ReceiptContent.class, Session.class, UserB2B.class
+                CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
+                ParkingLotHasUserB2BEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
+                PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
+                SessionEntity.class, UserB2BEntity.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
                 return getMyParkingConfiguration.getDataSourceFactory();
             }
         };
-
-        guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
-                                .addModule(new GMPModule())
-                                .enableAutoConfig(getClass().getPackage().getName())
-                                .setConfigClass(GetMyParkingConfiguration.class)
-                                .build();
-
-        guiceBundle.getInjector().injectMembers(hibernateBundle.getSessionFactory());
 
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(flywayBundle);
@@ -72,6 +64,13 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
     @Override
     public void run(GetMyParkingConfiguration getMyParkingConfiguration, Environment environment) throws Exception {
 
+        CompanyDAO companyDAO = new CompanyDAO(hibernateBundle.getSessionFactory());
+        ParkingDAO parkingDAO = new ParkingDAO(hibernateBundle.getSessionFactory());
 
+        ParkingResource parkingResource = new ParkingResource(parkingDAO,companyDAO);
+        CompanyResource companyResource = new CompanyResource(companyDAO);
+
+        environment.jersey().register(parkingResource);
+        environment.jersey().register(companyResource);
     }
 }

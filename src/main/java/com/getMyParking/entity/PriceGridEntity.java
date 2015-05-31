@@ -3,18 +3,18 @@ package com.getMyParking.entity;
 import javax.persistence.*;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
 @Table(name = "price_grid", schema = "", catalog = "get_my_parking")
-public class PriceGrid {
+public class PriceGridEntity {
     private int id;
     private String priceStructure;
     private Integer startHour;
     private Integer endHour;
     private int cost;
     private String slabHour;
-    private int pricingId;
+    private PricingSlotEntity pricingSlotByPricingId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -76,26 +76,15 @@ public class PriceGrid {
         this.slabHour = slabHour;
     }
 
-    @Basic
-    @Column(name = "pricing_id", nullable = false, insertable = true, updatable = true)
-    public int getPricingId() {
-        return pricingId;
-    }
-
-    public void setPricingId(int pricingId) {
-        this.pricingId = pricingId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PriceGrid that = (PriceGrid) o;
+        PriceGridEntity that = (PriceGridEntity) o;
 
         if (cost != that.cost) return false;
         if (id != that.id) return false;
-        if (pricingId != that.pricingId) return false;
         if (endHour != null ? !endHour.equals(that.endHour) : that.endHour != null) return false;
         if (priceStructure != null ? !priceStructure.equals(that.priceStructure) : that.priceStructure != null)
             return false;
@@ -113,7 +102,16 @@ public class PriceGrid {
         result = 31 * result + (endHour != null ? endHour.hashCode() : 0);
         result = 31 * result + cost;
         result = 31 * result + (slabHour != null ? slabHour.hashCode() : 0);
-        result = 31 * result + pricingId;
         return result;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "pricing_id", referencedColumnName = "id", nullable = false)
+    public PricingSlotEntity getPricingSlotByPricingId() {
+        return pricingSlotByPricingId;
+    }
+
+    public void setPricingSlotByPricingId(PricingSlotEntity pricingSlotByPricingId) {
+        this.pricingSlotByPricingId = pricingSlotByPricingId;
     }
 }

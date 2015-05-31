@@ -6,11 +6,11 @@ import java.sql.Time;
 import java.util.Collection;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
 @Table(name = "parking_lot", schema = "", catalog = "get_my_parking")
-public class ParkingLot {
+public class ParkingLotEntity {
     private int id;
     private String name;
     private Time openTime;
@@ -20,10 +20,11 @@ public class ParkingLot {
     private int carCapacity;
     private int bikeCapacity;
     private String licenseNo;
-    private int parkingId;
     private String collectionModel;
-    private Collection<PricingSlot> pricingSlotsById;
-    private Collection<ReceiptContent> receiptContentsById;
+    private ParkingEntity parkingByParkingId;
+    private Collection<ParkingPassMasterEntity> parkingPassMastersById;
+    private Collection<PricingSlotEntity> pricingSlotsById;
+    private Collection<ReceiptContentEntity> receiptContentsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -116,16 +117,6 @@ public class ParkingLot {
     }
 
     @Basic
-    @Column(name = "parking_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingId() {
-        return parkingId;
-    }
-
-    public void setParkingId(int parkingId) {
-        this.parkingId = parkingId;
-    }
-
-    @Basic
     @Column(name = "collection_model", nullable = true, insertable = true, updatable = true, length = 500)
     public String getCollectionModel() {
         return collectionModel;
@@ -140,12 +131,11 @@ public class ParkingLot {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ParkingLot that = (ParkingLot) o;
+        ParkingLotEntity that = (ParkingLotEntity) o;
 
         if (bikeCapacity != that.bikeCapacity) return false;
         if (carCapacity != that.carCapacity) return false;
         if (id != that.id) return false;
-        if (parkingId != that.parkingId) return false;
         if (closeTime != null ? !closeTime.equals(that.closeTime) : that.closeTime != null) return false;
         if (collectionModel != null ? !collectionModel.equals(that.collectionModel) : that.collectionModel != null)
             return false;
@@ -169,26 +159,44 @@ public class ParkingLot {
         result = 31 * result + carCapacity;
         result = 31 * result + bikeCapacity;
         result = 31 * result + (licenseNo != null ? licenseNo.hashCode() : 0);
-        result = 31 * result + parkingId;
         result = 31 * result + (collectionModel != null ? collectionModel.hashCode() : 0);
         return result;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "parking_id", referencedColumnName = "id", nullable = false)
+    public ParkingEntity getParkingByParkingId() {
+        return parkingByParkingId;
+    }
+
+    public void setParkingByParkingId(ParkingEntity parkingByParkingId) {
+        this.parkingByParkingId = parkingByParkingId;
+    }
+
     @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<PricingSlot> getPricingSlotsById() {
+    public Collection<ParkingPassMasterEntity> getParkingPassMastersById() {
+        return parkingPassMastersById;
+    }
+
+    public void setParkingPassMastersById(Collection<ParkingPassMasterEntity> parkingPassMastersById) {
+        this.parkingPassMastersById = parkingPassMastersById;
+    }
+
+    @OneToMany(mappedBy = "parkingLotByParkingLotId")
+    public Collection<PricingSlotEntity> getPricingSlotsById() {
         return pricingSlotsById;
     }
 
-    public void setPricingSlotsById(Collection<PricingSlot> pricingSlotsById) {
+    public void setPricingSlotsById(Collection<PricingSlotEntity> pricingSlotsById) {
         this.pricingSlotsById = pricingSlotsById;
     }
 
     @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<ReceiptContent> getReceiptContentsById() {
+    public Collection<ReceiptContentEntity> getReceiptContentsById() {
         return receiptContentsById;
     }
 
-    public void setReceiptContentsById(Collection<ReceiptContent> receiptContentsById) {
+    public void setReceiptContentsById(Collection<ReceiptContentEntity> receiptContentsById) {
         this.receiptContentsById = receiptContentsById;
     }
 }

@@ -5,18 +5,18 @@ import java.sql.Time;
 import java.util.Collection;
 
 /**
- * Created by rahulgupta.s on 30/05/15.
+ * Created by rahulgupta.s on 31/05/15.
  */
 @Entity
 @Table(name = "pricing_slot", schema = "", catalog = "get_my_parking")
-public class PricingSlot {
+public class PricingSlotEntity {
     private int id;
     private String vehicleType;
     private String day;
     private Time startTime;
     private Time endTime;
-    private int parkingLotId;
-    private Collection<PriceGrid> priceGridsById;
+    private Collection<PriceGridEntity> priceGridsById;
+    private ParkingLotEntity parkingLotByParkingLotId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -68,25 +68,14 @@ public class PricingSlot {
         this.endTime = endTime;
     }
 
-    @Basic
-    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingLotId() {
-        return parkingLotId;
-    }
-
-    public void setParkingLotId(int parkingLotId) {
-        this.parkingLotId = parkingLotId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PricingSlot that = (PricingSlot) o;
+        PricingSlotEntity that = (PricingSlotEntity) o;
 
         if (id != that.id) return false;
-        if (parkingLotId != that.parkingLotId) return false;
         if (day != null ? !day.equals(that.day) : that.day != null) return false;
         if (endTime != null ? !endTime.equals(that.endTime) : that.endTime != null) return false;
         if (startTime != null ? !startTime.equals(that.startTime) : that.startTime != null) return false;
@@ -102,16 +91,25 @@ public class PricingSlot {
         result = 31 * result + (day != null ? day.hashCode() : 0);
         result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
         result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
-        result = 31 * result + parkingLotId;
         return result;
     }
 
     @OneToMany(mappedBy = "pricingSlotByPricingId")
-    public Collection<PriceGrid> getPriceGridsById() {
+    public Collection<PriceGridEntity> getPriceGridsById() {
         return priceGridsById;
     }
 
-    public void setPriceGridsById(Collection<PriceGrid> priceGridsById) {
+    public void setPriceGridsById(Collection<PriceGridEntity> priceGridsById) {
         this.priceGridsById = priceGridsById;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
+    public ParkingLotEntity getParkingLotByParkingLotId() {
+        return parkingLotByParkingLotId;
+    }
+
+    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
+        this.parkingLotByParkingLotId = parkingLotByParkingLotId;
     }
 }

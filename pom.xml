@@ -13,6 +13,16 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
             <version>0.7.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
@@ -28,16 +38,6 @@
             <groupId>io.dropwizard.modules</groupId>
             <artifactId>dropwizard-flyway</artifactId>
             <version>0.7.0-1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hubspot.dropwizard</groupId>
-            <artifactId>dropwizard-guice</artifactId>
-            <version>0.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
