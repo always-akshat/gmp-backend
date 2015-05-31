@@ -1,6 +1,11 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -11,20 +16,32 @@ import java.sql.Timestamp;
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking")
 public class ParkingEventEntity {
     private int id;
+    @NotNull
     private String vehicleType;
+    @NotNull
     private String type;
+    @NotNull
     private String registrationNumber;
-    private Timestamp eventTime;
+    @NotNull
+    private DateTime eventTime;
+    @NotNull
     private String eventType;
+    @NotNull
     private BigDecimal cost;
+    @NotNull
     private String serialNumber;
+    @NotNull
     private String shiftNumber;
-    private Timestamp updatedTime;
+    @NotNull
+    private DateTime updatedTime;
+    @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
+    @JsonIgnore
     private ParkingPassEntity parkingPassByParkingPassId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -65,11 +82,12 @@ public class ParkingEventEntity {
 
     @Basic
     @Column(name = "event_time", nullable = false, insertable = true, updatable = true)
-    public Timestamp getEventTime() {
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    public DateTime getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(Timestamp eventTime) {
+    public void setEventTime(DateTime eventTime) {
         this.eventTime = eventTime;
     }
 
@@ -115,11 +133,12 @@ public class ParkingEventEntity {
 
     @Basic
     @Column(name = "updated_time", nullable = false, insertable = true, updatable = true)
-    public Timestamp getUpdatedTime() {
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    public DateTime getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(Timestamp updatedTime) {
+    public void setUpdatedTime(DateTime updatedTime) {
         this.updatedTime = updatedTime;
     }
 

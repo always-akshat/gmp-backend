@@ -1,9 +1,13 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -11,23 +15,35 @@ import java.util.Collection;
 @Entity
 @Table(name = "parking_lot", schema = "", catalog = "get_my_parking")
 public class ParkingLotEntity {
+
     private int id;
+    @NotNull
     private String name;
+    @NotNull
     private Time openTime;
+    @NotNull
     private Time closeTime;
+    @NotNull
     private BigDecimal latitude;
+    @NotNull
     private BigDecimal longitude;
+    @NotNull
     private int carCapacity;
+    @NotNull
     private int bikeCapacity;
     private String licenseNo;
+    @NotNull
     private String collectionModel;
+    @JsonIgnore
     private ParkingEntity parkingByParkingId;
-    private Collection<ParkingPassMasterEntity> parkingPassMastersById;
-    private Collection<PricingSlotEntity> pricingSlotsById;
-    private Collection<ReceiptContentEntity> receiptContentsById;
+
+    private List<ParkingPassMasterEntity> parkingPassMastersById;
+    private List<PricingSlotEntity> pricingSlotsById;
+    private List<ReceiptContentEntity> receiptContentsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -173,30 +189,30 @@ public class ParkingLotEntity {
         this.parkingByParkingId = parkingByParkingId;
     }
 
-    @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<ParkingPassMasterEntity> getParkingPassMastersById() {
+    @OneToMany(mappedBy = "parkingLotByParkingLotId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    public List<ParkingPassMasterEntity> getParkingPassMastersById() {
         return parkingPassMastersById;
     }
 
-    public void setParkingPassMastersById(Collection<ParkingPassMasterEntity> parkingPassMastersById) {
+    public void setParkingPassMastersById(List<ParkingPassMasterEntity> parkingPassMastersById) {
         this.parkingPassMastersById = parkingPassMastersById;
     }
 
-    @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<PricingSlotEntity> getPricingSlotsById() {
+    @OneToMany(mappedBy = "parkingLotByParkingLotId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    public List<PricingSlotEntity> getPricingSlotsById() {
         return pricingSlotsById;
     }
 
-    public void setPricingSlotsById(Collection<PricingSlotEntity> pricingSlotsById) {
+    public void setPricingSlotsById(List<PricingSlotEntity> pricingSlotsById) {
         this.pricingSlotsById = pricingSlotsById;
     }
 
-    @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<ReceiptContentEntity> getReceiptContentsById() {
+    @OneToMany(mappedBy = "parkingLotByParkingLotId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    public List<ReceiptContentEntity> getReceiptContentsById() {
         return receiptContentsById;
     }
 
-    public void setReceiptContentsById(Collection<ReceiptContentEntity> receiptContentsById) {
+    public void setReceiptContentsById(List<ReceiptContentEntity> receiptContentsById) {
         this.receiptContentsById = receiptContentsById;
     }
 }

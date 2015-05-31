@@ -1,7 +1,11 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -9,18 +13,28 @@ import java.util.Collection;
 @Entity
 @Table(name = "parking_pass_master", schema = "", catalog = "get_my_parking")
 public class ParkingPassMasterEntity {
+
     private int id;
+    @NotNull
     private String name;
+    @NotNull
     private String passType;
+    @NotNull
     private int numbers;
+    @NotNull
     private int price;
+    @NotNull
     private String vehicleType;
+    @NotNull
     private String isActive;
-    private Collection<ParkingPassEntity> parkingPassesById;
+    @JsonIgnore
+    private List<ParkingPassEntity> parkingPassesById;
+    @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -119,12 +133,12 @@ public class ParkingPassMasterEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingPassMasterByParkingPassMasterId")
-    public Collection<ParkingPassEntity> getParkingPassesById() {
+    @OneToMany(mappedBy = "parkingPassMasterByParkingPassMasterId", fetch = FetchType.LAZY)
+    public List<ParkingPassEntity> getParkingPassesById() {
         return parkingPassesById;
     }
 
-    public void setParkingPassesById(Collection<ParkingPassEntity> parkingPassesById) {
+    public void setParkingPassesById(List<ParkingPassEntity> parkingPassesById) {
         this.parkingPassesById = parkingPassesById;
     }
 

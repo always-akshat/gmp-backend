@@ -1,8 +1,12 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -11,13 +15,17 @@ import java.util.Collection;
 @Table(name = "parking_pass", schema = "", catalog = "get_my_parking")
 public class ParkingPassEntity {
     private int id;
+    @NotNull
     private String registrationNumber;
+    @NotNull
     private Timestamp validTime;
-    private Collection<ParkingEventEntity> parkingEventsById;
+    private List<ParkingEventEntity> parkingEventsById;
+    @JsonIgnore
     private ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -69,12 +77,12 @@ public class ParkingPassEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingPassByParkingPassId")
-    public Collection<ParkingEventEntity> getParkingEventsById() {
+    @OneToMany(mappedBy = "parkingPassByParkingPassId", fetch = FetchType.EAGER)
+    public List<ParkingEventEntity> getParkingEventsById() {
         return parkingEventsById;
     }
 
-    public void setParkingEventsById(Collection<ParkingEventEntity> parkingEventsById) {
+    public void setParkingEventsById(List<ParkingEventEntity> parkingEventsById) {
         this.parkingEventsById = parkingEventsById;
     }
 

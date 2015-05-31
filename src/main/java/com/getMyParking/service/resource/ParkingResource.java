@@ -6,6 +6,7 @@ import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.entity.CompanyEntity;
 import com.getMyParking.entity.ParkingEntity;
+import com.google.inject.Inject;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ public class ParkingResource {
     private ParkingDAO parkingDAO;
     private CompanyDAO companyDAO;
 
+    @Inject
     public ParkingResource(ParkingDAO parkingDAO, CompanyDAO companyDAO) {
         this.parkingDAO = parkingDAO;
         this.companyDAO = companyDAO;
@@ -34,7 +36,7 @@ public class ParkingResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public ParkingEntity getCompanyById(@PathParam("parkingId")int id) {
+    public ParkingEntity getParkingById(@PathParam("parkingId")int id) {
         ParkingEntity parkingEntity = parkingDAO.findById(id);
         if (parkingEntity == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -47,7 +49,7 @@ public class ParkingResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public void saveOrUpdateCompany(@Valid ParkingEntity parking, @PathParam("companyId") int companyId) {
+    public int saveOrUpdateParking(@Valid ParkingEntity parking, @PathParam("companyId") int companyId) {
         CompanyEntity company = companyDAO.findById(companyId);
         if (company == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -55,6 +57,7 @@ public class ParkingResource {
             parking.setCompanyByCompanyId(company);
             parkingDAO.saveOrUpdateParking(parking);
         }
+        return parking.getId();
     }
 
     @DELETE
@@ -62,7 +65,7 @@ public class ParkingResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public void deleteCompany(@PathParam("parkingId")int parkingId) {
+    public void deleteParking(@PathParam("parkingId")int parkingId) {
         parkingDAO.deleteById(parkingId);
     }
 }

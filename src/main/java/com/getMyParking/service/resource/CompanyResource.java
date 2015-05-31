@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.entity.CompanyEntity;
+import com.google.inject.Inject;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.validation.Valid;
@@ -21,6 +22,7 @@ public class CompanyResource {
 
     private CompanyDAO companyDAO;
 
+    @Inject
     public CompanyResource(CompanyDAO companyDAO) {
         this.companyDAO = companyDAO;
     }
@@ -42,8 +44,9 @@ public class CompanyResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public void saveOrUpdateCompany(@Valid CompanyEntity company) {
+    public int saveOrUpdateCompany(@Valid CompanyEntity company) {
         companyDAO.saveOrUpdateCompany(company);
+        return company.getId();
     }
 
     @DELETE

@@ -14,21 +14,15 @@ import java.util.Collection;
 public class ParkingEntity {
 
     private int id;
-
     @NotNull
     private String name;
-
     @NotNull
     private String address;
-
     @NotNull
     private String city;
-
     private String contactNumber;
-
     @JsonIgnore
     private CompanyEntity companyByCompanyId;
-
     @JsonIgnore
     private Collection<ParkingLotEntity> parkingLotsById;
 

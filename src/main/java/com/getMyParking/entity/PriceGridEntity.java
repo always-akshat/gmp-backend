@@ -1,6 +1,9 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -8,16 +11,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "price_grid", schema = "", catalog = "get_my_parking")
 public class PriceGridEntity {
+
     private int id;
+    @NotNull
     private String priceStructure;
     private Integer startHour;
     private Integer endHour;
+    @NotNull
     private int cost;
     private String slabHour;
+    @JsonIgnore
     private PricingSlotEntity pricingSlotByPricingId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }

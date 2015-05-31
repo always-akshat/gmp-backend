@@ -1,8 +1,12 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Time;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -10,16 +14,24 @@ import java.util.Collection;
 @Entity
 @Table(name = "pricing_slot", schema = "", catalog = "get_my_parking")
 public class PricingSlotEntity {
+
     private int id;
+    @NotNull
     private String vehicleType;
+    @NotNull
     private String day;
+    @NotNull
     private Time startTime;
+    @NotNull
     private Time endTime;
-    private Collection<PriceGridEntity> priceGridsById;
+    @NotNull
+    private List<PriceGridEntity> priceGridsById;
+    @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -94,12 +106,12 @@ public class PricingSlotEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "pricingSlotByPricingId")
-    public Collection<PriceGridEntity> getPriceGridsById() {
+    @OneToMany(mappedBy = "pricingSlotByPricingId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    public List<PriceGridEntity> getPriceGridsById() {
         return priceGridsById;
     }
 
-    public void setPriceGridsById(Collection<PriceGridEntity> priceGridsById) {
+    public void setPriceGridsById(List<PriceGridEntity> priceGridsById) {
         this.priceGridsById = priceGridsById;
     }
 
