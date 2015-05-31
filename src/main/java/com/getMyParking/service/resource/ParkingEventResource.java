@@ -43,7 +43,8 @@ public class ParkingEventResource {
     @ExceptionMetered
     @UnitOfWork
     public List<ParkingEventEntity> getParkingEventById(@PathParam("parkingLotId")int parkingLotId,
-                                                        @QueryParam("lastUpdateTime")DateTime lastUpdateTime) {
+                                                        @QueryParam("lastUpdateTime")String lastUpdateTimeStr) {
+        DateTime lastUpdateTime = DateTime.parse(lastUpdateTimeStr);
         return parkingEventDAO.getParkingEvents(parkingLotId,lastUpdateTime);
     }
 
