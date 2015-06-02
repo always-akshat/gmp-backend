@@ -1,6 +1,7 @@
 package com.getMyParking.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
@@ -9,10 +10,14 @@ import java.util.Collection;
 @Entity
 @Table(name = "user_b2b", schema = "", catalog = "get_my_parking")
 public class UserB2BEntity {
+    @NotNull
     private String username;
+    @NotNull
     private String password;
+    @NotNull
     private String name;
     private String contactNumber;
+    @NotNull
     private String role;
     private Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername;
 
@@ -93,7 +98,7 @@ public class UserB2BEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "userB2BByUserB2BUsername")
+    @OneToMany(mappedBy = "userB2BByUserB2BUsername", fetch = FetchType.EAGER)
     public Collection<ParkingLotHasUserB2BEntity> getParkingLotHasUserB2BsByUsername() {
         return parkingLotHasUserB2BsByUsername;
     }
