@@ -35,7 +35,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
     public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime lastUpdateTime) {
-        Query q = currentSession().createQuery("from ParkingEventEntity where parkingLotByParkingLotId.id =:id and updatedTime = :updatedTime");
+        Query q = currentSession().createQuery("from ParkingEventEntity where parkingLotByParkingLotId.id =:id and updatedTime >= :updatedTime");
         q.setInteger("id", parkingLotId);
         q.setString("updatedTime",lastUpdateTime.toString());
         return list(q);
