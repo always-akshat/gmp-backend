@@ -14,8 +14,18 @@ public class SessionEntity {
     private Timestamp validTime;
     private UserB2BEntity userB2BByUsername;
 
+    public SessionEntity() {
+    }
+
+    public SessionEntity(String authToken, Timestamp validTime, UserB2BEntity userB2BByUsername) {
+        this.authToken = authToken;
+        this.validTime = validTime;
+        this.userB2BByUsername = userB2BByUsername;
+    }
+
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -66,7 +76,7 @@ public class SessionEntity {
         return result;
     }
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "username", referencedColumnName = "username", nullable = false)
     public UserB2BEntity getUserB2BByUsername() {
         return userB2BByUsername;

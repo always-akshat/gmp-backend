@@ -5,6 +5,7 @@ package com.getMyParking.service.auth;
  */
 
 import com.google.common.base.Optional;
+import com.google.inject.Inject;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -19,20 +20,14 @@ import io.dropwizard.auth.Authenticator;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-/**
- * An example security provider that will look at each request when received by an endpoint using the auth attribute
- * and check that it has a header value containing a token and will authenticate the token to get the Principle (User)
- * for the request (otherwise throw an AuthenticationException). That Principle is the authenticated User associated
- * with the request and the resource method handling the request can use it to check authorisation to perform actions.
- *
- * @param <T> The Principle class (User) to be returned when a request is authenticated
- */
+
 public class GMPSecurityProvider<T> implements InjectableProvider<Auth, Parameter> {
 
-    public final static String CUSTOM_HEADER = "custom-security-token";
+    public final static String CUSTOM_HEADER = "GMP_AUTH";
 
     private final Authenticator<GMPCredentials, T> authenticator;
 
+    @Inject
     public GMPSecurityProvider(Authenticator<GMPCredentials, T> authenticator) {
         this.authenticator = authenticator;
     }

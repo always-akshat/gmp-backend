@@ -7,7 +7,12 @@ import com.getMyParking.service.configuration.GetMyParkingConfiguration;
 import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.resource.CompanyResource;
 import com.getMyParking.service.resource.ParkingResource;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
+import com.hubspot.dropwizard.guice.InjectorFactory;
+import com.netflix.governator.guice.LifecycleInjector;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
@@ -15,6 +20,8 @@ import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,6 +70,16 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
                                  .addModule(new GMPModule(hibernateBundle))
                                  .enableAutoConfig(getClass().getPackage().getName())
+                                 .setInjectorFactory(new InjectorFactory() {
+                                     @Override
+                                     public Injector create(Stage stage, List<Module> list) {
+                                         return LifecycleInjector.builder()
+                                                 .inStage(Stage.PRODUCTION)
+                                                 .withModules(list)
+                                                 .build()
+                                                 .createInjector();
+                                     }
+                                 })
                                  .setConfigClass(GetMyParkingConfiguration.class)
                                  .build();
 
