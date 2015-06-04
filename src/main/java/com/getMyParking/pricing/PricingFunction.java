@@ -12,6 +12,25 @@ import java.util.List;
 public class PricingFunction {
 
     //pricingSlots will be sorted by day. Day is Integer with 1 as Monday and 7 as Sunday
+    int calculateInitialCost(List<PricingSlot> pricingSlots, DateTime checkInTime) {
+
+        int day = checkInTime.dayOfWeek().get();
+        PricingSlot currentPricingSlot = pricingSlots.get(0);
+        int minutesOfDay = checkInTime.getMinuteOfDay();
+
+        for (PricingSlot pricingSlot : pricingSlots) {
+            if (pricingSlot.getDay() == day && pricingSlot.getStartMinutesOfDay() <= minutesOfDay
+                    && pricingSlot.getEndMinutesOfDay() > minutesOfDay) {
+                currentPricingSlot = pricingSlot;
+                break;
+            }
+        }
+
+        Collections.sort(currentPricingSlot.getPriceGrids(),priceGridComparator);
+        return currentPricingSlot.getPriceGrids().get(0).getCost();
+
+    }
+
     int calculateCost(List<PricingSlot> pricingSlots, DateTime checkInTime, DateTime checkoutTime) {
 
         int cost = 0;
