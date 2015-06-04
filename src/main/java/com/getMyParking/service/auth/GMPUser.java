@@ -11,11 +11,14 @@ public class GMPUser {
 
     private String userName;
 
+    private String role;
+
     private List<Integer> parkingLotIds;
 
-    public GMPUser(String authToken, String userName, List<Integer> parkingLotIds) {
+    public GMPUser(String authToken, String userName, String role, List<Integer> parkingLotIds) {
         this.authToken = authToken;
         this.userName = userName;
+        this.role = role;
         this.parkingLotIds = parkingLotIds;
     }
 

@@ -5,7 +5,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entity.*;
+import com.getMyParking.service.auth.GMPUser;
 import com.google.inject.Inject;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.validation.Valid;
@@ -36,12 +38,17 @@ public class ParkingLotResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public ParkingLotEntity getParkingLotById(@PathParam("parkingLotId")int id) {
-        ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
-        if (parkingLotEntity == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+    public ParkingLotEntity getParkingLotById(@PathParam("parkingLotId")int id,
+                                              @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingLotIds().contains(id)) {
+            ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
+            if (parkingLotEntity == null) {
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
+            }
+            return parkingLotEntity;
+        } else {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
-        return parkingLotEntity;
     }
 
     @Path("/parking/{parkingId}")

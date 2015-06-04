@@ -34,7 +34,7 @@ public class UserCacheLoader extends CacheLoader<String,GMPUser> {
             for (ParkingLotHasUserB2BEntity entity : user.getParkingLotHasUserB2BsByUsername()) {
                 parkingLotIds.add(entity.getParkingLotId());
             }
-            return new GMPUser(authToken,user.getUsername(),parkingLotIds);
+            return new GMPUser(authToken,user.getUsername(),user.getRole(),parkingLotIds);
         }
         throw new Exception("INVALID_AUTH_TOKEN");
     }

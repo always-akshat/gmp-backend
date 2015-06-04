@@ -70,7 +70,7 @@ public class UserResource {
             for (ParkingLotHasUserB2BEntity entity : userB2BEntity.getParkingLotHasUserB2BsByUsername()) {
                 parkingLotIds.add(entity.getParkingLotId());
             }
-            GMPUser user = new GMPUser(authToken,userName,parkingLotIds);
+            GMPUser user = new GMPUser(authToken,userName,userB2BEntity.getRole(),parkingLotIds);
             authTokenCache.put(authToken,user);
             return user;
         } else {

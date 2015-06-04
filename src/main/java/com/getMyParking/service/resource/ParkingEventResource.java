@@ -8,7 +8,9 @@ import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingPassEntity;
+import com.getMyParking.service.auth.GMPUser;
 import com.google.inject.Inject;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.joda.time.DateTime;
 
@@ -43,9 +45,14 @@ public class ParkingEventResource {
     @ExceptionMetered
     @UnitOfWork
     public List<ParkingEventEntity> getParkingEventById(@PathParam("parkingLotId")int parkingLotId,
-                                                        @QueryParam("lastUpdateTime")String lastUpdateTimeStr) {
-        DateTime lastUpdateTime = DateTime.parse(lastUpdateTimeStr);
-        return parkingEventDAO.getParkingEvents(parkingLotId,lastUpdateTime);
+                                                        @QueryParam("lastUpdateTime")String lastUpdateTimeStr,
+                                                        @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+            DateTime lastUpdateTime = DateTime.parse(lastUpdateTimeStr);
+            return parkingEventDAO.getParkingEvents(parkingLotId, lastUpdateTime);
+        } else {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
     }
 
     @POST
@@ -53,15 +60,21 @@ public class ParkingEventResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public int saveOrUpdateParkingEvent(@Valid ParkingEventEntity parkingEvent,@PathParam("parkingLotId")int parkingLotId) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        if (parkingLot == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+    public int saveOrUpdateParkingEvent(@Valid ParkingEventEntity parkingEvent,
+                                        @PathParam("parkingLotId")int parkingLotId,
+                                        @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+            ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+            if (parkingLot == null) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            } else {
+                parkingEvent.setParkingLotByParkingLotId(parkingLot);
+                parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+            }
+            return parkingEvent.getId();
         } else {
-            parkingEvent.setParkingLotByParkingLotId(parkingLot);
-            parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
-        return parkingEvent.getId();
     }
 
     @POST
@@ -69,18 +82,24 @@ public class ParkingEventResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public int saveOrUpdateParkingPassEvent(@Valid ParkingEventEntity parkingEvent,@PathParam("parkingLotId")int parkingLotId,
-                                            @PathParam("parkingPassId")int parkingPassId) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingPassId);
-        if (parkingLot == null && parkingPass == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+    public int saveOrUpdateParkingPassEvent(@Valid ParkingEventEntity parkingEvent,
+                                            @PathParam("parkingLotId")int parkingLotId,
+                                            @PathParam("parkingPassId")int parkingPassId,
+                                            @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+            ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+            ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingPassId);
+            if (parkingLot == null && parkingPass == null) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            } else {
+                parkingEvent.setParkingLotByParkingLotId(parkingLot);
+                parkingEvent.setParkingPassByParkingPassId(parkingPass);
+                parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+            }
+            return parkingEvent.getId();
         } else {
-            parkingEvent.setParkingLotByParkingLotId(parkingLot);
-            parkingEvent.setParkingPassByParkingPassId(parkingPass);
-            parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
-        return parkingEvent.getId();
     }
 
 }
