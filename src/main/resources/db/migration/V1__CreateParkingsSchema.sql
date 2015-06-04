@@ -160,9 +160,9 @@ DROP TABLE IF EXISTS `get_my_parking`.`pricing_slot` ;
 CREATE TABLE IF NOT EXISTS `get_my_parking`.`pricing_slot` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `vehicle_type` VARCHAR(255) NULL COMMENT 'BIKE / CAR',
-  `day` VARCHAR(45) NOT NULL,
-  `start_time` TIME NOT NULL,
-  `end_time` TIME NOT NULL,
+  `day` INT NOT NULL,
+  `start_minutes_of_day` INT NOT NULL,
+  `end_minutes_of_day` INT NOT NULL,
   `parking_lot_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_pricing_parking_lot1_idx` (`parking_lot_id` ASC),
@@ -182,11 +182,10 @@ DROP TABLE IF EXISTS `get_my_parking`.`price_grid` ;
 CREATE TABLE IF NOT EXISTS `get_my_parking`.`price_grid` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `price_structure` VARCHAR(45) NOT NULL COMMENT 'INCREMENTAL / FLAT',
-  `start_hour` INT NULL,
-  `end_hour` INT NULL,
   `cost` INT NOT NULL,
-  `slab_hour` VARCHAR(45) NULL,
+  `duration` INT NOT NULL,
   `pricing_id` INT NOT NULL,
+  `sequence_number` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_price_grid_parking_lot_price1_idx` (`pricing_id` ASC),
   CONSTRAINT `fk_price_grid_parking_lot_price1`

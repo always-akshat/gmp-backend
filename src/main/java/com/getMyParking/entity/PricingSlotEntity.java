@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Time;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,11 +18,11 @@ public class PricingSlotEntity {
     @NotNull
     private String vehicleType;
     @NotNull
-    private String day;
+    private Integer day;
     @NotNull
-    private Time startTime;
+    private Integer startMinutesOfDay;
     @NotNull
-    private Time endTime;
+    private Integer endMinutesOfDay;
     @NotNull
     private List<PriceGridEntity> priceGridsById;
     @JsonIgnore
@@ -52,32 +51,32 @@ public class PricingSlotEntity {
 
     @Basic
     @Column(name = "day", nullable = false, insertable = true, updatable = true, length = 45)
-    public String getDay() {
+    public Integer getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(Integer day) {
         this.day = day;
     }
 
     @Basic
     @Column(name = "start_time", nullable = false, insertable = true, updatable = true)
-    public Time getStartTime() {
-        return startTime;
+    public Integer getStartMinutesOfDay() {
+        return startMinutesOfDay;
     }
 
-    public void setStartTime(Time startTime) {
-        this.startTime = startTime;
+    public void setStartMinutesOfDay(Integer startTime) {
+        this.startMinutesOfDay = startTime;
     }
 
     @Basic
     @Column(name = "end_time", nullable = false, insertable = true, updatable = true)
-    public Time getEndTime() {
-        return endTime;
+    public Integer getEndMinutesOfDay() {
+        return endMinutesOfDay;
     }
 
-    public void setEndTime(Time endTime) {
-        this.endTime = endTime;
+    public void setEndMinutesOfDay(Integer endTime) {
+        this.endMinutesOfDay = endTime;
     }
 
     @Override
@@ -89,8 +88,8 @@ public class PricingSlotEntity {
 
         if (id != that.id) return false;
         if (day != null ? !day.equals(that.day) : that.day != null) return false;
-        if (endTime != null ? !endTime.equals(that.endTime) : that.endTime != null) return false;
-        if (startTime != null ? !startTime.equals(that.startTime) : that.startTime != null) return false;
+        if (endMinutesOfDay != null ? !endMinutesOfDay.equals(that.endMinutesOfDay) : that.endMinutesOfDay != null) return false;
+        if (startMinutesOfDay != null ? !startMinutesOfDay.equals(that.startMinutesOfDay) : that.startMinutesOfDay != null) return false;
         if (vehicleType != null ? !vehicleType.equals(that.vehicleType) : that.vehicleType != null) return false;
 
         return true;
@@ -101,8 +100,8 @@ public class PricingSlotEntity {
         int result = id;
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (day != null ? day.hashCode() : 0);
-        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
-        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+        result = 31 * result + (startMinutesOfDay != null ? startMinutesOfDay.hashCode() : 0);
+        result = 31 * result + (endMinutesOfDay != null ? endMinutesOfDay.hashCode() : 0);
         return result;
     }
 
