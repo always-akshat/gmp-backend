@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "receipt_content", schema = "", catalog = "get_my_parking")
 public class ReceiptContentEntity {
 
-    private int id;
+    private Integer id;
     @NotNull
     private String content;
     @NotNull
@@ -25,11 +25,11 @@ public class ReceiptContentEntity {
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -14,6 +14,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.HibernateException;
 import org.joda.time.DateTime;
@@ -94,12 +95,17 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addParkingLot(@Valid List<Integer> parkingLotIds, @PathParam("username") String username) {
-        UserB2BEntity user = userB2BDAO.findById(username);
-        if (user != null) {
-            parkingLotHasUserB2BDAO.saveParkingLotId(parkingLotIds,user);
+    public void addParkingLot(@Valid List<Integer> parkingLotIds, @PathParam("username") String username,
+                              @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingLotIds().containsAll(parkingLotIds)) {
+            UserB2BEntity user = userB2BDAO.findById(username);
+            if (user != null) {
+                parkingLotHasUserB2BDAO.saveParkingLotId(parkingLotIds, user);
+            } else {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
         } else {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
     }
 
