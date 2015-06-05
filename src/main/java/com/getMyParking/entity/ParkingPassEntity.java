@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -19,7 +18,7 @@ public class ParkingPassEntity {
     private String registrationNumber;
     @NotNull
     private Timestamp validTime;
-    private List<ParkingEventEntity> parkingEventsById;
+    private Set<ParkingEventEntity> parkingEventsById;
     @JsonIgnore
     private ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId;
 
@@ -78,11 +77,11 @@ public class ParkingPassEntity {
     }
 
     @OneToMany(mappedBy = "parkingPassByParkingPassId", fetch = FetchType.EAGER)
-    public List<ParkingEventEntity> getParkingEventsById() {
+    public Set<ParkingEventEntity> getParkingEventsById() {
         return parkingEventsById;
     }
 
-    public void setParkingEventsById(List<ParkingEventEntity> parkingEventsById) {
+    public void setParkingEventsById(Set<ParkingEventEntity> parkingEventsById) {
         this.parkingEventsById = parkingEventsById;
     }
 

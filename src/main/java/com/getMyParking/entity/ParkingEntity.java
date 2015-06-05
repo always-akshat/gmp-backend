@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -24,7 +24,7 @@ public class ParkingEntity {
     @JsonIgnore
     private CompanyEntity companyByCompanyId;
     @JsonIgnore
-    private Collection<ParkingLotEntity> parkingLotsById;
+    private Set<ParkingLotEntity> parkingLotsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -115,11 +115,11 @@ public class ParkingEntity {
     }
 
     @OneToMany(mappedBy = "parkingByParkingId")
-    public Collection<ParkingLotEntity> getParkingLotsById() {
+    public Set<ParkingLotEntity> getParkingLotsById() {
         return parkingLotsById;
     }
 
-    public void setParkingLotsById(Collection<ParkingLotEntity> parkingLotsById) {
+    public void setParkingLotsById(Set<ParkingLotEntity> parkingLotsById) {
         this.parkingLotsById = parkingLotsById;
     }
 }

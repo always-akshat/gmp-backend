@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Time;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -24,7 +23,7 @@ public class PricingSlotEntity {
     @NotNull
     private Integer endMinutesOfDay;
     @NotNull
-    private List<PriceGridEntity> priceGridsById;
+    private Set<PriceGridEntity> priceGridsById;
     @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
 
@@ -60,7 +59,7 @@ public class PricingSlotEntity {
     }
 
     @Basic
-    @Column(name = "start_time", nullable = false, insertable = true, updatable = true)
+    @Column(name = "start_minutes_of_day", nullable = false, insertable = true, updatable = true)
     public Integer getStartMinutesOfDay() {
         return startMinutesOfDay;
     }
@@ -70,7 +69,7 @@ public class PricingSlotEntity {
     }
 
     @Basic
-    @Column(name = "end_time", nullable = false, insertable = true, updatable = true)
+    @Column(name = "end_minutes_of_day", nullable = false, insertable = true, updatable = true)
     public Integer getEndMinutesOfDay() {
         return endMinutesOfDay;
     }
@@ -106,11 +105,11 @@ public class PricingSlotEntity {
     }
 
     @OneToMany(mappedBy = "pricingSlotByPricingId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    public List<PriceGridEntity> getPriceGridsById() {
+    public Set<PriceGridEntity> getPriceGridsById() {
         return priceGridsById;
     }
 
-    public void setPriceGridsById(List<PriceGridEntity> priceGridsById) {
+    public void setPriceGridsById(Set<PriceGridEntity> priceGridsById) {
         this.priceGridsById = priceGridsById;
     }
 

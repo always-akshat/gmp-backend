@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -28,7 +27,7 @@ public class ParkingPassMasterEntity {
     @NotNull
     private String isActive;
     @JsonIgnore
-    private List<ParkingPassEntity> parkingPassesById;
+    private Set<ParkingPassEntity> parkingPassesById;
     @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
 
@@ -134,11 +133,11 @@ public class ParkingPassMasterEntity {
     }
 
     @OneToMany(mappedBy = "parkingPassMasterByParkingPassMasterId", fetch = FetchType.LAZY)
-    public List<ParkingPassEntity> getParkingPassesById() {
+    public Set<ParkingPassEntity> getParkingPassesById() {
         return parkingPassesById;
     }
 
-    public void setParkingPassesById(List<ParkingPassEntity> parkingPassesById) {
+    public void setParkingPassesById(Set<ParkingPassEntity> parkingPassesById) {
         this.parkingPassesById = parkingPassesById;
     }
 

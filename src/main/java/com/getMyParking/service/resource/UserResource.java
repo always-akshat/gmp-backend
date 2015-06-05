@@ -14,6 +14,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.HibernateException;
 import org.joda.time.DateTime;
 
@@ -30,7 +31,6 @@ import java.util.UUID;
  */
 @Path("/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 
     private UserB2BDAO userB2BDAO;
@@ -51,6 +51,7 @@ public class UserResource {
     @Path("/login")
     @Timed
     @ExceptionMetered
+    @UnitOfWork
     public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password) {
         if (!Strings.isNullOrEmpty(userName) && !Strings.isNullOrEmpty(password)) {
 
@@ -81,6 +82,8 @@ public class UserResource {
     @POST
     @Timed
     @ExceptionMetered
+    @UnitOfWork
+    @Consumes(MediaType.APPLICATION_JSON)
     public void createUser(@Valid UserB2BEntity user) {
         userB2BDAO.saveUser(user);
     }
@@ -89,6 +92,8 @@ public class UserResource {
     @Path("/{username}/parking_lot")
     @Timed
     @ExceptionMetered
+    @UnitOfWork
+    @Consumes(MediaType.APPLICATION_JSON)
     public void addParkingLot(@Valid List<Integer> parkingLotIds, @PathParam("username") String username) {
         UserB2BEntity user = userB2BDAO.findById(username);
         if (user != null) {

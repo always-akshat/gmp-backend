@@ -29,7 +29,7 @@ public class GMPModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Authenticator.class).to(GMPAuthenticator.class);
+
     }
 
     @LazySingleton

@@ -21,14 +21,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 
-public class GMPSecurityProvider<T> implements InjectableProvider<Auth, Parameter> {
+public class GMPSecurityProvider implements InjectableProvider<Auth, Parameter> {
 
     public final static String CUSTOM_HEADER = "GMP_AUTH";
 
-    private final Authenticator<GMPCredentials, T> authenticator;
+    private final GMPAuthenticator authenticator;
 
     @Inject
-    public GMPSecurityProvider(Authenticator<GMPCredentials, T> authenticator) {
+    public GMPSecurityProvider(GMPAuthenticator authenticator) {
         this.authenticator = authenticator;
     }
 
@@ -39,7 +39,7 @@ public class GMPSecurityProvider<T> implements InjectableProvider<Auth, Paramete
 
     @Override
     public Injectable getInjectable(ComponentContext ic, Auth auth, Parameter parameter) {
-        return new GMPSecurityInjectable<T>(authenticator, auth.required());
+        return new GMPSecurityInjectable<GMPUser>(authenticator, auth.required());
     }
 
     private static class GMPSecurityInjectable<T> extends AbstractHttpContextInjectable<T> {

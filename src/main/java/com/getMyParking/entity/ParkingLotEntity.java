@@ -6,8 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Time;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -37,9 +36,9 @@ public class ParkingLotEntity {
     @JsonIgnore
     private ParkingEntity parkingByParkingId;
 
-    private List<ParkingPassMasterEntity> parkingPassMastersById;
-    private List<PricingSlotEntity> pricingSlotsById;
-    private List<ReceiptContentEntity> receiptContentsById;
+    private Set<ParkingPassMasterEntity> parkingPassMastersById;
+    private Set<PricingSlotEntity> pricingSlotsById;
+    private Set<ReceiptContentEntity> receiptContentsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -190,29 +189,29 @@ public class ParkingLotEntity {
     }
 
     @OneToMany(mappedBy = "parkingLotByParkingLotId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    public List<ParkingPassMasterEntity> getParkingPassMastersById() {
+    public Set<ParkingPassMasterEntity> getParkingPassMastersById() {
         return parkingPassMastersById;
     }
 
-    public void setParkingPassMastersById(List<ParkingPassMasterEntity> parkingPassMastersById) {
+    public void setParkingPassMastersById(Set<ParkingPassMasterEntity> parkingPassMastersById) {
         this.parkingPassMastersById = parkingPassMastersById;
     }
 
     @OneToMany(mappedBy = "parkingLotByParkingLotId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    public List<PricingSlotEntity> getPricingSlotsById() {
+    public Set<PricingSlotEntity> getPricingSlotsById() {
         return pricingSlotsById;
     }
 
-    public void setPricingSlotsById(List<PricingSlotEntity> pricingSlotsById) {
+    public void setPricingSlotsById(Set<PricingSlotEntity> pricingSlotsById) {
         this.pricingSlotsById = pricingSlotsById;
     }
 
     @OneToMany(mappedBy = "parkingLotByParkingLotId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    public List<ReceiptContentEntity> getReceiptContentsById() {
+    public Set<ReceiptContentEntity> getReceiptContentsById() {
         return receiptContentsById;
     }
 
-    public void setReceiptContentsById(List<ReceiptContentEntity> receiptContentsById) {
+    public void setReceiptContentsById(Set<ReceiptContentEntity> receiptContentsById) {
         this.receiptContentsById = receiptContentsById;
     }
 }

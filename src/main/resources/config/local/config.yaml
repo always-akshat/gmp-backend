@@ -16,10 +16,10 @@ server:
 
 
 logging:
-  level: INFO
+  level: DEBUG
   appenders:
     - type: console
-      threshold: INFO
+      threshold: DEBUG
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
     - type: file

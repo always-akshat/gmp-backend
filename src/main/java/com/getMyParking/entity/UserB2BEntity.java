@@ -2,8 +2,7 @@ package com.getMyParking.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -20,7 +19,7 @@ public class UserB2BEntity {
     private String contactNumber;
     @NotNull
     private String role;
-    private List<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername;
+    private Set<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername;
 
     @Id
     @Column(name = "username", nullable = false, insertable = true, updatable = true, length = 255)
@@ -100,11 +99,11 @@ public class UserB2BEntity {
     }
 
     @OneToMany(mappedBy = "userB2BByUserB2BUsername", fetch = FetchType.EAGER)
-    public List<ParkingLotHasUserB2BEntity> getParkingLotHasUserB2BsByUsername() {
+    public Set<ParkingLotHasUserB2BEntity> getParkingLotHasUserB2BsByUsername() {
         return parkingLotHasUserB2BsByUsername;
     }
 
-    public void setParkingLotHasUserB2BsByUsername(List<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername) {
+    public void setParkingLotHasUserB2BsByUsername(Set<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername) {
         this.parkingLotHasUserB2BsByUsername = parkingLotHasUserB2BsByUsername;
     }
 }
