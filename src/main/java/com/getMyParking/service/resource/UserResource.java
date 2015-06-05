@@ -61,7 +61,7 @@ public class UserResource {
             }
 
             long millis = DateTime.now().getMillis();
-            String authToken = millis + UUID.randomUUID().toString();
+            String authToken = millis + UUID.randomUUID().toString().substring(0,6);
             Timestamp validTillTimestamp = new Timestamp(DateTime.now().plusDays(7).getMillis());
             SessionEntity sessionEntity = new SessionEntity(authToken,validTillTimestamp,userB2BEntity);
             sessionDAO.saveSession(sessionEntity);
