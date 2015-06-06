@@ -30,10 +30,10 @@ database:
   user: gmp
 
   # the password
-  password: gmpgmp2015
+  password: gmp2015gmp
 
   # the JDBC URL
-  url: jdbc:mysql://gmp-db.c7hxh3osnv0g.ap-southeast-1.rds.amazonaws.com:3306/
+  url: jdbc:mysql://gmp-backend.c3qwswoi0j9e.ap-southeast-1.rds.amazonaws.com:3306/
 
   # any properties specific to your JDBC driver:
   properties:
