@@ -106,7 +106,7 @@ DROP TABLE IF EXISTS `get_my_parking`.`parking_pass` ;
 CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking_pass` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `registration_number` VARCHAR(500) NOT NULL,
-  `valid_time` TIMESTAMP NOT NULL,
+  `valid_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `parking_pass_master_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_parking_pass_parking_pass_master1_idx` (`parking_pass_master_id` ASC),
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`parking_event` (
   `vehicle_type` VARCHAR(45) NOT NULL,
   `type` VARCHAR(45) NOT NULL COMMENT 'Standard / Pass',
   `registration_number` VARCHAR(45) NOT NULL,
-  `event_time` TIMESTAMP NOT NULL,
+  `event_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `event_type` VARCHAR(500) NOT NULL,
   `cost` DECIMAL(10,2) NOT NULL,
   `parking_lot_id` INT NOT NULL,
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking`.`session` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(255) NOT NULL,
   `auth_token` VARCHAR(1000) NOT NULL,
-  `valid_time` TIMESTAMP NOT NULL,
+  `valid_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX `fk_session_user_b2b1_idx` (`username` ASC),
   CONSTRAINT `fk_session_user_b2b1`
