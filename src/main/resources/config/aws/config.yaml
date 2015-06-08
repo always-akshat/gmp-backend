@@ -18,10 +18,6 @@ server:
 logging:
   level: INFO
   appenders:
-    - type: console
-      threshold: INFO
-      timeZone: IST
-      logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
     - type: file
       threshold: INFO
       timeZone: IST
