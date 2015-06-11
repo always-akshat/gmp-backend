@@ -1,6 +1,7 @@
 package com.getMyParking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,7 +22,7 @@ public class ParkingEntity {
     @NotNull
     private String city;
     private String contactNumber;
-    @JsonIgnore
+    @JsonProperty("company")
     private CompanyEntity companyByCompanyId;
     @JsonIgnore
     private Set<ParkingLotEntity> parkingLotsById;
