@@ -40,4 +40,12 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         q.setString("updatedTime",lastUpdateTime.toString());
         return list(q);
     }
+
+    public ParkingEventEntity findBySerialNumberAndEventType(String eventType, String serialNumber) {
+        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class);
+        criteria.add(Restrictions.eq("eventType",eventType))
+                .add(Restrictions.eq("serialNumber",serialNumber));
+
+        return uniqueResult(criteria);
+    }
 }

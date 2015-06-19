@@ -68,7 +68,13 @@ public class ParkingEventResource {
             if (parkingLot == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
+                if (parkingEvent.getId() == 0) {
+                    ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingEvent.getEventType(), parkingEvent.getSerialNumber());
+                    if (pe != null)
+                        throw new WebApplicationException(Response.Status.BAD_REQUEST);
+                }
                 parkingEvent.setParkingLotByParkingLotId(parkingLot);
+                parkingEvent.setUpdatedTime(DateTime.now());
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }
             return parkingEvent.getId();

@@ -32,7 +32,6 @@ public class ParkingEventEntity {
     private String serialNumber;
     @NotNull
     private String shiftNumber;
-    @NotNull
     private DateTime updatedTime;
     @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;

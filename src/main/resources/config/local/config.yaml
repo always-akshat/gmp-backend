@@ -19,7 +19,7 @@ logging:
   level: DEBUG
   appenders:
     - type: console
-      threshold: DEBUG
+      threshold: INFO
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
     - type: file
