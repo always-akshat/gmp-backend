@@ -5,6 +5,8 @@ import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
 import com.getMyParking.service.guice.GMPModule;
+import com.getMyParking.service.interceptors.RequestLogger;
+import com.getMyParking.service.interceptors.ResponseFilter;
 import com.getMyParking.service.resource.CompanyResource;
 import com.getMyParking.service.resource.ParkingResource;
 import com.google.inject.Injector;
@@ -91,5 +93,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
     @Override
     public void run(GetMyParkingConfiguration getMyParkingConfiguration, Environment environment) throws Exception {
 
+        environment.jersey().getResourceConfig().getContainerRequestFilters().add(RequestLogger.class.getName());
+        environment.jersey().getResourceConfig().getContainerResponseFilters().add(ResponseFilter.class.getName());
     }
 }

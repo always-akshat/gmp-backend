@@ -3,12 +3,14 @@ package com.getMyParking.service.resource;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingDAO;
+import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -25,12 +27,14 @@ public class ParkingLotResource {
 
     private ParkingDAO parkingDAO;
     private ParkingLotDAO parkingLotDAO;
+    private ParkingEventDAO parkingEventDAO;
 
 
     @Inject
-    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO) {
+    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
         this.parkingDAO = parkingDAO;
         this.parkingLotDAO = parkingLotDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
 
     @GET
@@ -136,6 +140,16 @@ public class ParkingLotResource {
             parkingLotDAO.saveOrUpdateParkingLot(parkingLot);
         }
         return receiptContentEntity.getId();
+    }
+
+    @Path("/{parkingLotId}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+
+        return parkingEventDAO.createReport(parkingLotId,fromDate.get(),toDate.get());
     }
 
 }

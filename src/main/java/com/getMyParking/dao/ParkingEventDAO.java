@@ -1,11 +1,13 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.ParkingEventEntity;
+import com.getMyParking.entity.ParkingReport;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
@@ -47,5 +49,47 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("serialNumber",serialNumber));
 
         return uniqueResult(criteria);
+    }
+
+    public ParkingReport createReport(Integer parkingLotId, DateTime fromDate, DateTime toDate) {
+
+        List cars = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType","CHECKED_OUT"))
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("type", "CAR")).list();
+
+        Long carNumbers = (Long) cars.get(0);
+
+        List bikes = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("type", "BIKE")).list();
+
+        Long bikeNumbers = (Long) bikes.get(0);
+
+        List carsRevenue = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .setProjection(Projections.sum("cost"))
+                .add(Restrictions.eq("type", "CAR")).list();
+
+        Long carsTotal = (Long) carsRevenue.get(0);
+
+        List bikesRevenue = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .setProjection(Projections.sum("cost"))
+                .add(Restrictions.eq("type", "BIKE")).list();
+
+        Long bikeTotal = (Long) bikesRevenue.get(0);
+
+        return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
+
+
+
     }
 }
