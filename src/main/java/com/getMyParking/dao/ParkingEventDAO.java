@@ -11,6 +11,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType","CHECKED_OUT"))
                 .setProjection(Projections.rowCount())
-                .add(Restrictions.eq("type", "CAR")).list();
+                .add(Restrictions.eq("vehicleType", "CAR")).list();
 
         Long carNumbers = (Long) cars.get(0);
 
@@ -67,7 +68,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_OUT"))
                 .setProjection(Projections.rowCount())
-                .add(Restrictions.eq("type", "BIKE")).list();
+                .add(Restrictions.eq("vehicleType", "BIKE")).list();
 
         Long bikeNumbers = (Long) bikes.get(0);
 
@@ -75,17 +76,17 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("type", "CAR")).list();
+                .add(Restrictions.eq("vehicleType", "CAR")).list();
 
-        Long carsTotal = (Long) carsRevenue.get(0);
+        BigDecimal carsTotal = (BigDecimal) carsRevenue.get(0);
 
         List bikesRevenue = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("type", "BIKE")).list();
+                .add(Restrictions.eq("vehicleType", "BIKE")).list();
 
-        Long bikeTotal = (Long) bikesRevenue.get(0);
+        BigDecimal bikeTotal = (BigDecimal) bikesRevenue.get(0);
 
         return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
 
