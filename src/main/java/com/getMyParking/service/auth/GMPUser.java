@@ -48,4 +48,12 @@ public class GMPUser {
     public void setParkingLotIds(List<Integer> parkingLotIds) {
         this.parkingLotIds = parkingLotIds;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

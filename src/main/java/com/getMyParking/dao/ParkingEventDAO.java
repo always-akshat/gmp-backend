@@ -62,6 +62,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("vehicleType", "CAR")).list();
 
         Long carNumbers = (Long) cars.get(0);
+        if (carNumbers == null) carNumbers = 0L;
 
         List bikes = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
@@ -71,6 +72,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("vehicleType", "BIKE")).list();
 
         Long bikeNumbers = (Long) bikes.get(0);
+        if (bikeNumbers == null) bikeNumbers = 0L;
 
         List carsRevenue = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
@@ -79,6 +81,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("vehicleType", "CAR")).list();
 
         BigDecimal carsTotal = (BigDecimal) carsRevenue.get(0);
+        if (carsTotal == null) carsTotal = new BigDecimal(0);
 
         List bikesRevenue = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
@@ -87,6 +90,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("vehicleType", "BIKE")).list();
 
         BigDecimal bikeTotal = (BigDecimal) bikesRevenue.get(0);
+        if (bikeTotal == null) bikeTotal = new BigDecimal(0);
 
         return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
 

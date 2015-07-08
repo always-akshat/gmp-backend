@@ -7,6 +7,8 @@ import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -53,6 +56,27 @@ public class ParkingLotResource {
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
+    }
+
+    @GET
+    @Path("/batch/{parkingLotIds}")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    public List<ParkingLotEntity> getParkingLotById(@PathParam("parkingLotIds")String ids,
+                                              @Auth GMPUser gmpUser) {
+        List<ParkingLotEntity> parkingLotEntityList = Lists.newArrayList();
+        List<String> parkingLotIds = Splitter.on(",").splitToList(ids);
+        for (String idStr : parkingLotIds) {
+            int id = Integer.parseInt(idStr);
+            if (gmpUser.getParkingLotIds().contains(id)) {
+                ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
+                if (parkingLotEntity == null) {
+                    parkingLotEntityList.add(parkingLotEntity);
+                }
+            }
+        }
+        return parkingLotEntityList;
     }
 
     @Path("/parking/{parkingId}")

@@ -37,6 +37,8 @@ public class ParkingEventEntity {
     private ParkingLotEntity parkingLotByParkingLotId;
     @JsonIgnore
     private ParkingPassEntity parkingPassByParkingPassId;
+    private int parkingLotId;
+    private int parkingPassId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -141,17 +143,61 @@ public class ParkingEventEntity {
         this.updatedTime = updatedTime;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
+    public ParkingLotEntity getParkingLotByParkingLotId() {
+        return parkingLotByParkingLotId;
+    }
+
+    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
+        this.parkingLotByParkingLotId = parkingLotByParkingLotId;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "parking_pass_id", referencedColumnName = "id")
+    public ParkingPassEntity getParkingPassByParkingPassId() {
+        return parkingPassByParkingPassId;
+    }
+
+    public void setParkingPassByParkingPassId(ParkingPassEntity parkingPassByParkingPassId) {
+        this.parkingPassByParkingPassId = parkingPassByParkingPassId;
+    }
+
+    @Transient
+    public int getParkingLotId() {
+        return parkingLotId;
+    }
+
+    public void setParkingLotId(int parkingLotId) {
+        this.parkingLotId = parkingLotId;
+    }
+
+    @Transient
+    public int getParkingPassId() {
+        return parkingPassId;
+    }
+
+    public void setParkingPassId(int parkingPassId) {
+        this.parkingPassId = parkingPassId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ParkingEventEntity)) return false;
 
         ParkingEventEntity that = (ParkingEventEntity) o;
 
         if (id != that.id) return false;
+        if (parkingLotId != that.parkingLotId) return false;
+        if (parkingPassId != that.parkingPassId) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
         if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
+        if (parkingLotByParkingLotId != null ? !parkingLotByParkingLotId.equals(that.parkingLotByParkingLotId) : that.parkingLotByParkingLotId != null)
+            return false;
+        if (parkingPassByParkingPassId != null ? !parkingPassByParkingPassId.equals(that.parkingPassByParkingPassId) : that.parkingPassByParkingPassId != null)
+            return false;
         if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
             return false;
         if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
@@ -175,26 +221,10 @@ public class ParkingEventEntity {
         result = 31 * result + (serialNumber != null ? serialNumber.hashCode() : 0);
         result = 31 * result + (shiftNumber != null ? shiftNumber.hashCode() : 0);
         result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
+        result = 31 * result + (parkingLotByParkingLotId != null ? parkingLotByParkingLotId.hashCode() : 0);
+        result = 31 * result + (parkingPassByParkingPassId != null ? parkingPassByParkingPassId.hashCode() : 0);
+        result = 31 * result + parkingLotId;
+        result = 31 * result + parkingPassId;
         return result;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingLotEntity getParkingLotByParkingLotId() {
-        return parkingLotByParkingLotId;
-    }
-
-    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
-        this.parkingLotByParkingLotId = parkingLotByParkingLotId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "parking_pass_id", referencedColumnName = "id")
-    public ParkingPassEntity getParkingPassByParkingPassId() {
-        return parkingPassByParkingPassId;
-    }
-
-    public void setParkingPassByParkingPassId(ParkingPassEntity parkingPassByParkingPassId) {
-        this.parkingPassByParkingPassId = parkingPassByParkingPassId;
     }
 }

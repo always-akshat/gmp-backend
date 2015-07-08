@@ -49,7 +49,13 @@ public class ParkingEventResource {
                                                         @Auth GMPUser gmpUser) {
         if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
             DateTime lastUpdateTime = DateTime.parse(lastUpdateTimeStr);
-            return parkingEventDAO.getParkingEvents(parkingLotId, lastUpdateTime);
+            List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingLotId, lastUpdateTime);
+            for (ParkingEventEntity parkingEvent : parkingEvents) {
+                parkingEvent.setParkingLotId(parkingLotId);
+                if (parkingEvent.getParkingPassByParkingPassId() != null)
+                    parkingEvent.setParkingPassId(parkingEvent.getParkingPassByParkingPassId().getId());
+            }
+            return parkingEvents;
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
