@@ -64,6 +64,19 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         Long carNumbers = (Long) cars.get(0);
         if (carNumbers == null) carNumbers = 0L;
 
+        List zeroCost = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType","CHECKED_OUT"))
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("vehicleType", "CAR"))
+                .add(Restrictions.eq("cost",0.0)).list();
+
+        Long zeroCostNumber = (Long) zeroCost.get(0);
+        if (zeroCostNumber == null) zeroCostNumber = 0L;
+
+        carNumbers = carNumbers - zeroCostNumber;
+
         List bikes = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
@@ -73,6 +86,19 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
         Long bikeNumbers = (Long) bikes.get(0);
         if (bikeNumbers == null) bikeNumbers = 0L;
+
+        zeroCost = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType","CHECKED_OUT"))
+                .setProjection(Projections.rowCount())
+                .add(Restrictions.eq("vehicleType", "BIKE"))
+                .add(Restrictions.eq("cost",0.0)).list();
+
+        zeroCostNumber = (Long) zeroCost.get(0);
+        if (zeroCostNumber == null) zeroCostNumber = 0L;
+
+        bikeNumbers = bikeNumbers - zeroCostNumber;
 
         List carsRevenue = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
