@@ -70,7 +70,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("eventType","CHECKED_OUT"))
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("vehicleType", "CAR"))
-                .add(Restrictions.eq("cost",0.0)).list();
+                .add(Restrictions.eq("cost",new BigDecimal(0))).list();
 
         Long zeroCostNumber = (Long) zeroCost.get(0);
         if (zeroCostNumber == null) zeroCostNumber = 0L;
@@ -93,7 +93,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(Restrictions.eq("eventType","CHECKED_OUT"))
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("vehicleType", "BIKE"))
-                .add(Restrictions.eq("cost",0.0)).list();
+                .add(Restrictions.eq("cost",new BigDecimal(0))).list();
 
         zeroCostNumber = (Long) zeroCost.get(0);
         if (zeroCostNumber == null) zeroCostNumber = 0L;
