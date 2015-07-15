@@ -172,8 +172,8 @@ public class ParkingLotResource {
     @UnitOfWork
     public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-
-        return parkingEventDAO.createReport(parkingLotId,fromDate.get(),toDate.get());
+        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+        return parkingEventDAO.createReport(parkingLot,fromDate.get(),toDate.get());
     }
 
 }
