@@ -23,6 +23,8 @@ public class PricingSlotEntity {
     @NotNull
     private Integer endMinutesOfDay;
     @NotNull
+    private String collectionModel;
+    @NotNull
     private Set<PriceGridEntity> priceGridsById;
     @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
@@ -66,6 +68,16 @@ public class PricingSlotEntity {
 
     public void setStartMinutesOfDay(Integer startTime) {
         this.startMinutesOfDay = startTime;
+    }
+
+    @Basic
+    @Column(name = "collection_model", nullable = false, insertable = true, updatable = true)
+    public String getCollectionModel() {
+        return collectionModel;
+    }
+
+    public void setCollectionModel(String collectionModel) {
+        this.collectionModel = collectionModel;
     }
 
     @Basic

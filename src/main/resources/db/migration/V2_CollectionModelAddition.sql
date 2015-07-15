@@ -1,0 +1,1 @@
+ALTER TABLE `pricing_slot` ADD COLUMN `collection_model` varchar(500) NOT NULL COMMENT 'PREPAID / POSTPAID / HYBRID';

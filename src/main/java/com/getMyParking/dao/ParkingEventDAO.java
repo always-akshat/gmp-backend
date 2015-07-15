@@ -1,7 +1,10 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.ParkingEventEntity;
+import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingReport;
+import com.getMyParking.entity.PricingSlotEntity;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
@@ -52,12 +55,33 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return uniqueResult(criteria);
     }
 
-    public ParkingReport createReport(Integer parkingLotId, DateTime fromDate, DateTime toDate) {
+    public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
+
+        List<PricingSlotEntity> pricingSlotEntities = Lists.newArrayList(parkingLot.getPricingSlotsById());
+
+        String carEvent = "CHECKED_IN";
+        String bikeEvent = "CHECKED_IN";
+        for (PricingSlotEntity pricingSlotEntity : pricingSlotEntities) {
+            if (pricingSlotEntity.getVehicleType().equalsIgnoreCase("CAR")) {
+                if (pricingSlotEntity.getCollectionModel().equalsIgnoreCase("POSTPAID")) {
+                    carEvent = "CHECKED_OUT";
+                } else {
+                    carEvent = "CHECKED_IN";
+                }
+            }
+            if (pricingSlotEntity.getVehicleType().equalsIgnoreCase("BIKE")) {
+                if (pricingSlotEntity.getCollectionModel().equalsIgnoreCase("POSTPAID")) {
+                    bikeEvent = "CHECKED_OUT";
+                } else {
+                    bikeEvent = "CHECKED_IN";
+                }
+            }
+        }
 
         List cars = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType","CHECKED_OUT"))
+                .add(Restrictions.eq("eventType",carEvent))
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("vehicleType", "CAR")).list();
 
@@ -65,9 +89,9 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         if (carNumbers == null) carNumbers = 0L;
 
         List zeroCost = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType","CHECKED_OUT"))
+                .add(Restrictions.eq("eventType",carEvent))
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("vehicleType", "CAR"))
                 .add(Restrictions.eq("cost",new BigDecimal(0))).list();
@@ -78,9 +102,9 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         carNumbers = carNumbers - zeroCostNumber;
 
         List bikes = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
+                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
+                .add(Restrictions.eq("eventType", bikeEvent))
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("vehicleType", "BIKE")).list();
 
@@ -88,9 +112,9 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         if (bikeNumbers == null) bikeNumbers = 0L;
 
         zeroCost = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType","CHECKED_OUT"))
+                .add(Restrictions.eq("eventType",bikeEvent))
                 .setProjection(Projections.rowCount())
                 .add(Restrictions.eq("vehicleType", "BIKE"))
                 .add(Restrictions.eq("cost",new BigDecimal(0))).list();
@@ -101,7 +125,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         bikeNumbers = bikeNumbers - zeroCostNumber;
 
         List carsRevenue = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
+                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
                 .add(Restrictions.eq("vehicleType", "CAR")).list();
@@ -110,7 +134,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         if (carsTotal == null) carsTotal = new BigDecimal(0);
 
         List bikesRevenue = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLotId))
+                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
                 .add(Restrictions.eq("vehicleType", "BIKE")).list();
