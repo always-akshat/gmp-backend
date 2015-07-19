@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 /**
@@ -15,7 +16,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking")
 public class ParkingEventEntity {
-    private int id;
+    private BigInteger id;
     @NotNull
     private String vehicleType;
     @NotNull
@@ -43,11 +44,11 @@ public class ParkingEventEntity {
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    public int getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -211,7 +212,7 @@ public class ParkingEventEntity {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id.hashCode();
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (registrationNumber != null ? registrationNumber.hashCode() : 0);

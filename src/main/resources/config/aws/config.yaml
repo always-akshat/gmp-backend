@@ -18,6 +18,10 @@ server:
 logging:
   level: INFO
   appenders:
+    - type: console
+      threshold: INFO
+      timeZone: IST
+      logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
     - type: file
       threshold: INFO
       timeZone: IST
@@ -65,7 +69,7 @@ database:
   minSize: 8
 
   # the maximum number of connections to keep open
-  maxSize: 32
+  maxSize: 96
 
   # whether or not idle connections should be validated
   checkConnectionWhileIdle: false

@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -45,6 +46,21 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         q.setInteger("id", parkingLotId);
         q.setString("updatedTime",lastUpdateTime.toString());
         return list(q);
+    }
+
+    public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime fromDate, DateTime toDate) {
+
+        SQLQuery query = currentSession().createSQLQuery("SELECT * from `parking_event` where `event_type` = 'CHECKED_IN' " +
+                "AND parking_lot_id = :id AND`event_time` between :fromDate AND :toDate AND `serial_number` NOT IN " +
+                "(Select `serial_number` from `parking_event` where `event_type` = 'CHECKED_OUT' AND " +
+                "`event_time` between :fromDate AND :toDate)");
+
+        query.setParameter("id", parkingLotId);
+        query.setParameter("fromDate", fromDate.toString());
+        query.setParameter("toDate", toDate.toString());
+        query.addEntity(ParkingEventEntity.class);
+
+        return list(query);
     }
 
     public ParkingEventEntity findBySerialNumberAndEventType(String eventType, String serialNumber) {

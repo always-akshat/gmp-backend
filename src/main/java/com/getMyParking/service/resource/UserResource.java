@@ -95,7 +95,7 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addParkingLot(@Valid List<Integer> parkingLotIds, @PathParam("username") String username,
+    public void addParkingLot(List<Integer> parkingLotIds, @PathParam("username") String username,
                               @Auth GMPUser gmpUser) {
         if (gmpUser.getParkingLotIds().containsAll(parkingLotIds)) {
             UserB2BEntity user = userB2BDAO.findById(username);

@@ -24,6 +24,8 @@ public class ParkingLotEntity {
     @NotNull
     private Time closeTime;
     @NotNull
+    private Time autoCheckoutTime;
+    @NotNull
     private BigDecimal latitude;
     @NotNull
     private BigDecimal longitude;
@@ -70,6 +72,16 @@ public class ParkingLotEntity {
 
     public void setOpenTime(Time openTime) {
         this.openTime = openTime;
+    }
+
+    @Basic
+    @Column(name = "auto_checkout_time", nullable = true, insertable = true, updatable = true)
+    public Time getAutoCheckoutTime() {
+        return autoCheckoutTime;
+    }
+
+    public void setAutoCheckoutTime(Time autoCheckoutTime) {
+        this.autoCheckoutTime = autoCheckoutTime;
     }
 
     @Basic

@@ -1,14 +1,15 @@
 package com.getMyParking.service;
 
-import com.getMyParking.dao.CompanyDAO;
-import com.getMyParking.dao.ParkingDAO;
+import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entity.*;
+import com.getMyParking.quartz.AutoCheckoutJob;
+import com.getMyParking.service.auth.GMPAuthFactory;
+import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
 import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.interceptors.RequestLogger;
 import com.getMyParking.service.interceptors.ResponseFilter;
-import com.getMyParking.service.resource.CompanyResource;
-import com.getMyParking.service.resource.ParkingResource;
+import com.getMyParking.service.managed.ManagedQuartzScheduler;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
@@ -16,14 +17,26 @@ import com.hubspot.dropwizard.guice.GuiceBundle;
 import com.hubspot.dropwizard.guice.InjectorFactory;
 import com.netflix.governator.guice.LifecycleInjector;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthFactory;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.quartz.CronExpression;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.Trigger;
 
+import static org.quartz.JobBuilder.*;
+import static org.quartz.TriggerBuilder.*;
+import static org.quartz.CronScheduleBuilder.*;
+
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created with IntelliJ IDEA.
@@ -70,7 +83,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         };
 
         guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
-                                 .addModule(new GMPModule(hibernateBundle))
+                                 .addModule(new GMPModule(hibernateBundle,bootstrap))
                                  .enableAutoConfig(getClass().getPackage().getName())
                                  .setInjectorFactory(new InjectorFactory() {
                                      @Override
@@ -92,8 +105,30 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
     @Override
     public void run(GetMyParkingConfiguration getMyParkingConfiguration, Environment environment) throws Exception {
+        environment.jersey().register(AuthFactory.binder(
+                new GMPAuthFactory(guiceBundle.getInjector().getInstance(GMPAuthenticator.class),"Oh! You Missed Something..")));
 
-        environment.jersey().getResourceConfig().getContainerRequestFilters().add(RequestLogger.class.getName());
-        environment.jersey().getResourceConfig().getContainerResponseFilters().add(ResponseFilter.class.getName());
+        ManagedQuartzScheduler quartzScheduler = guiceBundle.getInjector().getInstance(ManagedQuartzScheduler.class);
+        Scheduler scheduler = quartzScheduler.getScheduler();
+
+        ParkingLotDAO parkingLotDAO = guiceBundle.getInjector().getInstance(ParkingLotDAO.class);
+        List<ParkingLotEntity> parkingLots = parkingLotDAO.getAutoCheckoutParkingLotList();
+
+        for (ParkingLotEntity parkingLot : parkingLots) {
+
+            JobDetail jobDetail = newJob(AutoCheckoutJob.class)
+                    .usingJobData("parkingLotId",parkingLot.getId())
+                    .withIdentity("autoCheckout",String.valueOf(parkingLot.getId()))
+                    .build();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parkingLot.getAutoCheckoutTime());
+            String cronExpression = "* " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR) + " * * ?";
+            Trigger trigger = newTrigger()
+                    .withIdentity("autoCheckoutTrigger", String.valueOf(parkingLot.getId()))
+                    .forJob(jobDetail)
+                    .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
+                    .build();
+            scheduler.scheduleJob(jobDetail,trigger);
+        }
     }
 }

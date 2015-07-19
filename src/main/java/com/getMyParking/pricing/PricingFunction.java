@@ -1,5 +1,8 @@
 package com.getMyParking.pricing;
 
+import com.getMyParking.entity.PriceGridEntity;
+import com.getMyParking.entity.PricingSlotEntity;
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 
 import java.util.Collections;
@@ -12,37 +15,37 @@ import java.util.List;
 public class PricingFunction {
 
     //pricingSlots will be sorted by day. Day is Integer with 1 as Monday and 7 as Sunday
-    int calculateInitialCost(List<PricingSlot> pricingSlots, DateTime checkInTime) {
+    public static int calculateInitialCost(List<PricingSlotEntity> pricingSlots, DateTime checkInTime) {
 
         int day = checkInTime.dayOfWeek().get();
-        PricingSlot currentPricingSlot = pricingSlots.get(0);
+        PricingSlotEntity currentPricingSlot = pricingSlots.get(0);
         int minutesOfDay = checkInTime.getMinuteOfDay();
 
-        for (PricingSlot pricingSlot : pricingSlots) {
+        for (PricingSlotEntity pricingSlot : pricingSlots) {
             if (pricingSlot.getDay() == day && pricingSlot.getStartMinutesOfDay() <= minutesOfDay
                     && pricingSlot.getEndMinutesOfDay() > minutesOfDay) {
                 currentPricingSlot = pricingSlot;
                 break;
             }
         }
-
-        Collections.sort(currentPricingSlot.getPriceGrids(),priceGridComparator);
-        return currentPricingSlot.getPriceGrids().get(0).getCost();
+        List<PriceGridEntity> priceGridList = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
+        Collections.sort(priceGridList,priceGridComparator);
+        return priceGridList.get(0).getCost();
 
     }
 
-    int calculateCost(List<PricingSlot> pricingSlots, DateTime checkInTime, DateTime checkoutTime) {
+    public static int calculateCost(List<PricingSlotEntity> pricingSlots, DateTime checkInTime, DateTime checkoutTime) {
 
         int cost = 0;
         int index;
         DateTime currentTime = checkInTime;
 
         int day = checkInTime.dayOfWeek().get();
-        PricingSlot currentPricingSlot = pricingSlots.get(0);
+        PricingSlotEntity currentPricingSlot = pricingSlots.get(0);
         int minutesOfDay = checkInTime.getMinuteOfDay();
 
         for (index = 0; index < pricingSlots.size();index++) {
-            PricingSlot pricingSlot = pricingSlots.get(index);
+            PricingSlotEntity pricingSlot = pricingSlots.get(index);
             if (pricingSlot.getDay() == day && pricingSlot.getStartMinutesOfDay() <= minutesOfDay
                     && pricingSlot.getEndMinutesOfDay() > minutesOfDay) {
                 currentPricingSlot = pricingSlot;
@@ -50,8 +53,9 @@ public class PricingFunction {
             }
         }
 
-        Collections.sort(currentPricingSlot.getPriceGrids(),priceGridComparator);
-        PriceGrid currentPriceGrid = currentPricingSlot.getPriceGrids().get(0);
+        List<PriceGridEntity> priceGridList = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
+        Collections.sort(priceGridList,priceGridComparator);
+        PriceGridEntity currentPriceGrid = priceGridList.get(0);
         int priceGridIndex = 0;
 
         while (currentTime.isBefore(checkoutTime)) {
@@ -65,18 +69,19 @@ public class PricingFunction {
                     currentPricingSlot.getStartMinutesOfDay() <= minutesOfDay &&
                     currentPricingSlot.getEndMinutesOfDay() > minutesOfDay) {
 
-                List<PriceGrid> currentPriceGrids = currentPricingSlot.getPriceGrids();
+                List<PriceGridEntity> currentPriceGrids = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
                 priceGridIndex = (priceGridIndex == (currentPriceGrids.size() - 1))? priceGridIndex: priceGridIndex + 1;
                 currentPriceGrid = currentPriceGrids.get(priceGridIndex);
 
             } else {
-                PricingSlot nextPricingSlot = pricingSlots.get( (index + 1) % pricingSlots.size());
+                PricingSlotEntity nextPricingSlot = pricingSlots.get( (index + 1) % pricingSlots.size());
                 if (nextPricingSlot.getStartMinutesOfDay() <= minutesOfDay
                         && nextPricingSlot.getEndMinutesOfDay() > minutesOfDay) {
                     currentPricingSlot = nextPricingSlot;
                     index = (index + 1) % pricingSlots.size();
-                    Collections.sort(currentPricingSlot.getPriceGrids(),priceGridComparator);
-                    currentPriceGrid = currentPricingSlot.getPriceGrids().get(0);
+                    List<PriceGridEntity> currentPriceGrids = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
+                    Collections.sort(currentPriceGrids,priceGridComparator);
+                    currentPriceGrid = currentPriceGrids.get(0);
                     priceGridIndex = 0;
 
                 }
@@ -87,9 +92,9 @@ public class PricingFunction {
         return cost;
     }
 
-    Comparator<PriceGrid> priceGridComparator = new Comparator<PriceGrid>() {
+    private static Comparator<PriceGridEntity> priceGridComparator = new Comparator<PriceGridEntity>() {
         @Override
-        public int compare(PriceGrid o1, PriceGrid o2) {
+        public int compare(PriceGridEntity o1, PriceGridEntity o2) {
             return o1.getSequenceNumber() - o2.getSequenceNumber();
         }
     };

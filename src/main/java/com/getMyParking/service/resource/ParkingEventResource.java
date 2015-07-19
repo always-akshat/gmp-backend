@@ -74,7 +74,7 @@ public class ParkingEventResource {
             if (parkingLot == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
-                if (parkingEvent.getId() == 0) {
+                if (parkingEvent.getId() == null) {
                     ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingEvent.getEventType(), parkingEvent.getSerialNumber());
                     if (pe != null)
                         throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -83,7 +83,7 @@ public class ParkingEventResource {
                 parkingEvent.setUpdatedTime(DateTime.now());
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }
-            return parkingEvent.getId();
+            return parkingEvent.getId().intValue();
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
@@ -108,7 +108,7 @@ public class ParkingEventResource {
                 parkingEvent.setParkingPassByParkingPassId(parkingPass);
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }
-            return parkingEvent.getId();
+            return parkingEvent.getId().intValue();
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
