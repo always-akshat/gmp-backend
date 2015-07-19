@@ -72,7 +72,7 @@ public class ParkingEventResource {
         if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
             ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
             if (parkingLot == null) {
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+                throw new WebApplicationException(Response.Status.CONFLICT);
             } else {
                 if (parkingEvent.getId() == 0) {
                     ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingEvent.getEventType(), parkingEvent.getSerialNumber());

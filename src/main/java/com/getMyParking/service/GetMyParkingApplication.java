@@ -53,14 +53,12 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         new GetMyParkingApplication().run(args);
     }
 
-    private HibernateBundle<GetMyParkingConfiguration> hibernateBundle;
-    private FlywayBundle<GetMyParkingConfiguration> flywayBundle;
     private GuiceBundle<GetMyParkingConfiguration> guiceBundle;
 
     @Override
     public void initialize(Bootstrap<GetMyParkingConfiguration> bootstrap) {
 
-        flywayBundle = new FlywayBundle<GetMyParkingConfiguration>() {
+        FlywayBundle<GetMyParkingConfiguration> flywayBundle = new FlywayBundle<GetMyParkingConfiguration>() {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration configuration) {
                 return configuration.getDataSourceFactory();
@@ -72,7 +70,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
             }
         };
 
-        hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
+        HibernateBundle<GetMyParkingConfiguration> hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
                 CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
                 ParkingLotHasUserB2BEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
                 PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,

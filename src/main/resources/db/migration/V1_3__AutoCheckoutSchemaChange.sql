@@ -1,5 +1,4 @@
 ALTER TABLE `parking_lot` ADD COLUMN `auto_checkout_time` TIME NULL;
-ALTER TABLE `parking_event` CHANGE id id BIGINT;
 ALTER TABLE `parking_event` CHANGE serial_number serial_number VARCHAR(50);
 ALTER TABLE `parking_event` CHANGE event_type event_type VARCHAR(50);
 
