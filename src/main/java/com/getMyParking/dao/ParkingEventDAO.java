@@ -160,7 +160,5 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
         return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
 
-
-
     }
 }

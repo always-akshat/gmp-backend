@@ -7,9 +7,10 @@ import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
 import com.getMyParking.service.guice.GMPModule;
-import com.getMyParking.service.interceptors.RequestLogger;
-import com.getMyParking.service.interceptors.ResponseFilter;
+import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
@@ -24,7 +25,9 @@ import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.quartz.CronExpression;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.context.internal.ManagedSessionContext;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
@@ -33,7 +36,6 @@ import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
 
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -110,11 +112,16 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         ManagedQuartzScheduler quartzScheduler = guiceBundle.getInjector().getInstance(ManagedQuartzScheduler.class);
         Scheduler scheduler = quartzScheduler.getScheduler();
-
+        GuiceHelper.setInjector(guiceBundle.getInjector());
+        Session session = guiceBundle.getInjector().getInstance(SessionFactory.class).openSession();
+        ManagedSessionContext.bind(session);
         ParkingLotDAO parkingLotDAO = guiceBundle.getInjector().getInstance(ParkingLotDAO.class);
-        List<ParkingLotEntity> parkingLots = parkingLotDAO.getAutoCheckoutParkingLotList();
+        List<ParkingLotEntity> parkingLots =
+                Lists.newArrayList(Sets.newHashSet(parkingLotDAO.getAllParkingLots()));
 
         for (ParkingLotEntity parkingLot : parkingLots) {
+
+            if (parkingLot.getAutoCheckoutTime() == null) continue;
 
             JobDetail jobDetail = newJob(AutoCheckoutJob.class)
                     .usingJobData("parkingLotId",parkingLot.getId())
@@ -122,13 +129,15 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                     .build();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(parkingLot.getAutoCheckoutTime());
-            String cronExpression = "* " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR) + " * * ?";
+            String cronExpression = "* " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
             Trigger trigger = newTrigger()
                     .withIdentity("autoCheckoutTrigger", String.valueOf(parkingLot.getId()))
                     .forJob(jobDetail)
-                    .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
+                    .startNow()
+                    //.withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                     .build();
             scheduler.scheduleJob(jobDetail,trigger);
         }
+        session.close();
     }
 }

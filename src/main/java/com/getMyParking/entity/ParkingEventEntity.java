@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking")
 public class ParkingEventEntity {
-    private BigInteger id;
+    private int id;
     @NotNull
     private String vehicleType;
     @NotNull
@@ -44,11 +44,11 @@ public class ParkingEventEntity {
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    public BigInteger getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -212,7 +212,7 @@ public class ParkingEventEntity {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id;
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (registrationNumber != null ? registrationNumber.hashCode() : 0);

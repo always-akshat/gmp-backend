@@ -40,8 +40,7 @@ public class ParkingLotDAO extends AbstractDAO<ParkingLotEntity> {
         q.executeUpdate();
     }
 
-    public List<ParkingLotEntity> getAutoCheckoutParkingLotList() {
-        return list(currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.isNotNull("autoCheckoutTime")));
+    public List<ParkingLotEntity> getAllParkingLots() {
+        return list(currentSession().createCriteria(ParkingLotEntity.class));
     }
 }
