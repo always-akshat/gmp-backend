@@ -133,8 +133,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
             Trigger trigger = newTrigger()
                     .withIdentity("autoCheckoutTrigger", String.valueOf(parkingLot.getId()))
                     .forJob(jobDetail)
-                    .startNow()
-                    //.withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
+                    .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                     .build();
             scheduler.scheduleJob(jobDetail,trigger);
         }
