@@ -1,6 +1,7 @@
 package com.getMyParking.service.interceptors;
 
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +24,14 @@ public class RequestLogger implements ContainerRequestFilter {
         for(MultivaluedMap.Entry entry : requestHeaders.entrySet())
             logger.info(entry.getKey() + " : " + entry.getValue());
 
-
         logger.info("Method : " + containerRequest.getMethod() + "  Request url :" + containerRequest.getUriInfo().toString());
+        try {
+            String body = IOUtils.toString(containerRequest.getEntityStream());
+            logger.info("body : {}", body);
+        } catch (Exception e) {
+
+        }
+
     }
 
     @Override
