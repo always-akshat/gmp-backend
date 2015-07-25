@@ -30,7 +30,8 @@ public class PricingFunction {
         }
         List<PriceGridEntity> priceGridList = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
         Collections.sort(priceGridList,priceGridComparator);
-        return priceGridList.get(0).getCost();
+        if (currentPricingSlot.getCollectionModel().equalsIgnoreCase("PREPAID")) return 0;
+        else return priceGridList.get(0).getCost();
 
     }
 

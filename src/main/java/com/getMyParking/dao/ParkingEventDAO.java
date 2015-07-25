@@ -53,7 +53,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         SQLQuery query = currentSession().createSQLQuery("SELECT * from `parking_event` where `event_type` = 'CHECKED_IN' " +
                 "AND parking_lot_id = :id AND`event_time` between :fromDate AND :toDate AND `serial_number` NOT IN " +
                 "(Select `serial_number` from `parking_event` where `event_type` = 'CHECKED_OUT' AND " +
-                "`event_time` between :fromDate AND :toDate)");
+                "`event_time` between :fromDate AND :toDate AND parking_lot_id = :id)");
 
         query.setParameter("id", parkingLotId);
         query.setParameter("fromDate", fromDate.toString());
@@ -63,10 +63,11 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return list(query);
     }
 
-    public ParkingEventEntity findBySerialNumberAndEventType(String eventType, String serialNumber) {
+    public ParkingEventEntity findBySerialNumberAndEventType(int parkingLotId, String eventType, String serialNumber) {
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class);
         criteria.add(Restrictions.eq("eventType",eventType))
-                .add(Restrictions.eq("serialNumber",serialNumber));
+                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.eq("serialNumber", serialNumber));
 
         return uniqueResult(criteria);
     }

@@ -23,7 +23,6 @@ public class ParkingLotEntity {
     private Time openTime;
     @NotNull
     private Time closeTime;
-    @NotNull
     private Time autoCheckoutTime;
     @NotNull
     private BigDecimal latitude;
@@ -33,6 +32,8 @@ public class ParkingLotEntity {
     private int carCapacity;
     @NotNull
     private int bikeCapacity;
+    private int taxiSupport;
+    private Time taxiTime;
     private String licenseNo;
     @NotNull
     private String collectionModel;
@@ -152,6 +153,26 @@ public class ParkingLotEntity {
 
     public void setCollectionModel(String collectionModel) {
         this.collectionModel = collectionModel;
+    }
+
+    @Basic
+    @Column(name = "taxi_support", nullable = true, insertable = true, updatable = true, length = 500)
+    public int getTaxiSupport() {
+        return taxiSupport;
+    }
+
+    public void setTaxiSupport(int taxiSupport) {
+        this.taxiSupport = taxiSupport;
+    }
+
+    @Basic
+    @Column(name = "taxi_time", nullable = true, insertable = true, updatable = true, length = 500)
+    public Time getTaxiTime() {
+        return taxiTime;
+    }
+
+    public void setTaxiTime(Time taxiTime) {
+        this.taxiTime = taxiTime;
     }
 
     @Override

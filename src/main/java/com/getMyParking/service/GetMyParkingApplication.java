@@ -32,13 +32,13 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
-import static org.quartz.JobBuilder.*;
-import static org.quartz.TriggerBuilder.*;
-import static org.quartz.CronScheduleBuilder.*;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -106,7 +106,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
     @Override
     public void run(GetMyParkingConfiguration getMyParkingConfiguration, Environment environment) throws Exception {
         environment.jersey().register(AuthFactory.binder(
-                new GMPAuthFactory(guiceBundle.getInjector().getInstance(GMPAuthenticator.class),"Oh! You Missed Something..")));
+                new GMPAuthFactory(guiceBundle.getInjector().getInstance(GMPAuthenticator.class), "Oh! You Missed Something..")));
 
         ManagedQuartzScheduler quartzScheduler = guiceBundle.getInjector().getInstance(ManagedQuartzScheduler.class);
         Scheduler scheduler = quartzScheduler.getScheduler();
@@ -127,7 +127,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                     .build();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(parkingLot.getAutoCheckoutTime());
-            String cronExpression = "* " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
+            String cronExpression = calendar.get(Calendar.SECOND) + " " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
             Trigger trigger = newTrigger()
                     .withIdentity("autoCheckoutTrigger", String.valueOf(parkingLot.getId()))
                     .forJob(jobDetail)

@@ -1,58 +1,54 @@
-package com.getMyParking.quartz;
-
 import com.getMyParking.dao.ParkingEventDAO;
-import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.PricingSlotEntity;
 import com.getMyParking.pricing.PricingFunction;
-import com.getMyParking.service.guice.GuiceHelper;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.context.internal.ManagedSessionContext;
 import org.joda.time.DateTime;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.testng.annotations.Test;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Created by rahulgupta.s on 19/07/15.
+ * Created by rahulgupta.s on 23/07/15.
  */
-public class AutoCheckoutJob implements Job {
+public class AutoCheckoutTest {
 
-    private ParkingEventDAO parkingEventDAO;
-    private ParkingLotDAO parkingLotDAO;
-    private SessionFactory sessionFactory;
+    @Test
+    public void testAutoCheckout() throws Exception {
 
-    public AutoCheckoutJob() {
-        Injector injector = GuiceHelper.getInjector();
-        sessionFactory = injector.getInstance(SessionFactory.class);
-        parkingEventDAO = injector.getInstance(ParkingEventDAO.class);
-        parkingLotDAO = injector.getInstance(ParkingLotDAO.class);
-    }
-
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
-        int parkingLotId = jobDataMap.getInt("parkingLotId");
-        DateTime toDate = DateTime.now();
-        DateTime fromDate = toDate.minusDays(1);
-        fromDate = fromDate.minusSeconds(fromDate.getSecondOfDay());
+        Configuration configuration = new Configuration().configure();
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().
+                applySettings(configuration.getProperties());
+        SessionFactory sessionFactory = configuration.buildSessionFactory(builder.build());
+        ParkingEventDAO parkingEventDAO = new ParkingEventDAO(sessionFactory);
         Session session = sessionFactory.openSession();
         ManagedSessionContext.bind(session);
-        List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingLotId, fromDate, toDate);
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+        Transaction tx = session.beginTransaction();
+        DateTime toDate = DateTime.now();
+        DateTime fromDate = toDate.minusDays(2);
+        SQLQuery query = session.createSQLQuery("SELECT * from `parking_event` where `event_type` = 'CHECKED_IN' " +
+                "AND parking_lot_id = :id AND vehicle_type = 'BIKE' AND `event_time` between :fromDate AND :toDate AND `serial_number` NOT IN " +
+                "(Select `serial_number` from `parking_event` where `event_type` = 'CHECKED_OUT' AND " +
+                "`event_time` between :fromDate AND :toDate AND vehicle_type = 'BIKE')");
+
+        query.setParameter("id", 1);
+        query.setParameter("fromDate", fromDate.toString());
+        query.setParameter("toDate", toDate.toString());
+
+        query.addEntity(ParkingEventEntity.class);
+        List<ParkingEventEntity> parkingEvents = query.list();
         int count = 0;
         if (parkingEvents != null && parkingEvents.size() > 0) {
+            ParkingLotEntity parkingLot = parkingEvents.get(0).getParkingLotByParkingLotId();
 
             for (ParkingEventEntity oldParkingEvent : parkingEvents) {
                 ParkingEventEntity parkingEvent = new ParkingEventEntity();
@@ -70,15 +66,9 @@ public class AutoCheckoutJob implements Job {
                     parkingEvent.setParkingPassByParkingPassId(oldParkingEvent.getParkingPassByParkingPassId());
                 }
                 List<PricingSlotEntity> pricingSlotList = Lists.newArrayList(parkingLot.getPricingSlotsById());
-                List<PricingSlotEntity> currentPricingSlot = Lists.newArrayList();
-                for (PricingSlotEntity pricingSlot : pricingSlotList) {
-                    if (pricingSlot.getVehicleType().equalsIgnoreCase(oldParkingEvent.getVehicleType())) {
-                        currentPricingSlot.add(pricingSlot);
-                    }
-                }
-                parkingEvent.setCost(new BigDecimal(PricingFunction.calculateInitialCost(currentPricingSlot, DateTime.now())));
+                parkingEvent.setCost(new BigDecimal(PricingFunction.calculateInitialCost(pricingSlotList, DateTime.now())));
                 parkingEvent.setUpdatedTime(DateTime.now());
-                parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+                session.persist(parkingEvent);
                 count ++;
                 if (count == 20) {
                     session.flush();
@@ -88,8 +78,9 @@ public class AutoCheckoutJob implements Job {
         }
         session.flush();
         session.clear();
+        tx.commit();
         session.close();
 
-    }
 
+    }
 }

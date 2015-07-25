@@ -25,12 +25,12 @@ public class RequestLogger implements ContainerRequestFilter {
             logger.info(entry.getKey() + " : " + entry.getValue());
 
         logger.info("Method : " + containerRequest.getMethod() + "  Request url :" + containerRequest.getUriInfo().toString());
-        try {
+        /*try {
             String body = IOUtils.toString(containerRequest.getEntityStream());
             logger.info("body : {}", body);
         } catch (Exception e) {
 
-        }
+        }*/
 
     }
 
