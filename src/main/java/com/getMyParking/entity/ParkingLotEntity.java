@@ -156,7 +156,7 @@ public class ParkingLotEntity {
     }
 
     @Basic
-    @Column(name = "taxi_support", nullable = true, insertable = true, updatable = true, length = 500)
+    @Column(name = "taxi_support", nullable = false, insertable = true, updatable = true, length = 500)
     public int getTaxiSupport() {
         return taxiSupport;
     }
