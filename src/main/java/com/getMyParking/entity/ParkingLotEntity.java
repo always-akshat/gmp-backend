@@ -33,7 +33,7 @@ public class ParkingLotEntity {
     @NotNull
     private int bikeCapacity;
     private int taxiSupport;
-    private int taxiTime;
+    private Integer taxiTime;
     private int barcodeSupport;
     private String licenseNo;
     @NotNull
@@ -178,11 +178,11 @@ public class ParkingLotEntity {
 
     @Basic
     @Column(name = "taxi_time", nullable = true, insertable = true, updatable = true)
-    public int getTaxiTime() {
+    public Integer getTaxiTime() {
         return taxiTime;
     }
 
-    public void setTaxiTime(int taxiTime) {
+    public void setTaxiTime(Integer taxiTime) {
         this.taxiTime = taxiTime;
     }
 
