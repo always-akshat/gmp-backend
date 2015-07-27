@@ -19,6 +19,8 @@ public class ReceiptContentEntity {
     private String ordering;
     @NotNull
     private String placement;
+    @NotNull
+    private String vehicleType;
     @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
 
@@ -41,6 +43,16 @@ public class ReceiptContentEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Basic
+    @Column(name = "vehicle_type", nullable = true, insertable = true, updatable = true, length = 255)
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     @Basic

@@ -33,7 +33,8 @@ public class ParkingLotEntity {
     @NotNull
     private int bikeCapacity;
     private int taxiSupport;
-    private Time taxiTime;
+    private int taxiTime;
+    private int barcodeSupport;
     private String licenseNo;
     @NotNull
     private String collectionModel;
@@ -146,6 +147,16 @@ public class ParkingLotEntity {
     }
 
     @Basic
+    @Column(name = "barcode_support", nullable = false, insertable = true, updatable = true)
+    public int getBarcodeSupport() {
+        return barcodeSupport;
+    }
+
+    public void setBarcodeSupport(int barcodeSupport) {
+        this.barcodeSupport = barcodeSupport;
+    }
+
+    @Basic
     @Column(name = "collection_model", nullable = true, insertable = true, updatable = true, length = 500)
     public String getCollectionModel() {
         return collectionModel;
@@ -156,7 +167,7 @@ public class ParkingLotEntity {
     }
 
     @Basic
-    @Column(name = "taxi_support", nullable = false, insertable = true, updatable = true, length = 500)
+    @Column(name = "taxi_support", nullable = false, insertable = true, updatable = true)
     public int getTaxiSupport() {
         return taxiSupport;
     }
@@ -166,12 +177,12 @@ public class ParkingLotEntity {
     }
 
     @Basic
-    @Column(name = "taxi_time", nullable = true, insertable = true, updatable = true, length = 500)
-    public Time getTaxiTime() {
+    @Column(name = "taxi_time", nullable = true, insertable = true, updatable = true)
+    public int getTaxiTime() {
         return taxiTime;
     }
 
-    public void setTaxiTime(Time taxiTime) {
+    public void setTaxiTime(int taxiTime) {
         this.taxiTime = taxiTime;
     }
 
