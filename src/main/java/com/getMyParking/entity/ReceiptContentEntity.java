@@ -21,6 +21,10 @@ public class ReceiptContentEntity {
     private String placement;
     @NotNull
     private String vehicleType;
+    private String receiptSection;
+    private Integer sequence;
+    private Integer flag;
+    private String event;
     @JsonIgnore
     private ParkingLotEntity parkingLotByParkingLotId;
 
@@ -43,6 +47,46 @@ public class ReceiptContentEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Basic
+    @Column(name = "receipt_section", nullable = true, insertable = true, updatable = true, length = 255)
+    public String getReceiptSection() {
+        return receiptSection;
+    }
+
+    public void setReceiptSection(String receiptSection) {
+        this.receiptSection = receiptSection;
+    }
+
+    @Basic
+    @Column(name = "sequence", nullable = true, insertable = true, updatable = true)
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    @Basic
+    @Column(name = "flag", nullable = true, insertable = true, updatable = true)
+    public Integer getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Integer flag) {
+        this.flag = flag;
+    }
+
+    @Basic
+    @Column(name = "event", nullable = true, insertable = true, updatable = true, length = 255)
+    public String getEvent() {
+        return event;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
     }
 
     @Basic

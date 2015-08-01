@@ -36,6 +36,9 @@ public class ParkingLotEntity {
     private Integer taxiTime;
     private int barcodeSupport;
     private String licenseNo;
+    private String parkingLotType;
+    private Integer checkinBarcode;
+    private Integer checkoutBarcode;
     @NotNull
     private String collectionModel;
     @JsonProperty("parking")
@@ -64,6 +67,16 @@ public class ParkingLotEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Basic
+    @Column(name = "parking_lot_type", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getParkingLotType() {
+        return parkingLotType;
+    }
+
+    public void setParkingLotType(String parkingLotType) {
+        this.parkingLotType = parkingLotType;
     }
 
     @Basic
@@ -174,6 +187,26 @@ public class ParkingLotEntity {
 
     public void setTaxiSupport(int taxiSupport) {
         this.taxiSupport = taxiSupport;
+    }
+
+    @Basic
+    @Column(name = "checkin_barcode", nullable = true, insertable = true, updatable = true)
+    public Integer getCheckinBarcode() {
+        return checkinBarcode;
+    }
+
+    public void setCheckinBarcode(Integer checkinBarcode) {
+        this.checkinBarcode = checkinBarcode;
+    }
+
+    @Basic
+    @Column(name = "checkout_barcode", nullable = true, insertable = true, updatable = true)
+    public Integer getCheckoutBarcode() {
+        return checkoutBarcode;
+    }
+
+    public void setCheckoutBarcode(Integer checkoutBarcode) {
+        this.checkoutBarcode = checkoutBarcode;
     }
 
     @Basic

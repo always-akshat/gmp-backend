@@ -21,6 +21,7 @@ public class ParkingEntity {
     private String address;
     @NotNull
     private String city;
+    private String reportEmailAddress;
     private String contactNumber;
     @JsonProperty("company")
     private CompanyEntity companyByCompanyId;
@@ -46,6 +47,16 @@ public class ParkingEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Basic
+    @Column(name = "report_email_address", nullable = false, insertable = true, updatable = true, length = 500)
+    public String getReportEmailAddress() {
+        return reportEmailAddress;
+    }
+
+    public void setReportEmailAddress(String reportEmailAddress) {
+        this.reportEmailAddress = reportEmailAddress;
     }
 
     @Basic
