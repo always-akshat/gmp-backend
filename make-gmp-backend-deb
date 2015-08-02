@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function die()
+{
+	echo "Error: $1" >&2
+	exit 1
+}
+
+mvn clean package
+
+if [ $? -ne 0 ]; then
+    die
+fi
+
+cp target/getMyParking*.jar package/usr/share/gmp/
+cp src/main/resources/config/aws/config.yaml package/usr/share/gmp/
+cp src/main/resources/config/aws/migration_config.yaml package/usr/share/gmp/
+
+
