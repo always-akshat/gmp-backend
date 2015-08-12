@@ -54,7 +54,7 @@ public class SESService {
 
         try {
 
-            ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+            //ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
             String endDate = DateTime.now().toString("yyyy-MM-dd");
             Response response = reportClient.getReportData(parkingLotId, endDate);
             String responseHtml = IOUtils.toString(response.getBody().in(), Charset.forName("UTF-8"));

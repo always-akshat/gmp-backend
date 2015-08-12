@@ -75,7 +75,7 @@ public class ParkingEventResource {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
                 if (parkingEvent.getId() == 0) {
-                    ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingLotId,parkingEvent.getEventType(), parkingEvent.getSerialNumber());
+                    ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingLotId, parkingEvent.getEventType(), parkingEvent.getSerialNumber());
                     if (pe != null)
                         throw new WebApplicationException(Response.Status.CONFLICT);
                 }
