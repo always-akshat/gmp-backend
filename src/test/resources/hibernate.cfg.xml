@@ -9,18 +9,6 @@
     <property name="connection.password">gmp2015gmp</property>
       <property name="show_sql">true</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-      <mapping class="com.getMyParking.entity.CompanyEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingEventEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingLotEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingLotHasUserB2BEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingPassEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingPassMasterEntity"/>
-      <mapping class="com.getMyParking.entity.PriceGridEntity"/>
-      <mapping class="com.getMyParking.entity.PricingSlotEntity"/>
-      <mapping class="com.getMyParking.entity.ReceiptContentEntity"/>
-      <mapping class="com.getMyParking.entity.SessionEntity"/>
-      <mapping class="com.getMyParking.entity.UserB2BEntity"/>
       <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>
