@@ -9,6 +9,7 @@ import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.service.auth.GMPUser;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -19,6 +20,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -84,6 +86,37 @@ public class ParkingEventResource {
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }
             return parkingEvent.getId();
+        } else {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+    }
+
+    @POST
+    @Path("/parking_lot/{parkingLotId}/check")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    public List<Map<String, Object>> checkParkingEvent(List<Map<String, Object>> parkingEvents,
+                                                       @PathParam("parkingLotId") int parkingLotId,
+                                                       @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+            ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+            if (parkingLot == null) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            } else {
+                List<Map<String,Object>> parkingResults = Lists.newArrayList();
+                for (Map<String,Object> parkingEvent : parkingEvents) {
+
+                    ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingLotId, (String) parkingEvent.get("eventType"), (String)parkingEvent.get("serialNumber"));
+                    if (pe != null) {
+                        parkingEvent.put("is_present",true);
+                    }else {
+                        parkingEvent.put("is_present",false);
+                    }
+                    parkingResults.add(parkingEvent);
+                }
+                return parkingResults;
+            }
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
