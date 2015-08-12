@@ -1,16 +1,10 @@
 package com.getMyParking.service;
 
-import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.entity.*;
-import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
 import com.getMyParking.service.guice.GMPModule;
-import com.getMyParking.service.guice.GuiceHelper;
-import com.getMyParking.service.managed.ManagedQuartzScheduler;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
@@ -25,20 +19,8 @@ import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.context.internal.ManagedSessionContext;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.Trigger;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
-
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -108,33 +90,5 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         environment.jersey().register(AuthFactory.binder(
                 new GMPAuthFactory(guiceBundle.getInjector().getInstance(GMPAuthenticator.class), "Oh! You Missed Something..")));
 
-        ManagedQuartzScheduler quartzScheduler = guiceBundle.getInjector().getInstance(ManagedQuartzScheduler.class);
-        Scheduler scheduler = quartzScheduler.getScheduler();
-        GuiceHelper.setInjector(guiceBundle.getInjector());
-        Session session = guiceBundle.getInjector().getInstance(SessionFactory.class).openSession();
-        ManagedSessionContext.bind(session);
-        ParkingLotDAO parkingLotDAO = guiceBundle.getInjector().getInstance(ParkingLotDAO.class);
-        List<ParkingLotEntity> parkingLots =
-                Lists.newArrayList(Sets.newHashSet(parkingLotDAO.getAllParkingLots()));
-
-        for (ParkingLotEntity parkingLot : parkingLots) {
-
-            if (parkingLot.getAutoCheckoutTime() == null) continue;
-
-            JobDetail jobDetail = newJob(AutoCheckoutJob.class)
-                    .usingJobData("parkingLotId",parkingLot.getId())
-                    .withIdentity("autoCheckout",String.valueOf(parkingLot.getId()))
-                    .build();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parkingLot.getAutoCheckoutTime());
-            String cronExpression = calendar.get(Calendar.SECOND) + " " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
-            Trigger trigger = newTrigger()
-                    .withIdentity("autoCheckoutTrigger", String.valueOf(parkingLot.getId()))
-                    .forJob(jobDetail)
-                    .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
-                    .build();
-            scheduler.scheduleJob(jobDetail,trigger);
-        }
-        session.close();
     }
 }
