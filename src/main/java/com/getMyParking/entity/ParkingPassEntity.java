@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "parking_pass", schema = "", catalog = "get_my_parking_v2")
 public class ParkingPassEntity {
-    private int id;
+    private Integer id;
     private String registrationNumber;
     private Timestamp validTime;
     private Set<ParkingEventEntity> parkingEvents;
@@ -18,11 +18,11 @@ public class ParkingPassEntity {
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

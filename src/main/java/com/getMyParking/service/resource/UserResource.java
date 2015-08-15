@@ -31,9 +31,7 @@ import java.util.UUID;
 /**
  * Created by rahulgupta.s on 04/06/15.
  */
-@Api(value = "/v1/user", description = "User Resource" , authorizations = {
-        @Authorization(type = "Simple Auth", value = "GMP_AUTH")
-})
+@Api(value = "/v1/user", description = "User Resource")
 @Path("/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {

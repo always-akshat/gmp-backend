@@ -3,7 +3,14 @@ package com.getMyParking.dao;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -28,21 +35,22 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return get(id);
     }
 
-    /*
-    public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime lastUpdateTime) {
 
-        Query q = currentSession().createQuery("from ParkingEventEntity where parkingLotByParkingLotId.id =:id and updatedTime >= :updatedTime");
-        q.setInteger("id", parkingLotId);
+    public List<ParkingEventEntity> getParkingEvents(int parkingSubLotId, DateTime lastUpdateTime) {
+
+        Query q = currentSession().createQuery("from ParkingEventEntity where parkingSubLot.id =:id and updatedTime >= :updatedTime");
+        q.setInteger("id", parkingSubLotId);
         q.setString("updatedTime",lastUpdateTime.toString());
         return list(q);
     }
 
+
     public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime fromDate, DateTime toDate) {
 
         SQLQuery query = currentSession().createSQLQuery("SELECT * from `parking_event` where `event_type` = 'CHECKED_IN' " +
-                "AND parking_lot_id = :id AND`event_time` between :fromDate AND :toDate AND `serial_number` NOT IN " +
+                "AND parking_sub_lot_id = :id AND`event_time` between :fromDate AND :toDate AND `serial_number` NOT IN " +
                 "(Select `serial_number` from `parking_event` where `event_type` = 'CHECKED_OUT' AND " +
-                "`event_time` between :fromDate AND :toDate AND parking_lot_id = :id)");
+                "`event_time` between :fromDate AND :toDate AND parking_sub_lot_id = :id)");
 
         query.setParameter("id", parkingLotId);
         query.setParameter("fromDate", fromDate.toString());
@@ -55,12 +63,13 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public ParkingEventEntity findBySerialNumberAndEventType(int parkingLotId, String eventType, String serialNumber) {
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class);
         criteria.add(Restrictions.eq("eventType",eventType))
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLotId))
+                .add(Restrictions.eq("parkingSubLot.id",parkingLotId))
                 .add(Restrictions.eq("serialNumber", serialNumber));
 
         return uniqueResult(criteria);
     }
 
+    /*
     public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
 
         List<PricingSlotEntity> pricingSlotEntities = Lists.newArrayList(parkingLot.getPricingSlotsById());

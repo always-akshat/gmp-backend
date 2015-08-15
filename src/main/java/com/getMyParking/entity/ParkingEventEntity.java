@@ -1,8 +1,11 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -10,29 +13,35 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking_v2")
 public class ParkingEventEntity {
-    private int id;
+    private Integer id;
     private String type;
     private String registrationNumber;
     private String mobileNumber;
     private String valetName;
-    private Timestamp eventTime;
+    private DateTime eventTime;
     private String eventType;
     private BigDecimal cost;
     private String subLotType;
     private String serialNumber;
     private String shiftNumber;
-    private Timestamp updatedTime;
+    private DateTime updatedTime;
     private String operatorName;
+    @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
+    @JsonIgnore
     private ParkingPassEntity parkingPass;
+    @Transient
+    private Integer parkingSubLotId;
+    @Transient
+    private Integer parkingPassId;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -78,11 +87,12 @@ public class ParkingEventEntity {
 
     @Basic
     @Column(name = "event_time", nullable = false, insertable = true, updatable = true)
-    public Timestamp getEventTime() {
+    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    public DateTime getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(Timestamp eventTime) {
+    public void setEventTime(DateTime eventTime) {
         this.eventTime = eventTime;
     }
 
@@ -138,11 +148,12 @@ public class ParkingEventEntity {
 
     @Basic
     @Column(name = "updated_time", nullable = false, insertable = true, updatable = true)
-    public Timestamp getUpdatedTime() {
+    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    public DateTime getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(Timestamp updatedTime) {
+    public void setUpdatedTime(DateTime updatedTime) {
         this.updatedTime = updatedTime;
     }
 
@@ -216,5 +227,21 @@ public class ParkingEventEntity {
 
     public void setParkingPass(ParkingPassEntity parkingPassByParkingPassId) {
         this.parkingPass = parkingPassByParkingPassId;
+    }
+
+    public void setParkingSubLotId(Integer parkingSubLotId) {
+        this.parkingSubLotId = parkingSubLotId;
+    }
+
+    public Integer getParkingSubLotId() {
+        return parkingSubLotId;
+    }
+
+    public void setParkingPassId(Integer parkingPassId) {
+        this.parkingPassId = parkingPassId;
+    }
+
+    public Integer getParkingPassId() {
+        return parkingPassId;
     }
 }

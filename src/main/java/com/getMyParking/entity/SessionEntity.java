@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "session", schema = "", catalog = "get_my_parking_v2")
 public class SessionEntity {
-    private int id;
+    private Integer id;
     private String authToken;
     private Timestamp validTime;
     private UserB2BEntity userB2BEntity;
@@ -25,11 +25,11 @@ public class SessionEntity {
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

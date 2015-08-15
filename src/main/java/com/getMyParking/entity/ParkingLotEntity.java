@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -12,22 +14,23 @@ import java.util.Set;
 @Entity
 @Table(name = "parking_lot", schema = "", catalog = "get_my_parking_v2")
 public class ParkingLotEntity {
-    private int id;
+    private Integer id;
     private String name;
     private Time openTime;
     private Time closeTime;
     private BigDecimal longitude;
     private BigDecimal latitude;
+    @JsonIgnore
     private ParkingEntity parking;
     private Set<ParkingSubLotEntity> parkingSubLots;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -119,7 +122,7 @@ public class ParkingLotEntity {
         this.parking = parkingByParkingId;
     }
 
-    @OneToMany(mappedBy = "parkingLot")
+    @OneToMany(mappedBy = "parkingLot", fetch = FetchType.EAGER)
     public Set<ParkingSubLotEntity> getParkingSubLots() {
         return parkingSubLots;
     }

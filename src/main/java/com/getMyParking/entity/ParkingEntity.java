@@ -1,7 +1,10 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -9,21 +12,22 @@ import java.util.Collection;
 @Entity
 @Table(name = "parking", schema = "", catalog = "get_my_parking_v2")
 public class ParkingEntity {
-    private int id;
+    private Integer id;
     private String name;
     private String address;
     private String city;
     private String contactNumber;
+    @JsonIgnore
     private CompanyEntity company;
-    private Collection<ParkingLotEntity> parkingLots;
+    private Set<ParkingLotEntity> parkingLots;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -104,12 +108,12 @@ public class ParkingEntity {
         this.company = companyByCompanyId;
     }
 
-    @OneToMany(mappedBy = "parking")
-    public Collection<ParkingLotEntity> getParkingLots() {
+    @OneToMany(mappedBy = "parking", fetch = FetchType.EAGER)
+    public Set<ParkingLotEntity> getParkingLots() {
         return parkingLots;
     }
 
-    public void setParkingLots(Collection<ParkingLotEntity> parkingLotsById) {
+    public void setParkingLots(Set<ParkingLotEntity> parkingLotsById) {
         this.parkingLots = parkingLotsById;
     }
 }

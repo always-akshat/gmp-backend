@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Collection;
 
@@ -9,16 +11,17 @@ import java.util.Collection;
 @Entity
 @Table(name = "style_master", schema = "", catalog = "get_my_parking_v2")
 public class StyleMasterEntity {
-    private int id;
+    private Integer id;
+    @JsonIgnore
     private Collection<ReceiptContentEntity> receiptContentsById;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

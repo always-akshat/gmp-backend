@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "parking_lot_has_user_b2b", schema = "", catalog = "get_my_parking_v2")
 public class ParkingLotHasUserB2BEntity {
-    private int id;
-    private int parkingSubLotId;
+    private Integer id;
+    private Integer parkingSubLotId;
     private UserB2BEntity userB2B;
 
     public ParkingLotHasUserB2BEntity(int parkingSubLotId, UserB2BEntity userB2B) {
@@ -22,21 +22,21 @@ public class ParkingLotHasUserB2BEntity {
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
     @Basic
     @Column(name = "parking_sub_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingSubLotId() {
+    public Integer getParkingSubLotId() {
         return parkingSubLotId;
     }
 
-    public void setParkingSubLotId(int parkingSubLotId) {
+    public void setParkingSubLotId(Integer parkingSubLotId) {
         this.parkingSubLotId = parkingSubLotId;
     }
 

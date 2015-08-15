@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.sql.Time;
 import java.util.Set;
@@ -10,29 +12,30 @@ import java.util.Set;
 @Entity
 @Table(name = "parking_sub_lot", schema = "", catalog = "get_my_parking_v2")
 public class ParkingSubLotEntity {
-    private int id;
+    private Integer id;
     private String type;
-    private int capacity;
+    private Integer capacity;
     private String collectionModel;
     private Time taxiTime;
     private Time autoCheckoutTime;
     private String plateNumberType;
-    private byte mobileRequired;
-    private byte valetName;
+    private Integer mobileRequired;
+    private Integer valetName;
     private Time lastCheckinUpdateTime;
 
     private Set<ParkingPassMasterEntity> parkingPasses;
+    @JsonIgnore
     private ParkingLotEntity parkingLot;
     private Set<PricingSlotEntity> pricingSlots;
     private Set<ReceiptContentEntity> receiptContents;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -48,11 +51,11 @@ public class ParkingSubLotEntity {
 
     @Basic
     @Column(name = "capacity", nullable = false, insertable = true, updatable = true)
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
 
@@ -98,21 +101,21 @@ public class ParkingSubLotEntity {
 
     @Basic
     @Column(name = "mobile_required", nullable = false, insertable = true, updatable = true)
-    public byte getMobileRequired() {
+    public Integer getMobileRequired() {
         return mobileRequired;
     }
 
-    public void setMobileRequired(byte mobileRequired) {
+    public void setMobileRequired(Integer mobileRequired) {
         this.mobileRequired = mobileRequired;
     }
 
     @Basic
     @Column(name = "valet_name", nullable = false, insertable = true, updatable = true)
-    public byte getValetName() {
+    public Integer getValetName() {
         return valetName;
     }
 
-    public void setValetName(byte valetName) {
+    public void setValetName(Integer valetName) {
         this.valetName = valetName;
     }
 
@@ -166,7 +169,7 @@ public class ParkingSubLotEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot")
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
     public Set<ParkingPassMasterEntity> getParkingPasses() {
         return parkingPasses;
     }
@@ -185,7 +188,7 @@ public class ParkingSubLotEntity {
         this.parkingLot = parkingLotByParkingLotId;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot")
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
     public Set<PricingSlotEntity> getPricingSlots() {
         return pricingSlots;
     }
@@ -194,7 +197,7 @@ public class ParkingSubLotEntity {
         this.pricingSlots = pricingSlotsById;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot")
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
     public Set<ReceiptContentEntity> getReceiptContents() {
         return receiptContents;
     }

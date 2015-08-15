@@ -8,20 +8,20 @@ import javax.persistence.*;
 @Entity
 @Table(name = "price_grid", schema = "", catalog = "get_my_parking_v2")
 public class PriceGridEntity {
-    private int id;
+    private Integer id;
     private String priceStructure;
-    private int cost;
-    private int duration;
-    private int sequenceNumber;
+    private Integer cost;
+    private Integer duration;
+    private Integer sequenceNumber;
     private PricingSlotEntity pricingSlot;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -37,31 +37,31 @@ public class PriceGridEntity {
 
     @Basic
     @Column(name = "cost", nullable = false, insertable = true, updatable = true)
-    public int getCost() {
+    public Integer getCost() {
         return cost;
     }
 
-    public void setCost(int cost) {
+    public void setCost(Integer cost) {
         this.cost = cost;
     }
 
     @Basic
     @Column(name = "duration", nullable = false, insertable = true, updatable = true)
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
     @Basic
     @Column(name = "sequence_number", nullable = false, insertable = true, updatable = true)
-    public int getSequenceNumber() {
+    public Integer getSequenceNumber() {
         return sequenceNumber;
     }
 
-    public void setSequenceNumber(int sequenceNumber) {
+    public void setSequenceNumber(Integer sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
 

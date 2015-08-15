@@ -8,22 +8,22 @@ import javax.persistence.*;
 @Entity
 @Table(name = "parking_pass_master", schema = "", catalog = "get_my_parking_v2")
 public class ParkingPassMasterEntity {
-    private int id;
+    private Integer id;
     private String name;
     private String passType;
-    private int numbers;
-    private int price;
+    private Integer numbers;
+    private Integer price;
     private String vehicleType;
     private String isActive;
     private ParkingSubLotEntity parkingSubLot;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -49,21 +49,21 @@ public class ParkingPassMasterEntity {
 
     @Basic
     @Column(name = "numbers", nullable = false, insertable = true, updatable = true)
-    public int getNumbers() {
+    public Integer getNumbers() {
         return numbers;
     }
 
-    public void setNumbers(int numbers) {
+    public void setNumbers(Integer numbers) {
         this.numbers = numbers;
     }
 
     @Basic
     @Column(name = "price", nullable = false, insertable = true, updatable = true)
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 

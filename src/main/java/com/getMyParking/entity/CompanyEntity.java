@@ -2,6 +2,7 @@ package com.getMyParking.entity;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -9,22 +10,22 @@ import java.util.Collection;
 @Entity
 @Table(name = "company", schema = "", catalog = "get_my_parking_v2")
 public class CompanyEntity {
-    private int id;
+    private Integer id;
     private String name;
     private String address;
     private String city;
     private String email;
     private String contactNumber;
     private String website;
-    private Collection<ParkingEntity> parkingsById;
+    private Set<ParkingEntity> parkings;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -119,12 +120,12 @@ public class CompanyEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "company")
-    public Collection<ParkingEntity> getParkingsById() {
-        return parkingsById;
+    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
+    public Set<ParkingEntity> getParkings() {
+        return parkings;
     }
 
-    public void setParkingsById(Collection<ParkingEntity> parkingsById) {
-        this.parkingsById = parkingsById;
+    public void setParkings(Set<ParkingEntity> parkingsById) {
+        this.parkings = parkingsById;
     }
 }

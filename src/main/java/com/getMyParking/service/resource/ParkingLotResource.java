@@ -10,6 +10,7 @@ import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
@@ -24,20 +25,18 @@ import java.util.List;
  * Created by rahulgupta.s on 31/05/15.
  */
 @Path("/v1/parking_lot")
+@Api(value = "/v1/parking_lot", description = "Parking Lot Resource")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ParkingLotResource {
 
-    /*private ParkingDAO parkingDAO;
+    private ParkingDAO parkingDAO;
     private ParkingLotDAO parkingLotDAO;
-    private ParkingEventDAO parkingEventDAO;
-
 
     @Inject
-    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO) {
         this.parkingDAO = parkingDAO;
         this.parkingLotDAO = parkingLotDAO;
-        this.parkingEventDAO = parkingEventDAO;
     }
 
     @GET
@@ -45,38 +44,24 @@ public class ParkingLotResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
+    @ApiOperation(value = "Get Parking Lot Id", response = ParkingLotEntity.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
     public ParkingLotEntity getParkingLotById(@PathParam("parkingLotId")int id,
                                               @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingSubLotIds().contains(id)) {
-            ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
-            if (parkingLotEntity == null) {
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-            return parkingLotEntity;
-        } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
+        if (parkingLotEntity == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-    }
 
-    @GET
-    @Path("/batch/{parkingLotIds}")
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    public List<ParkingLotEntity> getParkingLotById(@PathParam("parkingLotIds")String ids,
-                                              @Auth GMPUser gmpUser) {
-        List<ParkingLotEntity> parkingLotEntityList = Lists.newArrayList();
-        List<String> parkingLotIds = Splitter.on(",").splitToList(ids);
-        for (String idStr : parkingLotIds) {
-            int id = Integer.parseInt(idStr);
-            if (gmpUser.getParkingSubLotIds().contains(id)) {
-                ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
-                if (parkingLotEntity == null) {
-                    parkingLotEntityList.add(parkingLotEntity);
-                }
+        for (ParkingSubLotEntity parkingSubLot : parkingLotEntity.getParkingSubLots()) {
+            if (gmpUser.getParkingSubLotIds().contains(parkingSubLot.getId())) {
+                return parkingLotEntity;
             }
         }
-        return parkingLotEntityList;
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
 
     @Path("/parking/{parkingId}")
@@ -84,23 +69,20 @@ public class ParkingLotResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public int createParkingLot(@Valid ParkingLotEntity parkingLot, @PathParam("parkingId") int parkingId) {
+    @ApiOperation(value = "Save or update the parking lot", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public int saveOrUpdateParkingLot(@ApiParam("Parking Lot") @Valid ParkingLotEntity parkingLot, @PathParam("parkingId") int parkingId) {
         ParkingEntity parking = parkingDAO.findById(parkingId);
         if (parking == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
-            parkingLot.setParkingByParkingId(parking);
+            parkingLot.setParking(parking);
             parkingLotDAO.saveOrUpdateParkingLot(parkingLot);
         }
         return parkingLot.getId();
-    }
-
-    @PUT
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    public void updateParkingLot(@Valid ParkingLotEntity parkingLot) {
-        parkingLotDAO.saveOrUpdateParkingLot(parkingLot);
     }
 
     @DELETE
@@ -108,65 +90,17 @@ public class ParkingLotResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
+    @ApiOperation(value = "delete the parking lot")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK")
+    })
     public void deleteParkingLot(@PathParam("parkingLotId")int parkingLotId) {
         parkingLotDAO.deleteById(parkingLotId);
     }
 
-    @Path("/{parkingLotId}/parking_pass")
-    @POST
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    public int saveOrUpdateParkingPass(@Valid ParkingPassMasterEntity parkingPassMasterEntity, @PathParam("parkingLotId") int parkingLotId) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        if (parkingLot == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } else {
-            parkingPassMasterEntity.setParkingLotByParkingLotId(parkingLot);
-            parkingLot.getParkingPassMastersById().add(parkingPassMasterEntity);
-            parkingLotDAO.saveOrUpdateParkingLot(parkingLot);
-        }
-        return parkingPassMasterEntity.getId();
-    }
 
-    @Path("/{parkingLotId}/pricing_slot")
-    @POST
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    public int saveOrUpdatePricingSlot(@Valid PricingSlotEntity pricingSlotEntity, @PathParam("parkingLotId") int parkingLotId) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        if (parkingLot == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } else {
-            pricingSlotEntity.setParkingLotByParkingLotId(parkingLot);
-            for (PriceGridEntity priceGridEntity : pricingSlotEntity.getPriceGridsById()) {
-                priceGridEntity.setPricingSlotByPricingId(pricingSlotEntity);
-            }
-            parkingLot.getPricingSlotsById().add(pricingSlotEntity);
-            parkingLotDAO.saveOrUpdateParkingLot(parkingLot);
-        }
-        return pricingSlotEntity.getId();
-    }
 
-    @Path("/{parkingLotId}/receipt_content")
-    @POST
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    public int saveOrUpdateReceiptContent(@Valid ReceiptContentEntity receiptContentEntity, @PathParam("parkingLotId") int parkingLotId) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        if (parkingLot == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } else {
-            receiptContentEntity.setParkingLotByParkingLotId(parkingLot);
-            parkingLot.getReceiptContentsById().add(receiptContentEntity);
-            parkingLotDAO.saveOrUpdateParkingLot(parkingLot);
-        }
-        return receiptContentEntity.getId();
-    }
-
-    @Path("/{parkingLotId}/report")
+    /*@Path("/{parkingLotId}/report")
     @GET
     @Timed
     @UnitOfWork

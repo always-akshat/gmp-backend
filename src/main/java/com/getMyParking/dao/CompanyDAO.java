@@ -3,8 +3,10 @@ package com.getMyParking.dao;
 import com.getMyParking.entity.CompanyEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * Created by rahulgupta.s on 31/05/15.

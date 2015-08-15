@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -8,20 +10,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "receipt_content", schema = "", catalog = "get_my_parking_v2")
 public class ReceiptContentEntity {
-    private int id;
+    private Integer id;
     private String content;
-    private int sequence;
+    private Integer sequence;
     private String eventType;
+    @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
     private StyleMasterEntity styleMaster;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -37,11 +40,11 @@ public class ReceiptContentEntity {
 
     @Basic
     @Column(name = "sequence", nullable = false, insertable = true, updatable = true)
-    public int getSequence() {
+    public Integer getSequence() {
         return sequence;
     }
 
-    public void setSequence(int sequence) {
+    public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
 
