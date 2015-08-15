@@ -14,10 +14,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -34,7 +31,9 @@ import java.util.UUID;
 /**
  * Created by rahulgupta.s on 04/06/15.
  */
-@Api("/v1/user")
+@Api(value = "/v1/user", description = "User Resource" , authorizations = {
+        @Authorization(type = "Simple Auth", value = "GMP_AUTH")
+})
 @Path("/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -101,7 +100,7 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void createUser(@Valid UserB2BEntity user) {
+    public void createUser(@ApiParam(value = "Create User Object", required = true) @Valid UserB2BEntity user) {
         userB2BDAO.saveUser(user);
     }
 
@@ -116,7 +115,7 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addParkingLot(List<Integer> parkingSubLotIds, @PathParam("username") String username,
+    public void addParkingLot(@ApiParam(value = "List of Parking Lot Ids", required = true)List<Integer> parkingSubLotIds, @PathParam("username") String username,
                               @Auth GMPUser gmpUser) {
         if (gmpUser.getParkingSubLotIds().containsAll(parkingSubLotIds)) {
             UserB2BEntity user = userB2BDAO.findById(username);
