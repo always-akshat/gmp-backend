@@ -1,7 +1,8 @@
 package com.getMyParking.entity;
 
 import javax.persistence.*;
-import java.util.Collection;
+import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -9,13 +10,15 @@ import java.util.Collection;
 @Entity
 @Table(name = "user_b2b", schema = "", catalog = "get_my_parking_v2")
 public class UserB2BEntity {
+    @NotNull
     private String username;
+    @NotNull
     private String password;
     private String name;
     private String contactNumber;
-    private Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername;
-    private Collection<SessionEntity> sessionsByUsername;
-    private Collection<UserAccessEntity> userAccessesByUsername;
+    private Set<ParkingLotHasUserB2BEntity> parkingSubLots;
+    @NotNull
+    private Set<UserAccessEntity> userAccesses;
 
     @Id
     @Column(name = "username", nullable = false, insertable = true, updatable = true, length = 255)
@@ -82,30 +85,21 @@ public class UserB2BEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "userB2BByUserB2BUsername")
-    public Collection<ParkingLotHasUserB2BEntity> getParkingLotHasUserB2BsByUsername() {
-        return parkingLotHasUserB2BsByUsername;
+    @OneToMany(mappedBy = "userB2B")
+    public Set<ParkingLotHasUserB2BEntity> getParkingSubLots() {
+        return parkingSubLots;
     }
 
-    public void setParkingLotHasUserB2BsByUsername(Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername) {
-        this.parkingLotHasUserB2BsByUsername = parkingLotHasUserB2BsByUsername;
+    public void setParkingSubLots(Set<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername) {
+        this.parkingSubLots = parkingLotHasUserB2BsByUsername;
     }
 
-    @OneToMany(mappedBy = "userB2BByUsername")
-    public Collection<SessionEntity> getSessionsByUsername() {
-        return sessionsByUsername;
+    @OneToMany(mappedBy = "userB2BEntity")
+    public Set<UserAccessEntity> getUserAccesses() {
+        return userAccesses;
     }
 
-    public void setSessionsByUsername(Collection<SessionEntity> sessionsByUsername) {
-        this.sessionsByUsername = sessionsByUsername;
-    }
-
-    @OneToMany(mappedBy = "userB2BByUserB2BUsername")
-    public Collection<UserAccessEntity> getUserAccessesByUsername() {
-        return userAccessesByUsername;
-    }
-
-    public void setUserAccessesByUsername(Collection<UserAccessEntity> userAccessesByUsername) {
-        this.userAccessesByUsername = userAccessesByUsername;
+    public void setUserAccesses(Set<UserAccessEntity> userAccessesByUsername) {
+        this.userAccesses = userAccessesByUsername;
     }
 }

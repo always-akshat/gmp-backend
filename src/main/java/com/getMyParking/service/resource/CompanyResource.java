@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CompanyResource {
 
-    private CompanyDAO companyDAO;
+    /*private CompanyDAO companyDAO;
 
     @Inject
     public CompanyResource(CompanyDAO companyDAO) {
@@ -57,6 +57,7 @@ public class CompanyResource {
     public void deleteCompany(@PathParam("companyId")int companyId) {
         companyDAO.deleteById(companyId);
     }
+    */
 
 
 }

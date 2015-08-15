@@ -14,9 +14,13 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import io.dropwizard.auth.Auth;
+import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.hibernate.HibernateException;
 import org.joda.time.DateTime;
 
 import javax.validation.Valid;
@@ -30,6 +34,7 @@ import java.util.UUID;
 /**
  * Created by rahulgupta.s on 04/06/15.
  */
+@Api("/v1/incidentManager")
 @Path("/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -48,17 +53,22 @@ public class UserResource {
         this.authTokenCache = authTokenCache;
     }
 
+    @ApiOperation(value = "Login User Api", response = GMPUser.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
     @POST
     @Path("/login")
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password) {
+    public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password) throws AuthenticationException {
         if (!Strings.isNullOrEmpty(userName) && !Strings.isNullOrEmpty(password)) {
 
             UserB2BEntity userB2BEntity = userB2BDAO.loginUser(userName, password);
             if (userB2BEntity == null) {
-                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+                throw new AuthenticationException("Invalid Credentials");
             }
 
             long millis = DateTime.now().getMillis();
@@ -69,10 +79,11 @@ public class UserResource {
 
             List<Integer> parkingLotIds = Lists.newArrayList();
 
-            for (ParkingLotHasUserB2BEntity entity : userB2BEntity.getParkingLotHasUserB2BsByUsername()) {
-                parkingLotIds.add(entity.getParkingLotId());
+            for (ParkingLotHasUserB2BEntity entity : userB2BEntity.getParkingSubLots()) {
+                parkingLotIds.add(entity.getParkingSubLotId());
             }
-            GMPUser user = new GMPUser(authToken,userName,userB2BEntity.getRole(),parkingLotIds);
+            GMPUser user = new GMPUser(userName,userB2BEntity.getName(),parkingLotIds,
+                    Lists.newArrayList(userB2BEntity.getUserAccesses()),authToken);
             authTokenCache.put(authToken,user);
             return user;
         } else {
@@ -80,6 +91,11 @@ public class UserResource {
         }
     }
 
+    @ApiOperation(value = "Create User Api")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Username already exists"),
+    })
     @POST
     @Timed
     @ExceptionMetered
@@ -89,18 +105,23 @@ public class UserResource {
         userB2BDAO.saveUser(user);
     }
 
+    @ApiOperation(value = "Add parking sub lot to user Api")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Username already exists"),
+    })
     @POST
-    @Path("/{username}/parking_lot")
+    @Path("/{username}/parking_sub_lot")
     @Timed
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addParkingLot(List<Integer> parkingLotIds, @PathParam("username") String username,
+    public void addParkingLot(List<Integer> parkingSubLotIds, @PathParam("username") String username,
                               @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingLotIds().containsAll(parkingLotIds)) {
+        if (gmpUser.getParkingSubLotIds().containsAll(parkingSubLotIds)) {
             UserB2BEntity user = userB2BDAO.findById(username);
             if (user != null) {
-                parkingLotHasUserB2BDAO.saveParkingLotId(parkingLotIds, user);
+                parkingLotHasUserB2BDAO.saveParkingLotId(parkingSubLotIds, user);
             } else {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }

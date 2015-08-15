@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -17,9 +18,8 @@ public class ParkingLotEntity {
     private Time closeTime;
     private BigDecimal longitude;
     private BigDecimal latitude;
-    private int parkingId;
-    private ParkingEntity parkingByParkingId;
-    private Collection<ParkingSubLotEntity> parkingSubLotsById;
+    private ParkingEntity parking;
+    private Set<ParkingSubLotEntity> parkingSubLots;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -81,16 +81,6 @@ public class ParkingLotEntity {
         this.latitude = latitude;
     }
 
-    @Basic
-    @Column(name = "parking_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingId() {
-        return parkingId;
-    }
-
-    public void setParkingId(int parkingId) {
-        this.parkingId = parkingId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,7 +89,6 @@ public class ParkingLotEntity {
         ParkingLotEntity that = (ParkingLotEntity) o;
 
         if (id != that.id) return false;
-        if (parkingId != that.parkingId) return false;
         if (closeTime != null ? !closeTime.equals(that.closeTime) : that.closeTime != null) return false;
         if (latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) return false;
         if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
@@ -117,26 +106,25 @@ public class ParkingLotEntity {
         result = 31 * result + (closeTime != null ? closeTime.hashCode() : 0);
         result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
-        result = 31 * result + parkingId;
         return result;
     }
 
     @ManyToOne
     @JoinColumn(name = "parking_id", referencedColumnName = "id", nullable = false)
-    public ParkingEntity getParkingByParkingId() {
-        return parkingByParkingId;
+    public ParkingEntity getParking() {
+        return parking;
     }
 
-    public void setParkingByParkingId(ParkingEntity parkingByParkingId) {
-        this.parkingByParkingId = parkingByParkingId;
+    public void setParking(ParkingEntity parkingByParkingId) {
+        this.parking = parkingByParkingId;
     }
 
-    @OneToMany(mappedBy = "parkingLotByParkingLotId")
-    public Collection<ParkingSubLotEntity> getParkingSubLotsById() {
-        return parkingSubLotsById;
+    @OneToMany(mappedBy = "parkingLot")
+    public Set<ParkingSubLotEntity> getParkingSubLots() {
+        return parkingSubLots;
     }
 
-    public void setParkingSubLotsById(Collection<ParkingSubLotEntity> parkingSubLotsById) {
-        this.parkingSubLotsById = parkingSubLotsById;
+    public void setParkingSubLots(Set<ParkingSubLotEntity> parkingSubLotsById) {
+        this.parkingSubLots = parkingSubLotsById;
     }
 }

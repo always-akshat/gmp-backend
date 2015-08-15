@@ -119,7 +119,7 @@ public class CompanyEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "companyByCompanyId")
+    @OneToMany(mappedBy = "company")
     public Collection<ParkingEntity> getParkingsById() {
         return parkingsById;
     }

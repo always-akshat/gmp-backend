@@ -1,22 +1,9 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.ParkingLotEntity;
-import com.getMyParking.entity.ParkingReport;
-import com.getMyParking.entity.PricingSlotEntity;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.joda.time.DateTime;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -41,7 +28,9 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return get(id);
     }
 
+    /*
     public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime lastUpdateTime) {
+
         Query q = currentSession().createQuery("from ParkingEventEntity where parkingLotByParkingLotId.id =:id and updatedTime >= :updatedTime");
         q.setInteger("id", parkingLotId);
         q.setString("updatedTime",lastUpdateTime.toString());
@@ -161,5 +150,5 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
         return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
 
-    }
+    }*/
 }

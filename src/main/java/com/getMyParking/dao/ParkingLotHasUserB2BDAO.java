@@ -23,9 +23,9 @@ public class ParkingLotHasUserB2BDAO extends AbstractDAO<ParkingLotHasUserB2BEnt
     }
 
 
-    public void saveParkingLotId(List<Integer> parkingLotIds, UserB2BEntity user) {
-        for (Integer parkingLotId : parkingLotIds) {
-            ParkingLotHasUserB2BEntity entity = new ParkingLotHasUserB2BEntity(parkingLotId,user);
+    public void saveParkingLotId(List<Integer> parkingSubLotIds, UserB2BEntity user) {
+        for (Integer parkingSubLotId : parkingSubLotIds) {
+            ParkingLotHasUserB2BEntity entity = new ParkingLotHasUserB2BEntity(parkingSubLotId,user);
             persist(entity);
         }
     }

@@ -2,7 +2,7 @@ package com.getMyParking.entity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -13,9 +13,8 @@ public class ParkingPassEntity {
     private int id;
     private String registrationNumber;
     private Timestamp validTime;
-    private int parkingPassMasterId;
-    private Collection<ParkingEventEntity> parkingEventsById;
-    private ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId;
+    private Set<ParkingEventEntity> parkingEvents;
+    private ParkingPassMasterEntity parkingPassMaster;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -47,16 +46,6 @@ public class ParkingPassEntity {
         this.validTime = validTime;
     }
 
-    @Basic
-    @Column(name = "parking_pass_master_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingPassMasterId() {
-        return parkingPassMasterId;
-    }
-
-    public void setParkingPassMasterId(int parkingPassMasterId) {
-        this.parkingPassMasterId = parkingPassMasterId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,7 +54,6 @@ public class ParkingPassEntity {
         ParkingPassEntity that = (ParkingPassEntity) o;
 
         if (id != that.id) return false;
-        if (parkingPassMasterId != that.parkingPassMasterId) return false;
         if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
             return false;
         if (validTime != null ? !validTime.equals(that.validTime) : that.validTime != null) return false;
@@ -78,26 +66,25 @@ public class ParkingPassEntity {
         int result = id;
         result = 31 * result + (registrationNumber != null ? registrationNumber.hashCode() : 0);
         result = 31 * result + (validTime != null ? validTime.hashCode() : 0);
-        result = 31 * result + parkingPassMasterId;
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingPassByParkingPassId")
-    public Collection<ParkingEventEntity> getParkingEventsById() {
-        return parkingEventsById;
+    @OneToMany(mappedBy = "parkingPass")
+    public Set<ParkingEventEntity> getParkingEvents() {
+        return parkingEvents;
     }
 
-    public void setParkingEventsById(Collection<ParkingEventEntity> parkingEventsById) {
-        this.parkingEventsById = parkingEventsById;
+    public void setParkingEvents(Set<ParkingEventEntity> parkingEventsById) {
+        this.parkingEvents = parkingEventsById;
     }
 
     @ManyToOne
     @JoinColumn(name = "parking_pass_master_id", referencedColumnName = "id", nullable = false)
-    public ParkingPassMasterEntity getParkingPassMasterByParkingPassMasterId() {
-        return parkingPassMasterByParkingPassMasterId;
+    public ParkingPassMasterEntity getParkingPassMaster() {
+        return parkingPassMaster;
     }
 
-    public void setParkingPassMasterByParkingPassMasterId(ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId) {
-        this.parkingPassMasterByParkingPassMasterId = parkingPassMasterByParkingPassMasterId;
+    public void setParkingPassMaster(ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId) {
+        this.parkingPassMaster = parkingPassMasterByParkingPassMasterId;
     }
 }

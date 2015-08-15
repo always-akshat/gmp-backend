@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PriceSlotResource {
 
-    private PricingSlotDAO pricingSlotDAO;
+    /*private PricingSlotDAO pricingSlotDAO;
 
     @Inject
     public PriceSlotResource(PricingSlotDAO pricingSlotDAO) {
@@ -74,7 +74,7 @@ public class PriceSlotResource {
     @UnitOfWork
     public void deletePricingLot(@PathParam("pricingSlotId")int pricingSlotId) {
         pricingSlotDAO.deleteById(pricingSlotId);
-    }
+    }*/
 
 
 }

@@ -18,15 +18,13 @@ public class ParkingEventEntity {
     private Timestamp eventTime;
     private String eventType;
     private BigDecimal cost;
-    private int parkingSubLotId;
     private String subLotType;
-    private Integer parkingPassId;
     private String serialNumber;
     private String shiftNumber;
     private Timestamp updatedTime;
     private String operatorName;
-    private ParkingSubLotEntity parkingSubLotByParkingSubLotId;
-    private ParkingPassEntity parkingPassByParkingPassId;
+    private ParkingSubLotEntity parkingSubLot;
+    private ParkingPassEntity parkingPass;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -109,16 +107,6 @@ public class ParkingEventEntity {
     }
 
     @Basic
-    @Column(name = "parking_sub_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingSubLotId() {
-        return parkingSubLotId;
-    }
-
-    public void setParkingSubLotId(int parkingSubLotId) {
-        this.parkingSubLotId = parkingSubLotId;
-    }
-
-    @Basic
     @Column(name = "sub_lot_type", nullable = false, insertable = true, updatable = true, length = 45)
     public String getSubLotType() {
         return subLotType;
@@ -126,16 +114,6 @@ public class ParkingEventEntity {
 
     public void setSubLotType(String subLotType) {
         this.subLotType = subLotType;
-    }
-
-    @Basic
-    @Column(name = "parking_pass_id", nullable = true, insertable = true, updatable = true)
-    public Integer getParkingPassId() {
-        return parkingPassId;
-    }
-
-    public void setParkingPassId(Integer parkingPassId) {
-        this.parkingPassId = parkingPassId;
     }
 
     @Basic
@@ -186,14 +164,11 @@ public class ParkingEventEntity {
         ParkingEventEntity that = (ParkingEventEntity) o;
 
         if (id != that.id) return false;
-        if (parkingSubLotId != that.parkingSubLotId) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
         if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
-        if (parkingPassId != null ? !parkingPassId.equals(that.parkingPassId) : that.parkingPassId != null)
-            return false;
         if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
             return false;
         if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
@@ -201,9 +176,8 @@ public class ParkingEventEntity {
         if (subLotType != null ? !subLotType.equals(that.subLotType) : that.subLotType != null) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
-        if (valetName != null ? !valetName.equals(that.valetName) : that.valetName != null) return false;
+        return !(valetName != null ? !valetName.equals(that.valetName) : that.valetName != null);
 
-        return true;
     }
 
     @Override
@@ -216,9 +190,7 @@ public class ParkingEventEntity {
         result = 31 * result + (eventTime != null ? eventTime.hashCode() : 0);
         result = 31 * result + (eventType != null ? eventType.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
-        result = 31 * result + parkingSubLotId;
         result = 31 * result + (subLotType != null ? subLotType.hashCode() : 0);
-        result = 31 * result + (parkingPassId != null ? parkingPassId.hashCode() : 0);
         result = 31 * result + (serialNumber != null ? serialNumber.hashCode() : 0);
         result = 31 * result + (shiftNumber != null ? shiftNumber.hashCode() : 0);
         result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
@@ -228,21 +200,21 @@ public class ParkingEventEntity {
 
     @ManyToOne
     @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLotByParkingSubLotId() {
-        return parkingSubLotByParkingSubLotId;
+    public ParkingSubLotEntity getParkingSubLot() {
+        return parkingSubLot;
     }
 
-    public void setParkingSubLotByParkingSubLotId(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLotByParkingSubLotId = parkingSubLotByParkingSubLotId;
+    public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
+        this.parkingSubLot = parkingSubLotByParkingSubLotId;
     }
 
     @ManyToOne
     @JoinColumn(name = "parking_pass_id", referencedColumnName = "id")
-    public ParkingPassEntity getParkingPassByParkingPassId() {
-        return parkingPassByParkingPassId;
+    public ParkingPassEntity getParkingPass() {
+        return parkingPass;
     }
 
-    public void setParkingPassByParkingPassId(ParkingPassEntity parkingPassByParkingPassId) {
-        this.parkingPassByParkingPassId = parkingPassByParkingPassId;
+    public void setParkingPass(ParkingPassEntity parkingPassByParkingPassId) {
+        this.parkingPass = parkingPassByParkingPassId;
     }
 }

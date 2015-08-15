@@ -19,7 +19,7 @@ logging:
   level: DEBUG
   appenders:
     - type: console
-      threshold: INFO
+      threshold: DEBUG
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
     - type: file
@@ -38,6 +38,9 @@ logging:
       archive: true
       archivedLogFilenamePattern: /var/log/gmp/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
+
+swagger:
+  resourcePackage: com.getMyParking
 
 database:
   # the name of your JDBC driver

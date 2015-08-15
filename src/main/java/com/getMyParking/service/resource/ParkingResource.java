@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ParkingResource {
 
-    private ParkingDAO parkingDAO;
+    /*private ParkingDAO parkingDAO;
     private CompanyDAO companyDAO;
 
     @Inject
@@ -67,5 +67,5 @@ public class ParkingResource {
     @UnitOfWork
     public void deleteParking(@PathParam("parkingId")int parkingId) {
         parkingDAO.deleteById(parkingId);
-    }
+    }*/
 }

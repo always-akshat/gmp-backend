@@ -28,7 +28,7 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ParkingLotResource {
 
-    private ParkingDAO parkingDAO;
+    /*private ParkingDAO parkingDAO;
     private ParkingLotDAO parkingLotDAO;
     private ParkingEventDAO parkingEventDAO;
 
@@ -47,7 +47,7 @@ public class ParkingLotResource {
     @UnitOfWork
     public ParkingLotEntity getParkingLotById(@PathParam("parkingLotId")int id,
                                               @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingLotIds().contains(id)) {
+        if (gmpUser.getParkingSubLotIds().contains(id)) {
             ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
             if (parkingLotEntity == null) {
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -69,7 +69,7 @@ public class ParkingLotResource {
         List<String> parkingLotIds = Splitter.on(",").splitToList(ids);
         for (String idStr : parkingLotIds) {
             int id = Integer.parseInt(idStr);
-            if (gmpUser.getParkingLotIds().contains(id)) {
+            if (gmpUser.getParkingSubLotIds().contains(id)) {
                 ParkingLotEntity parkingLotEntity = parkingLotDAO.findById(id);
                 if (parkingLotEntity == null) {
                     parkingLotEntityList.add(parkingLotEntity);
@@ -174,6 +174,6 @@ public class ParkingLotResource {
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
         return parkingEventDAO.createReport(parkingLot,fromDate.get(),toDate.get());
-    }
+    }*/
 
 }

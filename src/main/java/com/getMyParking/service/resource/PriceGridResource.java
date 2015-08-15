@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PriceGridResource {
 
-    private PriceGridDAO priceGridDAO;
+    /*private PriceGridDAO priceGridDAO;
 
     @Inject
     public PriceGridResource(PriceGridDAO priceGridDAO) {
@@ -56,5 +56,5 @@ public class PriceGridResource {
     @UnitOfWork
     public void deletePriceGrid(@PathParam("priceGridId")int priceGridId) {
         priceGridDAO.deleteById(priceGridId);
-    }
+    }*/
 }

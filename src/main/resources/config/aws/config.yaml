@@ -39,6 +39,9 @@ logging:
       archivedLogFilenamePattern: /var/log/gmp/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
 
+swagger:
+  resourcePackage: com.getMyParking
+
 database:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver

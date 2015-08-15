@@ -12,9 +12,8 @@ public class PriceGridEntity {
     private String priceStructure;
     private int cost;
     private int duration;
-    private int pricingId;
     private int sequenceNumber;
-    private PricingSlotEntity pricingSlotByPricingId;
+    private PricingSlotEntity pricingSlot;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -57,16 +56,6 @@ public class PriceGridEntity {
     }
 
     @Basic
-    @Column(name = "pricing_id", nullable = false, insertable = true, updatable = true)
-    public int getPricingId() {
-        return pricingId;
-    }
-
-    public void setPricingId(int pricingId) {
-        this.pricingId = pricingId;
-    }
-
-    @Basic
     @Column(name = "sequence_number", nullable = false, insertable = true, updatable = true)
     public int getSequenceNumber() {
         return sequenceNumber;
@@ -86,7 +75,6 @@ public class PriceGridEntity {
         if (cost != that.cost) return false;
         if (duration != that.duration) return false;
         if (id != that.id) return false;
-        if (pricingId != that.pricingId) return false;
         if (sequenceNumber != that.sequenceNumber) return false;
         if (priceStructure != null ? !priceStructure.equals(that.priceStructure) : that.priceStructure != null)
             return false;
@@ -100,18 +88,17 @@ public class PriceGridEntity {
         result = 31 * result + (priceStructure != null ? priceStructure.hashCode() : 0);
         result = 31 * result + cost;
         result = 31 * result + duration;
-        result = 31 * result + pricingId;
         result = 31 * result + sequenceNumber;
         return result;
     }
 
     @ManyToOne
     @JoinColumn(name = "pricing_id", referencedColumnName = "id", nullable = false)
-    public PricingSlotEntity getPricingSlotByPricingId() {
-        return pricingSlotByPricingId;
+    public PricingSlotEntity getPricingSlot() {
+        return pricingSlot;
     }
 
-    public void setPricingSlotByPricingId(PricingSlotEntity pricingSlotByPricingId) {
-        this.pricingSlotByPricingId = pricingSlotByPricingId;
+    public void setPricingSlot(PricingSlotEntity pricingSlotByPricingId) {
+        this.pricingSlot = pricingSlotByPricingId;
     }
 }

@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ReceiptContentResource {
 
-    private ReceiptContentDAO receiptContentDAO;
+    /*private ReceiptContentDAO receiptContentDAO;
 
     @Inject
     public ReceiptContentResource(ReceiptContentDAO receiptContentDAO) {
@@ -55,5 +55,5 @@ public class ReceiptContentResource {
     @UnitOfWork
     public void deletePriceGrid(@PathParam("receiptContentId")int id) {
         receiptContentDAO.deleteById(id);
-    }
+    }*/
 }

@@ -19,6 +19,8 @@ import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.federecio.dropwizard.swagger.SwaggerBundle;
+import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 
 import java.util.List;
 
@@ -56,7 +58,8 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
                 ParkingLotHasUserB2BEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
                 PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
-                SessionEntity.class, UserB2BEntity.class
+                SessionEntity.class, UserB2BEntity.class, ParkingSubLotEntity.class, StyleMasterEntity.class,
+                UserAccessEntity.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
@@ -79,6 +82,13 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                                  })
                                  .setConfigClass(GetMyParkingConfiguration.class)
                                  .build();
+
+        bootstrap.addBundle(new SwaggerBundle<GetMyParkingConfiguration>() {
+            @Override
+            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(GetMyParkingConfiguration configuration) {
+                return configuration.swaggerBundleConfiguration;
+            }
+        });
 
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(flywayBundle);

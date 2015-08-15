@@ -1,7 +1,7 @@
 package com.getMyParking.entity;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -13,9 +13,8 @@ public class PricingSlotEntity {
     private int day;
     private int startMinutesOfDay;
     private int endMinutesOfDay;
-    private int parkingSubLotId;
-    private Collection<PriceGridEntity> priceGridsById;
-    private ParkingSubLotEntity parkingSubLotByParkingSubLotId;
+    private Set<PriceGridEntity> priceGrids;
+    private ParkingSubLotEntity parkingSubLot;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -57,16 +56,6 @@ public class PricingSlotEntity {
         this.endMinutesOfDay = endMinutesOfDay;
     }
 
-    @Basic
-    @Column(name = "parking_sub_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingSubLotId() {
-        return parkingSubLotId;
-    }
-
-    public void setParkingSubLotId(int parkingSubLotId) {
-        this.parkingSubLotId = parkingSubLotId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -77,7 +66,6 @@ public class PricingSlotEntity {
         if (day != that.day) return false;
         if (endMinutesOfDay != that.endMinutesOfDay) return false;
         if (id != that.id) return false;
-        if (parkingSubLotId != that.parkingSubLotId) return false;
         if (startMinutesOfDay != that.startMinutesOfDay) return false;
 
         return true;
@@ -89,26 +77,25 @@ public class PricingSlotEntity {
         result = 31 * result + day;
         result = 31 * result + startMinutesOfDay;
         result = 31 * result + endMinutesOfDay;
-        result = 31 * result + parkingSubLotId;
         return result;
     }
 
-    @OneToMany(mappedBy = "pricingSlotByPricingId")
-    public Collection<PriceGridEntity> getPriceGridsById() {
-        return priceGridsById;
+    @OneToMany(mappedBy = "pricingSlot")
+    public Set<PriceGridEntity> getPriceGrids() {
+        return priceGrids;
     }
 
-    public void setPriceGridsById(Collection<PriceGridEntity> priceGridsById) {
-        this.priceGridsById = priceGridsById;
+    public void setPriceGrids(Set<PriceGridEntity> priceGridsById) {
+        this.priceGrids = priceGridsById;
     }
 
     @ManyToOne
     @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLotByParkingSubLotId() {
-        return parkingSubLotByParkingSubLotId;
+    public ParkingSubLotEntity getParkingSubLot() {
+        return parkingSubLot;
     }
 
-    public void setParkingSubLotByParkingSubLotId(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLotByParkingSubLotId = parkingSubLotByParkingSubLotId;
+    public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
+        this.parkingSubLot = parkingSubLotByParkingSubLotId;
     }
 }

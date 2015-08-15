@@ -1,6 +1,9 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -8,28 +11,19 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_access", schema = "", catalog = "get_my_parking_v2")
 public class UserAccessEntity {
-    private String name;
-    private String userB2BUsername;
-    private UserB2BEntity userB2BByUserB2BUsername;
+    @NotNull
+    private String accessTitle;
+    @JsonIgnore
+    private UserB2BEntity userB2BEntity;
 
     @Id
-    @Column(name = "name", nullable = false, insertable = true, updatable = true, length = 128)
-    public String getName() {
-        return name;
+    @Column(name = "access_title", nullable = false, insertable = true, updatable = true, length = 128)
+    public String getAccessTitle() {
+        return accessTitle;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Basic
-    @Column(name = "user_b2b_username", nullable = false, insertable = true, updatable = true, length = 255)
-    public String getUserB2BUsername() {
-        return userB2BUsername;
-    }
-
-    public void setUserB2BUsername(String userB2BUsername) {
-        this.userB2BUsername = userB2BUsername;
+    public void setAccessTitle(String name) {
+        this.accessTitle = name;
     }
 
     @Override
@@ -39,27 +33,22 @@ public class UserAccessEntity {
 
         UserAccessEntity that = (UserAccessEntity) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (userB2BUsername != null ? !userB2BUsername.equals(that.userB2BUsername) : that.userB2BUsername != null)
-            return false;
+        return !(accessTitle != null ? !accessTitle.equals(that.accessTitle) : that.accessTitle != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (userB2BUsername != null ? userB2BUsername.hashCode() : 0);
-        return result;
+        return accessTitle != null ? accessTitle.hashCode() : 0;
     }
 
     @ManyToOne
     @JoinColumn(name = "user_b2b_username", referencedColumnName = "username", nullable = false)
-    public UserB2BEntity getUserB2BByUserB2BUsername() {
-        return userB2BByUserB2BUsername;
+    public UserB2BEntity getUserB2BEntity() {
+        return userB2BEntity;
     }
 
-    public void setUserB2BByUserB2BUsername(UserB2BEntity userB2BByUserB2BUsername) {
-        this.userB2BByUserB2BUsername = userB2BByUserB2BUsername;
+    public void setUserB2BEntity(UserB2BEntity userB2BByUserB2BUsername) {
+        this.userB2BEntity = userB2BByUserB2BUsername;
     }
 }

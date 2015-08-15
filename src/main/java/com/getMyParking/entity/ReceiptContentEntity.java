@@ -12,10 +12,8 @@ public class ReceiptContentEntity {
     private String content;
     private int sequence;
     private String eventType;
-    private int parkingSubLotId;
-    private int styleId;
-    private ParkingSubLotEntity parkingSubLotByParkingSubLotId;
-    private StyleMasterEntity styleMasterByStyleId;
+    private ParkingSubLotEntity parkingSubLot;
+    private StyleMasterEntity styleMaster;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -57,26 +55,6 @@ public class ReceiptContentEntity {
         this.eventType = eventType;
     }
 
-    @Basic
-    @Column(name = "parking_sub_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingSubLotId() {
-        return parkingSubLotId;
-    }
-
-    public void setParkingSubLotId(int parkingSubLotId) {
-        this.parkingSubLotId = parkingSubLotId;
-    }
-
-    @Basic
-    @Column(name = "style_id", nullable = false, insertable = true, updatable = true)
-    public int getStyleId() {
-        return styleId;
-    }
-
-    public void setStyleId(int styleId) {
-        this.styleId = styleId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,9 +63,7 @@ public class ReceiptContentEntity {
         ReceiptContentEntity that = (ReceiptContentEntity) o;
 
         if (id != that.id) return false;
-        if (parkingSubLotId != that.parkingSubLotId) return false;
         if (sequence != that.sequence) return false;
-        if (styleId != that.styleId) return false;
         if (content != null ? !content.equals(that.content) : that.content != null) return false;
         if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
 
@@ -100,28 +76,26 @@ public class ReceiptContentEntity {
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + sequence;
         result = 31 * result + (eventType != null ? eventType.hashCode() : 0);
-        result = 31 * result + parkingSubLotId;
-        result = 31 * result + styleId;
         return result;
     }
 
     @ManyToOne
     @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLotByParkingSubLotId() {
-        return parkingSubLotByParkingSubLotId;
+    public ParkingSubLotEntity getParkingSubLot() {
+        return parkingSubLot;
     }
 
-    public void setParkingSubLotByParkingSubLotId(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLotByParkingSubLotId = parkingSubLotByParkingSubLotId;
+    public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
+        this.parkingSubLot = parkingSubLotByParkingSubLotId;
     }
 
     @ManyToOne
     @JoinColumn(name = "style_id", referencedColumnName = "id", nullable = false)
-    public StyleMasterEntity getStyleMasterByStyleId() {
-        return styleMasterByStyleId;
+    public StyleMasterEntity getStyleMaster() {
+        return styleMaster;
     }
 
-    public void setStyleMasterByStyleId(StyleMasterEntity styleMasterByStyleId) {
-        this.styleMasterByStyleId = styleMasterByStyleId;
+    public void setStyleMaster(StyleMasterEntity styleMasterByStyleId) {
+        this.styleMaster = styleMasterByStyleId;
     }
 }

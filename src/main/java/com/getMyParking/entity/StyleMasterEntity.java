@@ -39,7 +39,7 @@ public class StyleMasterEntity {
         return id;
     }
 
-    @OneToMany(mappedBy = "styleMasterByStyleId")
+    @OneToMany(mappedBy = "styleMaster")
     public Collection<ReceiptContentEntity> getReceiptContentsById() {
         return receiptContentsById;
     }

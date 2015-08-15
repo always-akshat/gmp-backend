@@ -1,7 +1,6 @@
 package com.getMyParking.entity;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -14,11 +13,9 @@ public class ParkingPassMasterEntity {
     private String passType;
     private int numbers;
     private int price;
-    private int parkingSubLotId;
     private String vehicleType;
     private String isActive;
-    private Collection<ParkingPassEntity> parkingPassesById;
-    private ParkingSubLotEntity parkingSubLotByParkingSubLotId;
+    private ParkingSubLotEntity parkingSubLot;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -70,15 +67,6 @@ public class ParkingPassMasterEntity {
         this.price = price;
     }
 
-    @Basic
-    @Column(name = "parking_sub_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingSubLotId() {
-        return parkingSubLotId;
-    }
-
-    public void setParkingSubLotId(int parkingSubLotId) {
-        this.parkingSubLotId = parkingSubLotId;
-    }
 
     @Basic
     @Column(name = "vehicle_type", nullable = false, insertable = true, updatable = true, length = 45)
@@ -109,7 +97,6 @@ public class ParkingPassMasterEntity {
 
         if (id != that.id) return false;
         if (numbers != that.numbers) return false;
-        if (parkingSubLotId != that.parkingSubLotId) return false;
         if (price != that.price) return false;
         if (isActive != null ? !isActive.equals(that.isActive) : that.isActive != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -126,28 +113,18 @@ public class ParkingPassMasterEntity {
         result = 31 * result + (passType != null ? passType.hashCode() : 0);
         result = 31 * result + numbers;
         result = 31 * result + price;
-        result = 31 * result + parkingSubLotId;
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (isActive != null ? isActive.hashCode() : 0);
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingPassMasterByParkingPassMasterId")
-    public Collection<ParkingPassEntity> getParkingPassesById() {
-        return parkingPassesById;
-    }
-
-    public void setParkingPassesById(Collection<ParkingPassEntity> parkingPassesById) {
-        this.parkingPassesById = parkingPassesById;
-    }
-
     @ManyToOne
     @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLotByParkingSubLotId() {
-        return parkingSubLotByParkingSubLotId;
+    public ParkingSubLotEntity getParkingSubLot() {
+        return parkingSubLot;
     }
 
-    public void setParkingSubLotByParkingSubLotId(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLotByParkingSubLotId = parkingSubLotByParkingSubLotId;
+    public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
+        this.parkingSubLot = parkingSubLotByParkingSubLotId;
     }
 }

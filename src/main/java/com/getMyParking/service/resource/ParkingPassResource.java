@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ParkingPassResource {
 
-    private ParkingPassDAO parkingPassDAO;
+    /*private ParkingPassDAO parkingPassDAO;
     private ParkingPassMasterDAO parkingPassMasterDAO;
 
     @Inject
@@ -59,6 +59,6 @@ public class ParkingPassResource {
             parkingPassDAO.saveOrUpdateParkingLot(parkingPassEntity);
         }
         return parkingPassEntity.getId();
-    }
+    }*/
 
 }

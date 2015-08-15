@@ -1,7 +1,6 @@
 package com.getMyParking.cache;
 
 import com.getMyParking.dao.SessionDAO;
-import com.getMyParking.dao.UserB2BDAO;
 import com.getMyParking.entity.ParkingLotHasUserB2BEntity;
 import com.getMyParking.entity.SessionEntity;
 import com.getMyParking.entity.UserB2BEntity;
@@ -11,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.joda.time.DateTime;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -26,15 +26,16 @@ public class UserCacheLoader extends CacheLoader<String,GMPUser> {
     }
 
     @Override
-    public GMPUser load(String authToken) throws Exception {
+    public GMPUser load(@Nullable String authToken) throws Exception {
         SessionEntity sessionEntity = sessionDAO.findByAuthToken(authToken);
         if (sessionEntity != null && DateTime.now().isBefore(new DateTime(sessionEntity.getValidTime()))) {
-            UserB2BEntity user = sessionEntity.getUserB2BByUsername();
-            List<Integer> parkingLotIds = Lists.newArrayList();
-            for (ParkingLotHasUserB2BEntity entity : user.getParkingLotHasUserB2BsByUsername()) {
-                parkingLotIds.add(entity.getParkingLotId());
+            UserB2BEntity user = sessionEntity.getUserB2BEntity();
+            List<Integer> parkingSubLotIds = Lists.newArrayList();
+            for (ParkingLotHasUserB2BEntity entity : user.getParkingSubLots()) {
+                parkingSubLotIds.add(entity.getParkingSubLotId());
             }
-            return new GMPUser(authToken,user.getUsername(),user.getRole(),parkingLotIds);
+            new GMPUser(user.getUsername(),user.getName(),parkingSubLotIds,
+                    Lists.newArrayList(user.getUserAccesses()),authToken);
         }
         throw new Exception("INVALID_AUTH_TOKEN");
     }

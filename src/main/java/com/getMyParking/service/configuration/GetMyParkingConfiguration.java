@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayFactory;
+import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 
 /**
  * Created by rahulgupta.s on 14/03/15.
@@ -15,6 +16,9 @@ public class GetMyParkingConfiguration extends Configuration {
 
     @JsonProperty("flyway")
     private FlywayFactory flywayFactory;
+
+    @JsonProperty("swagger")
+    public SwaggerBundleConfiguration swaggerBundleConfiguration;
 
     public DataSourceFactory getDataSourceFactory() {
         return dataSourceFactory;

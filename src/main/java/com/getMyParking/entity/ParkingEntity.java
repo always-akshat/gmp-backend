@@ -14,9 +14,8 @@ public class ParkingEntity {
     private String address;
     private String city;
     private String contactNumber;
-    private int companyId;
-    private CompanyEntity companyByCompanyId;
-    private Collection<ParkingLotEntity> parkingLotsById;
+    private CompanyEntity company;
+    private Collection<ParkingLotEntity> parkingLots;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -68,16 +67,6 @@ public class ParkingEntity {
         this.contactNumber = contactNumber;
     }
 
-    @Basic
-    @Column(name = "company_id", nullable = false, insertable = true, updatable = true)
-    public int getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(int companyId) {
-        this.companyId = companyId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,7 +74,6 @@ public class ParkingEntity {
 
         ParkingEntity that = (ParkingEntity) o;
 
-        if (companyId != that.companyId) return false;
         if (id != that.id) return false;
         if (address != null ? !address.equals(that.address) : that.address != null) return false;
         if (city != null ? !city.equals(that.city) : that.city != null) return false;
@@ -103,26 +91,25 @@ public class ParkingEntity {
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (contactNumber != null ? contactNumber.hashCode() : 0);
-        result = 31 * result + companyId;
         return result;
     }
 
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
-    public CompanyEntity getCompanyByCompanyId() {
-        return companyByCompanyId;
+    public CompanyEntity getCompany() {
+        return company;
     }
 
-    public void setCompanyByCompanyId(CompanyEntity companyByCompanyId) {
-        this.companyByCompanyId = companyByCompanyId;
+    public void setCompany(CompanyEntity companyByCompanyId) {
+        this.company = companyByCompanyId;
     }
 
-    @OneToMany(mappedBy = "parkingByParkingId")
-    public Collection<ParkingLotEntity> getParkingLotsById() {
-        return parkingLotsById;
+    @OneToMany(mappedBy = "parking")
+    public Collection<ParkingLotEntity> getParkingLots() {
+        return parkingLots;
     }
 
-    public void setParkingLotsById(Collection<ParkingLotEntity> parkingLotsById) {
-        this.parkingLotsById = parkingLotsById;
+    public void setParkingLots(Collection<ParkingLotEntity> parkingLotsById) {
+        this.parkingLots = parkingLotsById;
     }
 }

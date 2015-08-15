@@ -13,7 +13,7 @@ import java.util.List;
  * Created by rahulgupta.s on 05/06/15.
  */
 public class PricingFunction {
-
+/*
     //pricingSlots will be sorted by day. Day is Integer with 1 as Monday and 7 as Sunday
     public static int calculateInitialCost(List<PricingSlotEntity> pricingSlots, DateTime checkInTime) {
 
@@ -99,5 +99,5 @@ public class PricingFunction {
             return o1.getSequenceNumber() - o2.getSequenceNumber();
         }
     };
-
+*/
 }

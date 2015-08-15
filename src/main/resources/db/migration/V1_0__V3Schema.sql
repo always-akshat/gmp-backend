@@ -325,7 +325,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`receipt_content` (
 DROP TABLE IF EXISTS `get_my_parking_v2`.`user_access` ;
 
 CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`user_access` (
-  `name` VARCHAR(128) NOT NULL,
+  `access_title` VARCHAR(128) NOT NULL,
   `user_b2b_username` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`name`),
   INDEX `fk_user_access_user_b2b1_idx` (`user_b2b_username` ASC),

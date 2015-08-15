@@ -1,28 +1,49 @@
 package com.getMyParking.service.auth;
 
+import com.getMyParking.entity.ParkingLotHasUserB2BEntity;
+import com.getMyParking.entity.UserAccessEntity;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 03/06/15.
  */
 public class GMPUser {
 
+    private String userName;
+    private String name;
+    private List<Integer> parkingSubLotIds;
+    private List<UserAccessEntity> userAccesses;
+
     private String authToken;
 
-    private String userName;
-
-    private String role;
-
-    private List<Integer> parkingLotIds;
-
-    public GMPUser(String authToken, String userName, String role, List<Integer> parkingLotIds) {
-        this.authToken = authToken;
+    public GMPUser(String userName, String name, List<Integer> parkingSubLotIds, List<UserAccessEntity> userAccesses,
+                   String authToken) {
         this.userName = userName;
-        this.role = role;
-        this.parkingLotIds = parkingLotIds;
+        this.name = name;
+        this.parkingSubLotIds = parkingSubLotIds;
+        this.userAccesses = userAccesses;
+        this.authToken = authToken;
     }
 
     public GMPUser() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<UserAccessEntity> getUserAccesses() {
+        return userAccesses;
+    }
+
+    public void setUserAccesses(List<UserAccessEntity> userAccesses) {
+        this.userAccesses = userAccesses;
     }
 
     public String getAuthToken() {
@@ -41,19 +62,12 @@ public class GMPUser {
         this.userName = userName;
     }
 
-    public List<Integer> getParkingLotIds() {
-        return parkingLotIds;
+    public List<Integer> getParkingSubLotIds() {
+        return parkingSubLotIds;
     }
 
-    public void setParkingLotIds(List<Integer> parkingLotIds) {
-        this.parkingLotIds = parkingLotIds;
+    public void setParkingSubLotIds(List<Integer> parkingSubLotIds) {
+        this.parkingSubLotIds = parkingSubLotIds;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

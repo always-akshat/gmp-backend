@@ -30,7 +30,7 @@ import java.util.Map;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ParkingEventResource {
 
-    private ParkingEventDAO parkingEventDAO;
+    /*private ParkingEventDAO parkingEventDAO;
     private ParkingLotDAO parkingLotDAO;
     private ParkingPassDAO parkingPassDAO;
 
@@ -49,7 +49,7 @@ public class ParkingEventResource {
     public List<ParkingEventEntity> getParkingEventById(@PathParam("parkingLotId")int parkingLotId,
                                                         @QueryParam("lastUpdateTime")String lastUpdateTimeStr,
                                                         @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingLotId)) {
             DateTime lastUpdateTime = DateTime.parse(lastUpdateTimeStr);
             List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingLotId, lastUpdateTime);
             for (ParkingEventEntity parkingEvent : parkingEvents) {
@@ -71,7 +71,7 @@ public class ParkingEventResource {
     public int saveOrUpdateParkingEvent(@Valid ParkingEventEntity parkingEvent,
                                         @PathParam("parkingLotId")int parkingLotId,
                                         @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingLotId)) {
             ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
             if (parkingLot == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -99,7 +99,7 @@ public class ParkingEventResource {
     public List<Map<String, Object>> checkParkingEvent(List<Map<String, Object>> parkingEvents,
                                                        @PathParam("parkingLotId") int parkingLotId,
                                                        @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingLotId)) {
             ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
             if (parkingLot == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -131,7 +131,7 @@ public class ParkingEventResource {
                                             @PathParam("parkingLotId")int parkingLotId,
                                             @PathParam("parkingPassId")int parkingPassId,
                                             @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingLotIds().contains(parkingLotId)) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingLotId)) {
             ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
             ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingPassId);
             if (parkingLot == null && parkingPass == null) {
@@ -145,6 +145,6 @@ public class ParkingEventResource {
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
-    }
+    }*/
 
 }

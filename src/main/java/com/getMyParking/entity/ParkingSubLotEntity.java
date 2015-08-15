@@ -2,7 +2,7 @@ package com.getMyParking.entity;
 
 import javax.persistence.*;
 import java.sql.Time;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -16,17 +16,15 @@ public class ParkingSubLotEntity {
     private String collectionModel;
     private Time taxiTime;
     private Time autoCheckoutTime;
-    private int parkingLotId;
     private String plateNumberType;
     private byte mobileRequired;
     private byte valetName;
     private Time lastCheckinUpdateTime;
-    private Collection<ParkingEventEntity> parkingEventsById;
-    private Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsById;
-    private Collection<ParkingPassMasterEntity> parkingPassMastersById;
-    private ParkingLotEntity parkingLotByParkingLotId;
-    private Collection<PricingSlotEntity> pricingSlotsById;
-    private Collection<ReceiptContentEntity> receiptContentsById;
+
+    private Set<ParkingPassMasterEntity> parkingPasses;
+    private ParkingLotEntity parkingLot;
+    private Set<PricingSlotEntity> pricingSlots;
+    private Set<ReceiptContentEntity> receiptContents;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -89,16 +87,6 @@ public class ParkingSubLotEntity {
     }
 
     @Basic
-    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
-    public int getParkingLotId() {
-        return parkingLotId;
-    }
-
-    public void setParkingLotId(int parkingLotId) {
-        this.parkingLotId = parkingLotId;
-    }
-
-    @Basic
     @Column(name = "plate_number_type", nullable = false, insertable = true, updatable = true, length = 45)
     public String getPlateNumberType() {
         return plateNumberType;
@@ -148,7 +136,6 @@ public class ParkingSubLotEntity {
         if (capacity != that.capacity) return false;
         if (id != that.id) return false;
         if (mobileRequired != that.mobileRequired) return false;
-        if (parkingLotId != that.parkingLotId) return false;
         if (valetName != that.valetName) return false;
         if (autoCheckoutTime != null ? !autoCheckoutTime.equals(that.autoCheckoutTime) : that.autoCheckoutTime != null)
             return false;
@@ -172,7 +159,6 @@ public class ParkingSubLotEntity {
         result = 31 * result + (collectionModel != null ? collectionModel.hashCode() : 0);
         result = 31 * result + (taxiTime != null ? taxiTime.hashCode() : 0);
         result = 31 * result + (autoCheckoutTime != null ? autoCheckoutTime.hashCode() : 0);
-        result = 31 * result + parkingLotId;
         result = 31 * result + (plateNumberType != null ? plateNumberType.hashCode() : 0);
         result = 31 * result + (int) mobileRequired;
         result = 31 * result + (int) valetName;
@@ -180,58 +166,40 @@ public class ParkingSubLotEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingSubLotByParkingSubLotId")
-    public Collection<ParkingEventEntity> getParkingEventsById() {
-        return parkingEventsById;
+    @OneToMany(mappedBy = "parkingSubLot")
+    public Set<ParkingPassMasterEntity> getParkingPasses() {
+        return parkingPasses;
     }
 
-    public void setParkingEventsById(Collection<ParkingEventEntity> parkingEventsById) {
-        this.parkingEventsById = parkingEventsById;
-    }
-
-    @OneToMany(mappedBy = "parkingSubLotByParkingSubLotId")
-    public Collection<ParkingLotHasUserB2BEntity> getParkingLotHasUserB2BsById() {
-        return parkingLotHasUserB2BsById;
-    }
-
-    public void setParkingLotHasUserB2BsById(Collection<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsById) {
-        this.parkingLotHasUserB2BsById = parkingLotHasUserB2BsById;
-    }
-
-    @OneToMany(mappedBy = "parkingSubLotByParkingSubLotId")
-    public Collection<ParkingPassMasterEntity> getParkingPassMastersById() {
-        return parkingPassMastersById;
-    }
-
-    public void setParkingPassMastersById(Collection<ParkingPassMasterEntity> parkingPassMastersById) {
-        this.parkingPassMastersById = parkingPassMastersById;
+    public void setParkingPasses(Set<ParkingPassMasterEntity> parkingPassMastersById) {
+        this.parkingPasses = parkingPassMastersById;
     }
 
     @ManyToOne
     @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingLotEntity getParkingLotByParkingLotId() {
-        return parkingLotByParkingLotId;
+    public ParkingLotEntity getParkingLot() {
+        return parkingLot;
     }
 
-    public void setParkingLotByParkingLotId(ParkingLotEntity parkingLotByParkingLotId) {
-        this.parkingLotByParkingLotId = parkingLotByParkingLotId;
+    public void setParkingLot(ParkingLotEntity parkingLotByParkingLotId) {
+        this.parkingLot = parkingLotByParkingLotId;
     }
 
-    @OneToMany(mappedBy = "parkingSubLotByParkingSubLotId")
-    public Collection<PricingSlotEntity> getPricingSlotsById() {
-        return pricingSlotsById;
+    @OneToMany(mappedBy = "parkingSubLot")
+    public Set<PricingSlotEntity> getPricingSlots() {
+        return pricingSlots;
     }
 
-    public void setPricingSlotsById(Collection<PricingSlotEntity> pricingSlotsById) {
-        this.pricingSlotsById = pricingSlotsById;
+    public void setPricingSlots(Set<PricingSlotEntity> pricingSlotsById) {
+        this.pricingSlots = pricingSlotsById;
     }
 
-    @OneToMany(mappedBy = "parkingSubLotByParkingSubLotId")
-    public Collection<ReceiptContentEntity> getReceiptContentsById() {
-        return receiptContentsById;
+    @OneToMany(mappedBy = "parkingSubLot")
+    public Set<ReceiptContentEntity> getReceiptContents() {
+        return receiptContents;
     }
 
-    public void setReceiptContentsById(Collection<ReceiptContentEntity> receiptContentsById) {
-        this.receiptContentsById = receiptContentsById;
+    public void setReceiptContents(Set<ReceiptContentEntity> receiptContentsById) {
+        this.receiptContents = receiptContentsById;
     }
 }

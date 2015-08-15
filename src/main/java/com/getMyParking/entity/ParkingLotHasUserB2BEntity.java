@@ -10,9 +10,15 @@ import javax.persistence.*;
 public class ParkingLotHasUserB2BEntity {
     private int id;
     private int parkingSubLotId;
-    private String userB2BUsername;
-    private ParkingSubLotEntity parkingSubLotByParkingSubLotId;
-    private UserB2BEntity userB2BByUserB2BUsername;
+    private UserB2BEntity userB2B;
+
+    public ParkingLotHasUserB2BEntity(int parkingSubLotId, UserB2BEntity userB2B) {
+        this.parkingSubLotId = parkingSubLotId;
+        this.userB2B = userB2B;
+    }
+
+    public ParkingLotHasUserB2BEntity() {
+    }
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -34,16 +40,6 @@ public class ParkingLotHasUserB2BEntity {
         this.parkingSubLotId = parkingSubLotId;
     }
 
-    @Basic
-    @Column(name = "user_b2b_username", nullable = false, insertable = true, updatable = true, length = 255)
-    public String getUserB2BUsername() {
-        return userB2BUsername;
-    }
-
-    public void setUserB2BUsername(String userB2BUsername) {
-        this.userB2BUsername = userB2BUsername;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,38 +48,24 @@ public class ParkingLotHasUserB2BEntity {
         ParkingLotHasUserB2BEntity entity = (ParkingLotHasUserB2BEntity) o;
 
         if (id != entity.id) return false;
-        if (parkingSubLotId != entity.parkingSubLotId) return false;
-        if (userB2BUsername != null ? !userB2BUsername.equals(entity.userB2BUsername) : entity.userB2BUsername != null)
-            return false;
+        return parkingSubLotId == entity.parkingSubLotId;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
         int result = id;
         result = 31 * result + parkingSubLotId;
-        result = 31 * result + (userB2BUsername != null ? userB2BUsername.hashCode() : 0);
         return result;
     }
 
     @ManyToOne
-    @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLotByParkingSubLotId() {
-        return parkingSubLotByParkingSubLotId;
-    }
-
-    public void setParkingSubLotByParkingSubLotId(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLotByParkingSubLotId = parkingSubLotByParkingSubLotId;
-    }
-
-    @ManyToOne
     @JoinColumn(name = "user_b2b_username", referencedColumnName = "username", nullable = false)
-    public UserB2BEntity getUserB2BByUserB2BUsername() {
-        return userB2BByUserB2BUsername;
+    public UserB2BEntity getUserB2B() {
+        return userB2B;
     }
 
-    public void setUserB2BByUserB2BUsername(UserB2BEntity userB2BByUserB2BUsername) {
-        this.userB2BByUserB2BUsername = userB2BByUserB2BUsername;
+    public void setUserB2B(UserB2BEntity userB2BByUserB2BUsername) {
+        this.userB2B = userB2BByUserB2BUsername;
     }
 }
