@@ -1,10 +1,10 @@
 server:
   applicationConnectors:
     - type: http
-      port: 8080
+      port: 9000
   adminConnectors:
     - type: http
-      port: 8081
+      port: 9001
   requestLog:
     timeZone: IST
     appenders:
@@ -53,7 +53,7 @@ database:
   password:
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/get_my_parking?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://localhost:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
