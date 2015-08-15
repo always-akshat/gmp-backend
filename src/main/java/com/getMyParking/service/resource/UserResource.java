@@ -34,7 +34,7 @@ import java.util.UUID;
 /**
  * Created by rahulgupta.s on 04/06/15.
  */
-@Api("/v1/incidentManager")
+@Api("/v1/user")
 @Path("/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {

@@ -40,7 +40,7 @@ logging:
       archivedFileCount: 50
 
 swagger:
-  resourcePackage: com.getMyParking
+  resourcePackage: com.getMyParking.service.resource
 
 database:
   # the name of your JDBC driver
