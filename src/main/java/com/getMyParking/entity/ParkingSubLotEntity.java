@@ -24,7 +24,6 @@ public class ParkingSubLotEntity {
     private Time lastCheckinUpdateTime;
 
     private Set<ParkingPassMasterEntity> parkingPasses;
-    @JsonIgnore
     private ParkingLotEntity parkingLot;
     private Set<PricingSlotEntity> pricingSlots;
     private Set<ReceiptContentEntity> receiptContents;

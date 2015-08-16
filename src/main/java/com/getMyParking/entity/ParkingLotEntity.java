@@ -20,7 +20,6 @@ public class ParkingLotEntity {
     private Time closeTime;
     private BigDecimal longitude;
     private BigDecimal latitude;
-    @JsonIgnore
     private ParkingEntity parking;
     private Set<ParkingSubLotEntity> parkingSubLots;
 

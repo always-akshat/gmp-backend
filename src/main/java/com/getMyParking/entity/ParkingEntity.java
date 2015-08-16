@@ -17,7 +17,6 @@ public class ParkingEntity {
     private String address;
     private String city;
     private String contactNumber;
-    @JsonIgnore
     private CompanyEntity company;
     private Set<ParkingLotEntity> parkingLots;
 
