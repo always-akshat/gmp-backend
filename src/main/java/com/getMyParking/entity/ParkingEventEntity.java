@@ -87,7 +87,7 @@ public class ParkingEventEntity {
 
     @Basic
     @Column(name = "event_time", nullable = false, insertable = true, updatable = true)
-    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     public DateTime getEventTime() {
         return eventTime;
     }
@@ -148,7 +148,7 @@ public class ParkingEventEntity {
 
     @Basic
     @Column(name = "updated_time", nullable = false, insertable = true, updatable = true)
-    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     public DateTime getUpdatedTime() {
         return updatedTime;
     }

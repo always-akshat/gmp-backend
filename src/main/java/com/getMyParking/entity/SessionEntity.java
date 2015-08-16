@@ -47,7 +47,7 @@ public class SessionEntity {
 
     @Basic
     @Column(name = "valid_time", nullable = false, insertable = true, updatable = true)
-    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     public DateTime getValidTime() {
         return validTime;
     }
