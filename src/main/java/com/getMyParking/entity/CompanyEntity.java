@@ -21,6 +21,7 @@ public class CompanyEntity {
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     public Integer getId() {
         return id;
     }
