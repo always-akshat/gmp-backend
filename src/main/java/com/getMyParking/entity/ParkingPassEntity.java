@@ -1,7 +1,9 @@
 package com.getMyParking.entity;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Set;
 
 /**
@@ -12,7 +14,7 @@ import java.util.Set;
 public class ParkingPassEntity {
     private Integer id;
     private String registrationNumber;
-    private Timestamp validTime;
+    private DateTime validTime;
     private Set<ParkingEventEntity> parkingEvents;
     private ParkingPassMasterEntity parkingPassMaster;
 
@@ -38,11 +40,12 @@ public class ParkingPassEntity {
 
     @Basic
     @Column(name = "valid_time", nullable = false, insertable = true, updatable = true)
-    public Timestamp getValidTime() {
+    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    public DateTime getValidTime() {
         return validTime;
     }
 
-    public void setValidTime(Timestamp validTime) {
+    public void setValidTime(DateTime validTime) {
         this.validTime = validTime;
     }
 

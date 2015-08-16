@@ -1,7 +1,9 @@
 package com.getMyParking.entity;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -11,13 +13,13 @@ import java.sql.Timestamp;
 public class SessionEntity {
     private Integer id;
     private String authToken;
-    private Timestamp validTime;
+    private DateTime validTime;
     private UserB2BEntity userB2BEntity;
 
     public SessionEntity() {
     }
 
-    public SessionEntity(String authToken, Timestamp validTillTimestamp, UserB2BEntity userB2BEntity) {
+    public SessionEntity(String authToken, DateTime validTillTimestamp, UserB2BEntity userB2BEntity) {
         this.authToken = authToken;
         this.validTime = validTillTimestamp;
         this.userB2BEntity = userB2BEntity;
@@ -45,11 +47,12 @@ public class SessionEntity {
 
     @Basic
     @Column(name = "valid_time", nullable = false, insertable = true, updatable = true)
-    public Timestamp getValidTime() {
+    @Type(type="org.joda.time.contrib.hibernate.PersistentDateTime")
+    public DateTime getValidTime() {
         return validTime;
     }
 
-    public void setValidTime(Timestamp validTime) {
+    public void setValidTime(DateTime validTime) {
         this.validTime = validTime;
     }
 

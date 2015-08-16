@@ -70,8 +70,8 @@ public class UserResource {
 
             long millis = DateTime.now().getMillis();
             String authToken = millis + UUID.randomUUID().toString().substring(0,6);
-            Timestamp validTillTimestamp = new Timestamp(DateTime.now().plusYears(3).getMillis());
-            SessionEntity sessionEntity = new SessionEntity(authToken,validTillTimestamp,userB2BEntity);
+            DateTime validTillDate = DateTime.now().plusYears(3);
+            SessionEntity sessionEntity = new SessionEntity(authToken,validTillDate,userB2BEntity);
             sessionDAO.saveSession(sessionEntity);
 
             List<Integer> parkingLotIds = Lists.newArrayList();
