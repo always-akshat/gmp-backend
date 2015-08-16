@@ -139,7 +139,7 @@ public class UserResource {
             @ApiResponse(code = 401, message = "Username already exists"),
     })
     @GET
-    @Path("/")
+    @Path("/access")
     @Timed
     @ExceptionMetered
     @UnitOfWork
