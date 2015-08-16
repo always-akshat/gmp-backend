@@ -56,7 +56,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         HibernateBundle<GetMyParkingConfiguration> hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
                 CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
-                ParkingLotHasUserB2BEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
+                ParkingSubLotUserAccessEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
                 PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
                 SessionEntity.class, UserB2BEntity.class, ParkingSubLotEntity.class, StyleMasterEntity.class,
                 UserAccessEntity.class
