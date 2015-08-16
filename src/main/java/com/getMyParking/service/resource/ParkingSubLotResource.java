@@ -31,6 +31,7 @@ public class ParkingSubLotResource {
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingLotDAO parkingLotDAO;
 
+    @Inject
     public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingLotDAO = parkingLotDAO;
