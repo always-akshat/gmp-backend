@@ -9,9 +9,9 @@ server:
     timeZone: IST
     appenders:
       - type: file
-        currentLogFilename: /var/log/gmp/requests.log
+        currentLogFilename: /var/log/gmp-v3/requests.log
         archive: true
-        archivedLogFilenamePattern: /var/log/gmp/requests-%d{yyyy-MM-dd}.log.gz
+        archivedLogFilenamePattern: /var/log/gmp-v3/requests-%d{yyyy-MM-dd}.log.gz
         archivedFileCount: 50
 
 
@@ -26,17 +26,17 @@ logging:
       threshold: INFO
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/gmp/services-info.log
+      currentLogFilename: /var/log/gmp-v3/services-info.log
       archive: true
-      archivedLogFilenamePattern: /var/log/gmp/services-info-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp-v3/services-info-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
     - type: file
       threshold: ERROR
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/gmp/services-error.log
+      currentLogFilename: /var/log/gmp-v3/services-error.log
       archive: true
-      archivedLogFilenamePattern: /var/log/gmp/services-error-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp-v3/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
 
 swagger:
@@ -83,7 +83,7 @@ flyway:
   encoding: UTF-8
   # The schemas managed by Flyway. (default: default schema of the connection)
   schemas:
-    - get_my_parking
+    - get_my_parking_v2
   # The name of the schema metadata table that will be used by Flyway. (default: schema_version)
   metaDataTableName: schema_version
   # The file name prefix for sql migrations (default: V)
