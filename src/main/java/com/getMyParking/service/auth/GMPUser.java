@@ -1,10 +1,11 @@
 package com.getMyParking.service.auth;
 
-import com.getMyParking.entity.ParkingLotHasUserB2BEntity;
+import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.UserAccessEntity;
+import com.getMyParking.entity.UserB2BEntity;
+import com.google.common.collect.Lists;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 03/06/15.
@@ -14,20 +15,68 @@ public class GMPUser {
     private String userName;
     private String name;
     private List<Integer> parkingSubLotIds;
+    private List<Integer> parkingLotIds;
+    private List<Integer> parkingIds;
+    private List<Integer> companyIds;
     private List<UserAccessEntity> userAccesses;
-
     private String authToken;
 
-    public GMPUser(String userName, String name, List<Integer> parkingSubLotIds, List<UserAccessEntity> userAccesses,
-                   String authToken) {
-        this.userName = userName;
-        this.name = name;
-        this.parkingSubLotIds = parkingSubLotIds;
-        this.userAccesses = userAccesses;
+    public GMPUser(UserB2BEntity userB2BEntity,String authToken) {
+
+        this.parkingSubLotIds = Lists.newArrayList();
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+            parkingSubLotIds.add(entity.getParkingSubLotId());
+        }
+
+        this.parkingLotIds = Lists.newArrayList();
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+            if (!parkingLotIds.contains(entity.getParkingLotId()))
+                parkingLotIds.add(entity.getParkingLotId());
+        }
+
+        parkingIds = Lists.newArrayList();
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+            if (!parkingIds.contains(entity.getParkingId()))
+                parkingIds.add(entity.getParkingId());
+        }
+
+        companyIds = Lists.newArrayList();
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+            if (!companyIds.contains(entity.getCompanyId()))
+                companyIds.add(entity.getCompanyId());
+        }
+
+        this.userName = userB2BEntity.getUsername();
+        this.name = userB2BEntity.getName();
+        this.userAccesses = Lists.newArrayList(userB2BEntity.getUserAccesses());
         this.authToken = authToken;
     }
 
     public GMPUser() {
+    }
+
+    public List<Integer> getParkingLotIds() {
+        return parkingLotIds;
+    }
+
+    public void setParkingLotIds(List<Integer> parkingLotIds) {
+        this.parkingLotIds = parkingLotIds;
+    }
+
+    public List<Integer> getParkingIds() {
+        return parkingIds;
+    }
+
+    public void setParkingIds(List<Integer> parkingIds) {
+        this.parkingIds = parkingIds;
+    }
+
+    public List<Integer> getCompanyIds() {
+        return companyIds;
+    }
+
+    public void setCompanyIds(List<Integer> companyIds) {
+        this.companyIds = companyIds;
     }
 
     public String getName() {

@@ -1,7 +1,6 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.ParkingLotHasUserB2BEntity;
-import com.getMyParking.entity.UserB2BEntity;
+import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * Created by rahulgupta.s on 04/06/15.
  */
-public class ParkingLotHasUserB2BDAO extends AbstractDAO<ParkingLotHasUserB2BEntity>{
+public class ParkingLotHasUserB2BDAO extends AbstractDAO<ParkingSubLotUserAccessEntity>{
     /**
      * Creates a new DAO with a given session provider.
      *
@@ -23,10 +22,8 @@ public class ParkingLotHasUserB2BDAO extends AbstractDAO<ParkingLotHasUserB2BEnt
     }
 
 
-    public void saveParkingLotId(List<Integer> parkingSubLotIds, UserB2BEntity user) {
-        for (Integer parkingSubLotId : parkingSubLotIds) {
-            ParkingLotHasUserB2BEntity entity = new ParkingLotHasUserB2BEntity(parkingSubLotId,user);
-            persist(entity);
-        }
+    public void saveUserAccess(List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessList) {
+        for (ParkingSubLotUserAccessEntity parkingSubLotUserAccess : parkingSubLotUserAccessList)
+            persist(parkingSubLotUserAccess);
     }
 }

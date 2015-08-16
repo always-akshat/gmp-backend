@@ -2,16 +2,19 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.dao.ParkingLotHasUserB2BDAO;
 import com.getMyParking.dao.SessionDAO;
 import com.getMyParking.dao.UserB2BDAO;
-import com.getMyParking.entity.ParkingLotHasUserB2BEntity;
-import com.getMyParking.entity.SessionEntity;
-import com.getMyParking.entity.UserB2BEntity;
+import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.wordnik.swagger.annotations.*;
@@ -24,8 +27,9 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -40,14 +44,15 @@ public class UserResource {
     private SessionDAO sessionDAO;
     private ParkingLotHasUserB2BDAO parkingLotHasUserB2BDAO;
     private LoadingCache<String,GMPUser> authTokenCache;
-
+    private CompanyDAO companyDAO;
     @Inject
     public UserResource(UserB2BDAO userB2BDAO, SessionDAO sessionDAO, ParkingLotHasUserB2BDAO parkingLotHasUserB2BDAO,
-                        @Named("authTokenCache")LoadingCache<String, GMPUser> authTokenCache) {
+                        CompanyDAO companyDAO,@Named("authTokenCache")LoadingCache<String, GMPUser> authTokenCache) {
         this.userB2BDAO = userB2BDAO;
         this.sessionDAO = sessionDAO;
         this.parkingLotHasUserB2BDAO = parkingLotHasUserB2BDAO;
         this.authTokenCache = authTokenCache;
+        this.companyDAO = companyDAO;
     }
 
     @ApiOperation(value = "Login User Api", response = GMPUser.class)
@@ -65,7 +70,7 @@ public class UserResource {
 
             UserB2BEntity userB2BEntity = userB2BDAO.loginUser(userName, password);
             if (userB2BEntity == null) {
-                throw new AuthenticationException("Invalid Credentials");
+                throw new WebApplicationException("Invalid Credentials",Response.Status.UNAUTHORIZED);
             }
 
             long millis = DateTime.now().getMillis();
@@ -74,13 +79,7 @@ public class UserResource {
             SessionEntity sessionEntity = new SessionEntity(authToken,validTillDate,userB2BEntity);
             sessionDAO.saveSession(sessionEntity);
 
-            List<Integer> parkingLotIds = Lists.newArrayList();
-
-            for (ParkingLotHasUserB2BEntity entity : userB2BEntity.getParkingSubLots()) {
-                parkingLotIds.add(entity.getParkingSubLotId());
-            }
-            GMPUser user = new GMPUser(userName,userB2BEntity.getName(),parkingLotIds,
-                    Lists.newArrayList(userB2BEntity.getUserAccesses()),authToken);
+            GMPUser user = new GMPUser(userB2BEntity,authToken);
             authTokenCache.put(authToken,user);
             return user;
         } else {
@@ -113,18 +112,72 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addParkingLot(@ApiParam(value = "List of Parking Lot Ids", required = true)List<Integer> parkingSubLotIds, @PathParam("username") String username,
+    public void addParkingLot(@ApiParam(value = "List of Parking Lot Ids", required = true)
+                              List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessList,
+                              @PathParam("username") String username,
                               @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingSubLotIds().containsAll(parkingSubLotIds)) {
+        List<Integer> companyIds = Lists.newArrayList();
+        for (ParkingSubLotUserAccessEntity entity : parkingSubLotUserAccessList) {
+            if (!companyIds.contains(entity.getCompanyId())) entity.getCompanyId();
+        }
+
+        if (gmpUser.getCompanyIds().containsAll(companyIds)) {
             UserB2BEntity user = userB2BDAO.findById(username);
             if (user != null) {
-                parkingLotHasUserB2BDAO.saveParkingLotId(parkingSubLotIds, user);
+                parkingLotHasUserB2BDAO.saveUserAccess(parkingSubLotUserAccessList);
             } else {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
+    }
+
+    @ApiOperation(value = "Get User Access Data",  response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Username already exists"),
+    })
+    @GET
+    @Path("/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<CompanyEntity> addParkingLot(@Auth GMPUser gmpUser) {
+        List<CompanyEntity> responseCompanies = Lists.newArrayList();
+        for (Integer companyId : gmpUser.getCompanyIds()) {
+            CompanyEntity companyEntity = companyDAO.findById(companyId);
+            Set<ParkingEntity> parkingEntities = Sets.newHashSet();
+
+            for (ParkingEntity parking : companyEntity.getParkings()) {
+
+                if (gmpUser.getParkingIds().contains(parking.getId())) {
+                    parkingEntities.add(parking);
+                    Set<ParkingLotEntity> parkingLotEntities = Sets.newHashSet();
+
+                    for (ParkingLotEntity parkingLot : parking.getParkingLots()) {
+
+                        if (gmpUser.getParkingLotIds().contains(parkingLot.getId())) {
+                            parkingLotEntities.add(parkingLot);
+                            Set<ParkingSubLotEntity> parkingSubLotEntities = Sets.newHashSet();
+
+                            for (ParkingSubLotEntity parkingSubLot : parkingLot.getParkingSubLots()) {
+
+                                if (gmpUser.getParkingSubLotIds().contains(parkingSubLot.getId())) {
+                                    parkingSubLotEntities.add(parkingSubLot);
+                                }
+                            }
+                            parkingLot.setParkingSubLots(parkingSubLotEntities);
+                        }
+                    }
+                    parking.setParkingLots(parkingLotEntities);
+                }
+            }
+            companyEntity.setParkings(parkingEntities);
+            responseCompanies.add(companyEntity);
+        }
+        return responseCompanies;
     }
 
 

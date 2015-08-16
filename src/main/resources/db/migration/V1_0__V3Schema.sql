@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_sub_lot` (
   `type` VARCHAR(255) NOT NULL,
   `capacity` INT NOT NULL,
   `collection_model` VARCHAR(500) NOT NULL COMMENT 'PREPAID / POSTPAID / HYBRID',
-  `taxi_time` TIME NOT NULL,
-  `auto_checkout_time` TIME NOT NULL,
+  `taxi_time` TIME NULL,
+  `auto_checkout_time` TIME NULL,
   `parking_lot_id` INT NOT NULL,
   `plate_number_type` VARCHAR(45) NOT NULL,
   `mobile_required` TINYINT NOT NULL,
@@ -234,27 +234,47 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`user_b2b` (
   PRIMARY KEY (`username`))
   ENGINE = InnoDB;
 
-
 -- -----------------------------------------------------
--- Table `get_my_parking_v2`.`parking_lot_has_user_b2b`
+-- Table `get_my_parking_v2`.`parking_sub_lot_user_access`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `get_my_parking_v2`.`parking_lot_has_user_b2b` ;
+DROP TABLE IF EXISTS `get_my_parking_v2`.`parking_sub_lot_user_access` ;
 
-CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_lot_has_user_b2b` (
+CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_sub_lot_user_access` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `parking_sub_lot_id` INT NOT NULL,
-  `user_b2b_username` VARCHAR(255) NOT NULL,
-  INDEX `fk_parking_lot_has_user_b2b_user_b2b1_idx` (`user_b2b_username` ASC),
+  `user_b2b` VARCHAR(255) NOT NULL,
+  `parking_lot_id` INT NOT NULL,
+  `parking_id` INT NOT NULL,
+  `company_id` INT NOT NULL,
+  INDEX `fk_parking_lot_has_user_b2b_user_b2b1_idx` (`user_b2b` ASC),
   INDEX `fk_parking_lot_has_user_b2b_parking_lot1_idx` (`parking_sub_lot_id` ASC),
   PRIMARY KEY (`id`),
+  INDEX `fk_parking_sub_lot_user_access_parking_lot1_idx` (`parking_lot_id` ASC),
+  INDEX `fk_parking_sub_lot_user_access_parking1_idx` (`parking_id` ASC),
+  INDEX `fk_parking_sub_lot_user_access_company1_idx` (`company_id` ASC),
   CONSTRAINT `fk_parking_lot_has_user_b2b_parking_lot1`
   FOREIGN KEY (`parking_sub_lot_id`)
   REFERENCES `get_my_parking_v2`.`parking_sub_lot` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_parking_lot_has_user_b2b_user_b2b1`
-  FOREIGN KEY (`user_b2b_username`)
+  FOREIGN KEY (`user_b2b`)
   REFERENCES `get_my_parking_v2`.`user_b2b` (`username`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parking_sub_lot_user_access_parking_lot1`
+  FOREIGN KEY (`parking_lot_id`)
+  REFERENCES `get_my_parking_v2`.`parking_lot` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parking_sub_lot_user_access_parking1`
+  FOREIGN KEY (`parking_id`)
+  REFERENCES `get_my_parking_v2`.`parking` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parking_sub_lot_user_access_company1`
+  FOREIGN KEY (`company_id`)
+  REFERENCES `get_my_parking_v2`.`company` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;

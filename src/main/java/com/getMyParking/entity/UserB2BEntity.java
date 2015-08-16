@@ -16,7 +16,7 @@ public class UserB2BEntity {
     private String password;
     private String name;
     private String contactNumber;
-    private Set<ParkingLotHasUserB2BEntity> parkingSubLots;
+    private Set<ParkingSubLotUserAccessEntity> parkingSubLots;
     @NotNull
     private Set<UserAccessEntity> userAccesses;
 
@@ -86,11 +86,11 @@ public class UserB2BEntity {
     }
 
     @OneToMany(mappedBy = "userB2B")
-    public Set<ParkingLotHasUserB2BEntity> getParkingSubLots() {
+    public Set<ParkingSubLotUserAccessEntity> getParkingSubLots() {
         return parkingSubLots;
     }
 
-    public void setParkingSubLots(Set<ParkingLotHasUserB2BEntity> parkingLotHasUserB2BsByUsername) {
+    public void setParkingSubLots(Set<ParkingSubLotUserAccessEntity> parkingLotHasUserB2BsByUsername) {
         this.parkingSubLots = parkingLotHasUserB2BsByUsername;
     }
 

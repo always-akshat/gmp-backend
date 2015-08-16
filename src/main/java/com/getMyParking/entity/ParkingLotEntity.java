@@ -20,8 +20,9 @@ public class ParkingLotEntity {
     private Time closeTime;
     private BigDecimal longitude;
     private BigDecimal latitude;
-    private ParkingEntity parking;
     private Set<ParkingSubLotEntity> parkingSubLots;
+    @JsonIgnore
+    private ParkingEntity parking;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)

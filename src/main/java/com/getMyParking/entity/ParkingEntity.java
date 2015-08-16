@@ -17,8 +17,9 @@ public class ParkingEntity {
     private String address;
     private String city;
     private String contactNumber;
-    private CompanyEntity company;
     private Set<ParkingLotEntity> parkingLots;
+    @JsonIgnore
+    private CompanyEntity company;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)

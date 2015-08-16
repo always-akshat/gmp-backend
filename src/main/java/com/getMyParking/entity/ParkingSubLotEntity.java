@@ -22,11 +22,11 @@ public class ParkingSubLotEntity {
     private Integer mobileRequired;
     private Integer valetName;
     private Time lastCheckinUpdateTime;
-
     private Set<ParkingPassMasterEntity> parkingPasses;
-    private ParkingLotEntity parkingLot;
     private Set<PricingSlotEntity> pricingSlots;
     private Set<ReceiptContentEntity> receiptContents;
+    @JsonIgnore
+    private ParkingLotEntity parkingLot;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
