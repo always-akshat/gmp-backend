@@ -30,9 +30,7 @@ public class ParkingEventEntity {
     private ParkingSubLotEntity parkingSubLot;
     @JsonIgnore
     private ParkingPassEntity parkingPass;
-    @Transient
     private Integer parkingSubLotId;
-    @Transient
     private Integer parkingPassId;
 
     @Id
@@ -234,6 +232,7 @@ public class ParkingEventEntity {
         this.parkingSubLotId = parkingSubLotId;
     }
 
+    @Transient
     public Integer getParkingSubLotId() {
         return parkingSubLotId;
     }
@@ -242,6 +241,7 @@ public class ParkingEventEntity {
         this.parkingPassId = parkingPassId;
     }
 
+    @Transient
     public Integer getParkingPassId() {
         return parkingPassId;
     }
