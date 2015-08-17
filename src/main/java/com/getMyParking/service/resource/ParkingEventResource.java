@@ -5,11 +5,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
-import com.getMyParking.entity.CompanyEntity;
-import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.ParkingPassEntity;
-import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
@@ -44,7 +42,7 @@ public class ParkingEventResource {
     }
 
     @GET
-    @Path("/parking_sub_lot/{parkingSubLotId}")
+    @Path("/parking_sub_lot/")
     @Timed
     @ExceptionMetered
     @UnitOfWork
@@ -53,20 +51,23 @@ public class ParkingEventResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "UnAuthorized"),
     })
-    public List<ParkingEventEntity> getParkingEventById(@PathParam("parkingSubLotId")int parkingSubLotId,
-                                                        @QueryParam("lastUpdateTime")DateTimeParam lastUpdateTime,
+    public List<GetParkingEventResponse> getParkingEventById(@QueryParam("lastUpdateTime")DateTimeParam lastUpdateTime,
                                                         @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingSubLotIds().contains(parkingSubLotId)) {
+        List<Integer> parkingSubLotIds = gmpUser.getParkingSubLotIds();
+        List<GetParkingEventResponse> parkingEventsResponseList = Lists.newArrayList();
+        for (Integer parkingSubLotId : parkingSubLotIds) {
+            GetParkingEventResponse parkingEventResponse = new GetParkingEventResponse();
+            parkingEventResponse.setParkingSubLotId(parkingSubLotId);
             List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingSubLotId, lastUpdateTime.get());
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
                 if (parkingEvent.getParkingPass() != null)
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
             }
-            return parkingEvents;
-        } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            parkingEventResponse.setParkingEvents(parkingEvents);
+            parkingEventsResponseList.add(parkingEventResponse);
         }
+        return parkingEventsResponseList;
     }
 
     @POST
