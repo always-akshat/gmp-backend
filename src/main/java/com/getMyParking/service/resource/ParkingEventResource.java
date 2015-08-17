@@ -13,6 +13,7 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import io.dropwizard.jersey.params.IntParam;
 import org.joda.time.DateTime;
 
 import javax.validation.Valid;
@@ -39,6 +40,36 @@ public class ParkingEventResource {
         this.parkingEventDAO = parkingEventDAO;
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingPassDAO = parkingPassDAO;
+    }
+
+    @GET
+    @Path("/parking_sub_lot/active")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking Events by last update time stamp that have only checkin events", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "UnAuthorized"),
+    })
+    public List<GetParkingEventResponse> getActiveParkingEventById(@QueryParam("duration")IntParam duration,
+                                                             @Auth GMPUser gmpUser) {
+        List<Integer> parkingSubLotIds = gmpUser.getParkingSubLotIds();
+        List<GetParkingEventResponse> parkingEventsResponseList = Lists.newArrayList();
+        for (Integer parkingSubLotId : parkingSubLotIds) {
+            GetParkingEventResponse parkingEventResponse = new GetParkingEventResponse();
+            parkingEventResponse.setParkingSubLotId(parkingSubLotId);
+            List<ParkingEventEntity> parkingEvents =
+                    parkingEventDAO.getParkingEvents(parkingSubLotId,DateTime.now().minusDays(duration.get()),DateTime.now());
+            for (ParkingEventEntity parkingEvent : parkingEvents) {
+                parkingEvent.setParkingSubLotId(parkingSubLotId);
+                if (parkingEvent.getParkingPass() != null)
+                    parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
+            }
+            parkingEventResponse.setParkingEvents(parkingEvents);
+            parkingEventsResponseList.add(parkingEventResponse);
+        }
+        return parkingEventsResponseList;
     }
 
     @GET
