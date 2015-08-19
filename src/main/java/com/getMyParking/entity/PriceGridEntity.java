@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -13,6 +15,7 @@ public class PriceGridEntity {
     private Integer cost;
     private Integer duration;
     private Integer sequenceNumber;
+    @JsonIgnore
     private PricingSlotEntity pricingSlot;
 
     @Id
