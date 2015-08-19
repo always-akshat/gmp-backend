@@ -306,8 +306,14 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`session` (
 DROP TABLE IF EXISTS `get_my_parking_v2`.`style_master` ;
 
 CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`style_master` (
-  `id` INT NOT NULL,
-  PRIMARY KEY (`id`))
+  `title` VARCHAR(255) NOT NULL,
+  `font` VARCHAR(255) NULL,
+  `double_height` VARCHAR(255) NULL,
+  `double_width` VARCHAR(255) NULL,
+  `negative` VARCHAR(255) NULL,
+  `underline` VARCHAR(255) NULL,
+  `feed` VARCHAR(255) NULL,
+  PRIMARY KEY (`title`))
   ENGINE = InnoDB;
 
 
@@ -322,22 +328,21 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`receipt_content` (
   `sequence` INT NOT NULL,
   `event_type` VARCHAR(45) NOT NULL,
   `parking_sub_lot_id` INT NOT NULL,
-  `style_id` INT NOT NULL,
+  `style_master_title` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_receipt_content_parking_lot1_idx` (`parking_sub_lot_id` ASC),
-  INDEX `fk_receipt_content_style_master1_idx` (`style_id` ASC),
+  INDEX `fk_receipt_content_style_master1_idx` (`style_master_title` ASC),
   CONSTRAINT `fk_receipt_content_parking_lot1`
   FOREIGN KEY (`parking_sub_lot_id`)
   REFERENCES `get_my_parking_v2`.`parking_sub_lot` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_receipt_content_style_master1`
-  FOREIGN KEY (`style_id`)
-  REFERENCES `get_my_parking_v2`.`style_master` (`id`)
+  FOREIGN KEY (`style_master_title`)
+  REFERENCES `get_my_parking_v2`.`style_master` (`title`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;
-
 
 -- -----------------------------------------------------
 -- Table `get_my_parking_v2`.`user_access`

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 
 /**
- * Created by rahulgupta.s on 13/08/15.
+ * Created by rahulgupta.s on 20/08/15.
  */
 @Entity
 @Table(name = "receipt_content", schema = "", catalog = "get_my_parking_v2")
@@ -20,12 +20,11 @@ public class ReceiptContentEntity {
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -41,11 +40,11 @@ public class ReceiptContentEntity {
 
     @Basic
     @Column(name = "sequence", nullable = false, insertable = true, updatable = true)
-    public Integer getSequence() {
+    public int getSequence() {
         return sequence;
     }
 
-    public void setSequence(Integer sequence) {
+    public void setSequence(int sequence) {
         this.sequence = sequence;
     }
 
@@ -94,7 +93,7 @@ public class ReceiptContentEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "style_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "style_master_title", referencedColumnName = "title", nullable = false)
     public StyleMasterEntity getStyleMaster() {
         return styleMaster;
     }

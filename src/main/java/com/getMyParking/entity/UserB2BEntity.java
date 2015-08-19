@@ -94,7 +94,7 @@ public class UserB2BEntity {
         this.parkingSubLots = parkingLotHasUserB2BsByUsername;
     }
 
-    @OneToMany(mappedBy = "userB2BEntity")
+    @OneToMany(mappedBy = "userB2BEntity", fetch = FetchType.EAGER)
     public Set<UserAccessEntity> getUserAccesses() {
         return userAccesses;
     }
