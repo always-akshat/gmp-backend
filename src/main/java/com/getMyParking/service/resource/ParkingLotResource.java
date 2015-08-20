@@ -98,16 +98,4 @@ public class ParkingLotResource {
         parkingLotDAO.deleteById(parkingLotId);
     }
 
-
-
-    /*@Path("/{parkingLotId}/report")
-    @GET
-    @Timed
-    @UnitOfWork
-    public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
-                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        return parkingEventDAO.createReport(parkingLot,fromDate.get(),toDate.get());
-    }*/
-
 }

@@ -1,15 +1,19 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.ParkingEventEntity;
+import com.getMyParking.entity.ParkingReport;
+import com.getMyParking.entity.ParkingSubLotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -69,95 +73,46 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return uniqueResult(criteria);
     }
 
-    /*
-    public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
 
-        List<PricingSlotEntity> pricingSlotEntities = Lists.newArrayList(parkingLot.getPricingSlotsById());
+    public ParkingReport createReport(ParkingSubLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
 
-        String carEvent = "CHECKED_IN";
-        String bikeEvent = "CHECKED_IN";
-        for (PricingSlotEntity pricingSlotEntity : pricingSlotEntities) {
-            if (pricingSlotEntity.getVehicleType().equalsIgnoreCase("CAR")) {
-                if (pricingSlotEntity.getCollectionModel().equalsIgnoreCase("POSTPAID")) {
-                    carEvent = "CHECKED_OUT";
-                } else {
-                    carEvent = "CHECKED_IN";
-                }
-            }
-            if (pricingSlotEntity.getVehicleType().equalsIgnoreCase("BIKE")) {
-                if (pricingSlotEntity.getCollectionModel().equalsIgnoreCase("POSTPAID")) {
-                    bikeEvent = "CHECKED_OUT";
-                } else {
-                    bikeEvent = "CHECKED_IN";
-                }
-            }
-        }
-
-        List cars = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLot.getId()))
+        List list = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType",carEvent))
-                .setProjection(Projections.rowCount())
-                .add(Restrictions.eq("vehicleType", "CAR")).list();
+                .add(Restrictions.eq("eventType","CHECKED_IN"))
+                .setProjection(Projections.rowCount()).list();
 
-        Long carNumbers = (Long) cars.get(0);
-        if (carNumbers == null) carNumbers = 0L;
+        Integer checkInCount = 0;
+        if (list != null) checkInCount = ((Long)list.get(0)).intValue();
 
-        List zeroCost = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLot.getId()))
+        list = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingSubLot.id", parkingSubLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType",carEvent))
-                .setProjection(Projections.rowCount())
-                .add(Restrictions.eq("vehicleType", "CAR"))
-                .add(Restrictions.eq("cost",new BigDecimal(0))).list();
+                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
+                .setProjection(Projections.rowCount()).list();
 
-        Long zeroCostNumber = (Long) zeroCost.get(0);
-        if (zeroCostNumber == null) zeroCostNumber = 0L;
+        Integer checkOutCount = 0;
+        if (list != null) checkOutCount = ((Long)list.get(0)).intValue();
 
-        carNumbers = carNumbers - zeroCostNumber;
-
-        List bikes = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLot.getId()))
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", bikeEvent))
-                .setProjection(Projections.rowCount())
-                .add(Restrictions.eq("vehicleType", "BIKE")).list();
-
-        Long bikeNumbers = (Long) bikes.get(0);
-        if (bikeNumbers == null) bikeNumbers = 0L;
-
-        zeroCost = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id",parkingLot.getId()))
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType",bikeEvent))
-                .setProjection(Projections.rowCount())
-                .add(Restrictions.eq("vehicleType", "BIKE"))
-                .add(Restrictions.eq("cost",new BigDecimal(0))).list();
-
-        zeroCostNumber = (Long) zeroCost.get(0);
-        if (zeroCostNumber == null) zeroCostNumber = 0L;
-
-        bikeNumbers = bikeNumbers - zeroCostNumber;
-
-        List carsRevenue = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLot.getId()))
+        list = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingSubLot.id", parkingSubLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("vehicleType", "CAR")).list();
+                .add(Restrictions.eq("eventType", "CHECKED_IN")).list();
 
-        BigDecimal carsTotal = (BigDecimal) carsRevenue.get(0);
-        if (carsTotal == null) carsTotal = new BigDecimal(0);
+        BigDecimal checkInRevenue = (BigDecimal) list.get(0);
+        if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
 
-        List bikesRevenue = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingLotByParkingLotId.id", parkingLot.getId()))
+        list = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingSubLot.id", parkingSubLot.getId()))
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("vehicleType", "BIKE")).list();
+                .add(Restrictions.eq("eventType", "CHECKED_OUT")).list();
 
-        BigDecimal bikeTotal = (BigDecimal) bikesRevenue.get(0);
-        if (bikeTotal == null) bikeTotal = new BigDecimal(0);
+        BigDecimal checkOutRevenue = (BigDecimal) list.get(0);
+        if (checkOutRevenue == null) checkOutRevenue = new BigDecimal(0);
 
-        return new ParkingReport(carNumbers.intValue(),bikeNumbers.intValue(),carsTotal.intValue(),bikeTotal.intValue());
+        return new ParkingReport(checkInCount,checkOutCount,checkInRevenue,checkOutRevenue);
 
-    }*/
+    }
 }

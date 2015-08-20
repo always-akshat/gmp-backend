@@ -2,6 +2,7 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.*;
@@ -12,6 +13,7 @@ import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -30,12 +32,16 @@ public class ParkingSubLotResource {
 
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingLotDAO parkingLotDAO;
+    private ParkingEventDAO parkingEventDAO;
 
-    @Inject
-    public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO) {
+    public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingLotDAO = parkingLotDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
+
+    @Inject
+
 
     @GET
     @Path("/{parkingSubLotIds}")
@@ -156,5 +162,15 @@ public class ParkingSubLotResource {
             parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);
         }
         return receiptContentEntity.getId();
+    }
+
+    @Path("/{parkingSubLotId}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    public ParkingReport report( @PathParam("parkingSubLotId") Integer parkingSubLotId,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
+        return parkingEventDAO.createReport(parkingSubLot,fromDate.get(),toDate.get());
     }
 }
