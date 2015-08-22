@@ -34,14 +34,12 @@ public class ParkingSubLotResource {
     private ParkingLotDAO parkingLotDAO;
     private ParkingEventDAO parkingEventDAO;
 
+    @Inject
     public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingLotDAO = parkingLotDAO;
         this.parkingEventDAO = parkingEventDAO;
     }
-
-    @Inject
-
 
     @GET
     @Path("/{parkingSubLotIds}")
@@ -54,7 +52,7 @@ public class ParkingSubLotResource {
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     public List<ParkingSubLotEntity> getParkingSubLotsById(@PathParam("parkingSubLotIds")String ids,
-                                              @Auth GMPUser gmpUser) {
+                                                           @Auth GMPUser gmpUser) {
         List<String> parkingLotSubIds = Splitter.on(",").splitToList(ids);
         List<ParkingSubLotEntity> parkingSubLotEntities = Lists.newArrayList();
         for (String id : parkingLotSubIds) {
