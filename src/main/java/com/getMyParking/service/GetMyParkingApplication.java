@@ -125,7 +125,8 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         Session session = guiceBundle.getInjector().getInstance(SessionFactory.class).openSession();
         ManagedSessionContext.bind(session);
         ParkingSubLotDAO parkingSubLotDAO = guiceBundle.getInjector().getInstance(ParkingSubLotDAO.class);
-        List<ParkingSubLotEntity> parkingSubLots = parkingSubLotDAO.getAllParkingLots();
+        List<ParkingSubLotEntity> parkingSubLots =
+                Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllParkingLots()));
 
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
 
