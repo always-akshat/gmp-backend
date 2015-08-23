@@ -6,6 +6,8 @@ import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 
+import java.util.List;
+
 /**
  * Created by rahulgupta.s on 15/08/15.
  */
@@ -23,5 +25,9 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
 
     public void saveOrUpdateParkingLot(ParkingSubLotEntity parkingSubLot) {
         persist(parkingSubLot);
+    }
+
+    public List<ParkingSubLotEntity> getAllParkingLots(){
+        return list(criteria());
     }
 }

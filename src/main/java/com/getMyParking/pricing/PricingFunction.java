@@ -8,16 +8,23 @@ import org.joda.time.DateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rahulgupta.s on 05/06/15.
  */
 public class PricingFunction {
-/*
+
     //pricingSlots will be sorted by day. Day is Integer with 1 as Monday and 7 as Sunday
-    public static int calculateInitialCost(List<PricingSlotEntity> pricingSlots, DateTime checkInTime) {
+    public static double calculateInitialCost(Map<Integer,List<PricingSlotEntity>> pricingSlotsMap, DateTime checkInTime) {
 
         int day = checkInTime.dayOfWeek().get();
+        List<PricingSlotEntity> pricingSlots = pricingSlotsMap.get(day);
+
+        if (pricingSlots == null) {
+            pricingSlots = pricingSlotsMap.get(0);
+        }
+
         PricingSlotEntity currentPricingSlot = pricingSlots.get(0);
         int minutesOfDay = checkInTime.getMinuteOfDay();
 
@@ -28,20 +35,26 @@ public class PricingFunction {
                 break;
             }
         }
-        List<PriceGridEntity> priceGridList = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
-        Collections.sort(priceGridList,priceGridComparator);
-        if (currentPricingSlot.getCollectionModel().equalsIgnoreCase("PREPAID")) return 0;
-        else return priceGridList.get(0).getCost();
+
+        Collections.sort(Lists.newArrayList(currentPricingSlot.getPriceGrids()),priceGridComparator);
+        return Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0).getCost();
 
     }
 
-    public static int calculateCost(List<PricingSlotEntity> pricingSlots, DateTime checkInTime, DateTime checkoutTime) {
+    public static double calculateCost(Map<Integer,List<PricingSlotEntity>> pricingSlotsMap, DateTime checkInTime, DateTime checkoutTime) {
 
-        int cost = 0;
+        double cost = 0;
         int index;
         DateTime currentTime = checkInTime;
 
         int day = checkInTime.dayOfWeek().get();
+
+        List<PricingSlotEntity> pricingSlots = pricingSlotsMap.get(day);
+
+        if (pricingSlots == null) {
+            pricingSlots = pricingSlotsMap.get(0);
+        }
+
         PricingSlotEntity currentPricingSlot = pricingSlots.get(0);
         int minutesOfDay = checkInTime.getMinuteOfDay();
 
@@ -54,9 +67,8 @@ public class PricingFunction {
             }
         }
 
-        List<PriceGridEntity> priceGridList = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
-        Collections.sort(priceGridList,priceGridComparator);
-        PriceGridEntity currentPriceGrid = priceGridList.get(0);
+        Collections.sort(Lists.newArrayList(currentPricingSlot.getPriceGrids()), priceGridComparator);
+        PriceGridEntity currentPriceGrid = Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0);
         int priceGridIndex = 0;
 
         while (currentTime.isBefore(checkoutTime)) {
@@ -70,24 +82,33 @@ public class PricingFunction {
                     currentPricingSlot.getStartMinutesOfDay() <= minutesOfDay &&
                     currentPricingSlot.getEndMinutesOfDay() > minutesOfDay) {
 
-                List<PriceGridEntity> currentPriceGrids = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
+                List<PriceGridEntity> currentPriceGrids = Lists.newArrayList(currentPricingSlot.getPriceGrids());
                 priceGridIndex = (priceGridIndex == (currentPriceGrids.size() - 1))? priceGridIndex: priceGridIndex + 1;
                 currentPriceGrid = currentPriceGrids.get(priceGridIndex);
+                currentTime = newCurrentTime;
 
+            } else if (newCurrentTime.getDayOfWeek() == currentTime.getDayOfWeek() &&
+                    pricingSlots.size() > index) {
+                int endMinutesOfCurrentSlot = currentPricingSlot.getEndMinutesOfDay();
+                index++;
+                currentPricingSlot = pricingSlots.get(index);
+                Collections.sort(Lists.newArrayList(currentPricingSlot.getPriceGrids()), priceGridComparator);
+                currentPriceGrid = Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0);
+                priceGridIndex = 0;
+                currentTime = currentTime.plusMinutes(endMinutesOfCurrentSlot - currentTime.getMinuteOfDay());
             } else {
-                PricingSlotEntity nextPricingSlot = pricingSlots.get( (index + 1) % pricingSlots.size());
-                if (nextPricingSlot.getStartMinutesOfDay() <= minutesOfDay
-                        && nextPricingSlot.getEndMinutesOfDay() > minutesOfDay) {
-                    currentPricingSlot = nextPricingSlot;
-                    index = (index + 1) % pricingSlots.size();
-                    List<PriceGridEntity> currentPriceGrids = Lists.newArrayList(currentPricingSlot.getPriceGridsById());
-                    Collections.sort(currentPriceGrids,priceGridComparator);
-                    currentPriceGrid = currentPriceGrids.get(0);
-                    priceGridIndex = 0;
-
+                int endMinutesOfCurrentSlot = currentPricingSlot.getEndMinutesOfDay();
+                pricingSlots = pricingSlotsMap.get((day % 7) + 1);
+                if (pricingSlots == null) {
+                    pricingSlots = pricingSlotsMap.get(0);
                 }
+                currentPricingSlot = pricingSlots.get(0);
+                index = 0;
+                Collections.sort(Lists.newArrayList(currentPricingSlot.getPriceGrids()), priceGridComparator);
+                currentPriceGrid = Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0);
+                priceGridIndex = 0;
+                currentTime = currentTime.plusMinutes(endMinutesOfCurrentSlot - currentTime.getMinuteOfDay());
             }
-            currentTime = newCurrentTime;
         }
 
         return cost;
@@ -99,5 +120,5 @@ public class PricingFunction {
             return o1.getSequenceNumber() - o2.getSequenceNumber();
         }
     };
-*/
+
 }
