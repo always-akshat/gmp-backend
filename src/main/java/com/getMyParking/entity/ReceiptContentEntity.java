@@ -16,7 +16,7 @@ public class ReceiptContentEntity {
     private String eventType;
     @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
-    private StyleMasterEntity styleMaster;
+    private String styleTitle;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -58,6 +58,16 @@ public class ReceiptContentEntity {
         this.eventType = eventType;
     }
 
+    @Basic
+    @Column(name = "style_master_title", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getStyleTitle() {
+        return styleTitle;
+    }
+
+    public void setStyleTitle(String styleTitle) {
+        this.styleTitle = styleTitle;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,15 +100,5 @@ public class ReceiptContentEntity {
 
     public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
         this.parkingSubLot = parkingSubLotByParkingSubLotId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "style_master_title", referencedColumnName = "title", nullable = false)
-    public StyleMasterEntity getStyleMaster() {
-        return styleMaster;
-    }
-
-    public void setStyleMaster(StyleMasterEntity styleMasterByStyleId) {
-        this.styleMaster = styleMasterByStyleId;
     }
 }
