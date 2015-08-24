@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_sub_lot` (
   `auto_checkout_time` TIME NULL,
   `parking_lot_id` INT NOT NULL,
   `plate_number_type` VARCHAR(45) NOT NULL,
-  `mobile_required` TINYINT NOT NULL,
-  `valet_name` TINYINT NOT NULL,
+  `mobile_required` VARCHAR(45) NOT NULL,
+  `valet_name` VARCHAR(45) NOT NULL,
   `last_checkin_update_time` TIME NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_parking_sub_lot_parking_lot1_idx` (`parking_lot_id` ASC),
@@ -345,22 +345,38 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`receipt_content` (
   ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `get_my_parking_v2`.`access_master`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `get_my_parking_v2`.`access_master` ;
+
+CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`access_master` (
+  `access_title` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`access_title`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `get_my_parking_v2`.`user_access`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `get_my_parking_v2`.`user_access` ;
 
 CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`user_access` (
-  `access_title` VARCHAR(128) NOT NULL,
-  `user_b2b_username` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`access_title`),
-  INDEX `fk_user_access_user_b2b1_idx` (`user_b2b_username` ASC),
-  CONSTRAINT `fk_user_access_user_b2b1`
-  FOREIGN KEY (`user_b2b_username`)
-  REFERENCES `get_my_parking_v2`.`user_b2b` (`username`)
+  `username` VARCHAR(255) NOT NULL,
+  `access_title` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`username`, `access_title`),
+  INDEX `fk_user_b2b_has_access_master_access_master1_idx` (`access_title` ASC),
+  INDEX `fk_user_b2b_has_access_master_user_b2b1_idx` (`username` ASC),
+  CONSTRAINT `fk_user_b2b_has_access_master_user_b2b1`
+    FOREIGN KEY (`username`)
+    REFERENCES `get_my_parking_v2`.`user_b2b` (`username`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_b2b_has_access_master_access_master1`
+    FOREIGN KEY (`access_title`)
+    REFERENCES `get_my_parking_v2`.`access_master` (`access_title`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-  ENGINE = InnoDB;
-
+ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

@@ -43,7 +43,7 @@ public class UserAccessEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "user_b2b_username", referencedColumnName = "username", nullable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", nullable = false)
     public UserB2BEntity getUserB2BEntity() {
         return userB2BEntity;
     }

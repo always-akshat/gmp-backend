@@ -19,8 +19,8 @@ public class ParkingSubLotEntity {
     private Time taxiTime;
     private Time autoCheckoutTime;
     private String plateNumberType;
-    private Integer mobileRequired;
-    private Integer valetName;
+    private String mobileRequired;
+    private String valetName;
     private Time lastCheckinUpdateTime;
     private Set<ParkingPassMasterEntity> parkingPasses;
     private Set<PricingSlotEntity> pricingSlots;
@@ -101,21 +101,21 @@ public class ParkingSubLotEntity {
 
     @Basic
     @Column(name = "mobile_required", nullable = false, insertable = true, updatable = true)
-    public Integer getMobileRequired() {
+    public String getMobileRequired() {
         return mobileRequired;
     }
 
-    public void setMobileRequired(Integer mobileRequired) {
+    public void setMobileRequired(String mobileRequired) {
         this.mobileRequired = mobileRequired;
     }
 
     @Basic
     @Column(name = "valet_name", nullable = false, insertable = true, updatable = true)
-    public Integer getValetName() {
+    public String getValetName() {
         return valetName;
     }
 
-    public void setValetName(Integer valetName) {
+    public void setValetName(String valetName) {
         this.valetName = valetName;
     }
 
@@ -163,8 +163,8 @@ public class ParkingSubLotEntity {
         result = 31 * result + (taxiTime != null ? taxiTime.hashCode() : 0);
         result = 31 * result + (autoCheckoutTime != null ? autoCheckoutTime.hashCode() : 0);
         result = 31 * result + (plateNumberType != null ? plateNumberType.hashCode() : 0);
-        result = 31 * result + (int) mobileRequired;
-        result = 31 * result + (int) valetName;
+        result = 31 * result + mobileRequired.hashCode();
+        result = 31 * result + valetName.hashCode();
         result = 31 * result + (lastCheckinUpdateTime != null ? lastCheckinUpdateTime.hashCode() : 0);
         return result;
     }
