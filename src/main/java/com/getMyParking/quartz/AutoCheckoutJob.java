@@ -71,6 +71,8 @@ public class AutoCheckoutJob implements Job {
                 parkingEvent.setRegistrationNumber(oldParkingEvent.getRegistrationNumber());
                 parkingEvent.setSerialNumber(oldParkingEvent.getSerialNumber());
                 parkingEvent.setType(oldParkingEvent.getType());
+                parkingEvent.setOperatorName("AUTO_CHECKOUT");
+                parkingEvent.setSubLotType(oldParkingEvent.getSubLotType());
                 if (oldParkingEvent.getShiftNumber() != null) {
                     parkingEvent.setShiftNumber(oldParkingEvent.getShiftNumber());
                 }
