@@ -7,6 +7,7 @@ import com.google.inject.name.Named;
 import com.netflix.governator.guice.lazy.LazySingleton;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
+import org.joda.time.DateTime;
 
 import java.util.concurrent.ExecutionException;
 
@@ -26,7 +27,11 @@ public class GMPAuthenticator implements Authenticator<GMPCredentials,GMPUser> {
     @Override
     public Optional<GMPUser> authenticate(GMPCredentials gmpCredentials) throws AuthenticationException {
         try {
-            return Optional.fromNullable(authTokenCache.get(gmpCredentials.getAuthToken()));
+            GMPUser gmpUser = authTokenCache.get(gmpCredentials.getAuthToken());
+            if (gmpUser != null && DateTime.now().isBefore(gmpUser.getValidTime()))
+                return Optional.of(gmpUser);
+            else
+                return Optional.absent();
         } catch (ExecutionException e) {
             throw new AuthenticationException("Invalid credentials");
         }

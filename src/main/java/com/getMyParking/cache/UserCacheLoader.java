@@ -27,7 +27,7 @@ public class UserCacheLoader extends CacheLoader<String,GMPUser> {
         SessionEntity sessionEntity = sessionDAO.findByAuthToken(authToken);
         if (sessionEntity != null && DateTime.now().isBefore(new DateTime(sessionEntity.getValidTime()))) {
             UserB2BEntity user = sessionEntity.getUserB2BEntity();
-            return new GMPUser(user,authToken);
+            return new GMPUser(user,authToken,sessionEntity.getValidTime());
         }
         throw new Exception("INVALID_AUTH_TOKEN");
     }

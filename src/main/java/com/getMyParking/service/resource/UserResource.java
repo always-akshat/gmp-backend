@@ -79,7 +79,7 @@ public class UserResource {
             SessionEntity sessionEntity = new SessionEntity(authToken,validTillDate,userB2BEntity);
             sessionDAO.saveSession(sessionEntity);
 
-            GMPUser user = new GMPUser(userB2BEntity,authToken);
+            GMPUser user = new GMPUser(userB2BEntity,authToken,sessionEntity.getValidTime());
             authTokenCache.put(authToken,user);
             return user;
         } else {
