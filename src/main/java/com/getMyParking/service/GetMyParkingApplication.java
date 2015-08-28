@@ -7,6 +7,7 @@ import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
+import com.getMyParking.service.exceptionMapper.AuthenticationExceptionMapper;
 import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
@@ -116,9 +117,10 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
     @Override
     public void run(GetMyParkingConfiguration getMyParkingConfiguration, Environment environment) throws Exception {
+
         environment.jersey().register(AuthFactory.binder(
                 new GMPAuthFactory(guiceBundle.getInjector().getInstance(GMPAuthenticator.class), "Oh! You Missed Something..")));
-
+        environment.jersey().register(new AuthenticationExceptionMapper());
         ManagedQuartzScheduler quartzScheduler = guiceBundle.getInjector().getInstance(ManagedQuartzScheduler.class);
         Scheduler scheduler = quartzScheduler.getScheduler();
         GuiceHelper.setInjector(guiceBundle.getInjector());

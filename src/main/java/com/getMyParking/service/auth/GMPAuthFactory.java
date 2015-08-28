@@ -79,7 +79,7 @@ public class GMPAuthFactory extends AuthFactory<GMPCredentials, GMPUser> {
                 LOGGER.warn("Error decoding credentials", e);
             } catch (AuthenticationException e) {
                 LOGGER.warn("Error authenticating credentials", e);
-                throw new WebApplicationException(unauthorizedHandler.buildResponse(prefix, realm));
+                throw new InternalServerErrorException();
             }
         }
 
