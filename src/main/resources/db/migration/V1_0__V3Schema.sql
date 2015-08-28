@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_pass` (
 DROP TABLE IF EXISTS `get_my_parking_v2`.`parking_event` ;
 
 CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_event` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(45) NOT NULL COMMENT 'Standard / Pass',
   `registration_number` VARCHAR(45) NOT NULL,
   `mobile_number` VARCHAR(45) NULL,
@@ -162,9 +162,15 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_event` (
   `shift_number` VARCHAR(500) NOT NULL,
   `updated_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `operator_name` VARCHAR(255) NOT NULL,
+  `parking_lot_id` INT NOT NULL,
+  `parking_id` INT NOT NULL,
+  `company_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_parkings_parking_lot1_idx` (`parking_sub_lot_id` ASC),
   INDEX `fk_parkings_parking_pass1_idx` (`parking_pass_id` ASC),
+  INDEX `fk_parking_event_parking_lot1_idx` (`parking_lot_id` ASC),
+  INDEX `fk_parking_event_parking1_idx` (`parking_id` ASC),
+  INDEX `fk_parking_event_company1_idx` (`company_id` ASC),
   CONSTRAINT `fk_parkings_parking_lot1`
   FOREIGN KEY (`parking_sub_lot_id`)
   REFERENCES `get_my_parking_v2`.`parking_sub_lot` (`id`)
@@ -173,6 +179,21 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_event` (
   CONSTRAINT `fk_parkings_parking_pass1`
   FOREIGN KEY (`parking_pass_id`)
   REFERENCES `get_my_parking_v2`.`parking_pass` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parking_event_parking_lot1`
+  FOREIGN KEY (`parking_lot_id`)
+  REFERENCES `get_my_parking_v2`.`parking_lot` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parking_event_parking1`
+  FOREIGN KEY (`parking_id`)
+  REFERENCES `get_my_parking_v2`.`parking` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parking_event_company1`
+  FOREIGN KEY (`company_id`)
+  REFERENCES `get_my_parking_v2`.`company` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;

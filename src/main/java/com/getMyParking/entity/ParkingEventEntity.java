@@ -26,6 +26,9 @@ public class ParkingEventEntity {
     private String shiftNumber;
     private DateTime updatedTime;
     private String operatorName;
+    private int parkingLotId;
+    private int parkingId;
+    private int companyId;
     @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
     @JsonIgnore
@@ -164,6 +167,36 @@ public class ParkingEventEntity {
 
     public void setOperatorName(String operatorName) {
         this.operatorName = operatorName;
+    }
+
+    @Basic
+    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
+    public int getParkingLotId() {
+        return parkingLotId;
+    }
+
+    public void setParkingLotId(int parkingLotId) {
+        this.parkingLotId = parkingLotId;
+    }
+
+    @Basic
+    @Column(name = "parking_id", nullable = false, insertable = true, updatable = true)
+    public int getParkingId() {
+        return parkingId;
+    }
+
+    public void setParkingId(int parkingId) {
+        this.parkingId = parkingId;
+    }
+
+    @Basic
+    @Column(name = "company_id", nullable = false, insertable = true, updatable = true)
+    public int getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(int companyId) {
+        this.companyId = companyId;
     }
 
     @Override

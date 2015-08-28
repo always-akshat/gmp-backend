@@ -3,7 +3,9 @@ package com.getMyParking.service.resource;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.CompanyDAO;
+import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.entity.CompanyEntity;
+import com.getMyParking.entity.ParkingReport;
 import com.getMyParking.entity.ParkingSubLotEntity;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
@@ -11,6 +13,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -29,10 +32,12 @@ import java.util.Set;
 public class CompanyResource {
 
     private CompanyDAO companyDAO;
+    private ParkingEventDAO parkingEventDAO;
 
     @Inject
-    public CompanyResource(CompanyDAO companyDAO) {
+    public CompanyResource(CompanyDAO companyDAO, ParkingEventDAO parkingEventDAO) {
         this.companyDAO = companyDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
 
     @ApiOperation(value = "Get Company by Company Id", response = CompanyEntity.class)
@@ -81,5 +86,19 @@ public class CompanyResource {
         companyDAO.deleteById(companyId);
     }
 
+    @Path("/{companyId}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by company", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public ParkingReport report( @PathParam("companyId") Integer companyId,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        CompanyEntity company = companyDAO.findById(companyId);
+        return parkingEventDAO.createReport(company,fromDate.get(),toDate.get());
+    }
 
 }

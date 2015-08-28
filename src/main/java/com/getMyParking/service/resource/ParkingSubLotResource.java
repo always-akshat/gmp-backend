@@ -166,6 +166,11 @@ public class ParkingSubLotResource {
     @GET
     @Timed
     @UnitOfWork
+    @ApiOperation(value = "Report by parking sub lot", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
     public ParkingReport report( @PathParam("parkingSubLotId") Integer parkingSubLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);

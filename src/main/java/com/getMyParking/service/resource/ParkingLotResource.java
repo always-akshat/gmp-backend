@@ -32,11 +32,13 @@ public class ParkingLotResource {
 
     private ParkingDAO parkingDAO;
     private ParkingLotDAO parkingLotDAO;
+    private ParkingEventDAO parkingEventDAO;
 
     @Inject
-    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO) {
+    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
         this.parkingDAO = parkingDAO;
         this.parkingLotDAO = parkingLotDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
 
     @GET
@@ -96,6 +98,21 @@ public class ParkingLotResource {
     })
     public void deleteParkingLot(@PathParam("parkingLotId")int parkingLotId) {
         parkingLotDAO.deleteById(parkingLotId);
+    }
+
+    @Path("/{parkingLotId}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking lot", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+        return parkingEventDAO.createReport(parkingLot,fromDate.get(),toDate.get());
     }
 
 }

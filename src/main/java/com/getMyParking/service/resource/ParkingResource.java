@@ -4,11 +4,15 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.dao.ParkingDAO;
+import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.entity.CompanyEntity;
 import com.getMyParking.entity.ParkingEntity;
+import com.getMyParking.entity.ParkingLotEntity;
+import com.getMyParking.entity.ParkingReport;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -26,11 +30,13 @@ public class ParkingResource {
 
     private ParkingDAO parkingDAO;
     private CompanyDAO companyDAO;
+    private ParkingEventDAO parkingEventDAO;
 
     @Inject
-    public ParkingResource(ParkingDAO parkingDAO, CompanyDAO companyDAO) {
+    public ParkingResource(ParkingDAO parkingDAO, CompanyDAO companyDAO, ParkingEventDAO parkingEventDAO) {
         this.parkingDAO = parkingDAO;
         this.companyDAO = companyDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
 
     @ApiOperation(value = "Get Parking by Parking Id", response = ParkingEntity.class)
@@ -85,5 +91,20 @@ public class ParkingResource {
     @UnitOfWork
     public void deleteParking(@PathParam("parkingId")int parkingId) {
         parkingDAO.deleteById(parkingId);
+    }
+
+    @Path("/{parkingId}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public ParkingReport report( @PathParam("parkingId") Integer parkingId,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        ParkingEntity parking = parkingDAO.findById(parkingId);
+        return parkingEventDAO.createReport(parking,fromDate.get(),toDate.get());
     }
 }

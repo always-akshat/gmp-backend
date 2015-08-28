@@ -1,14 +1,13 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.ParkingReport;
-import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.entity.*;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -73,11 +72,26 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return uniqueResult(criteria);
     }
 
-
     public ParkingReport createReport(ParkingSubLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate,toDate);
+    }
+
+    public ParkingReport createReport(ParkingLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingLotId",parkingSubLot.getId()),fromDate,toDate);
+    }
+
+    public ParkingReport createReport(ParkingEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingId",parkingSubLot.getId()),fromDate,toDate);
+    }
+
+    public ParkingReport createReport(CompanyEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("companyId",parkingSubLot.getId()),fromDate,toDate);
+    }
+
+    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate) {
 
         List list = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()))
+                .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType","CHECKED_IN"))
                 .setProjection(Projections.rowCount()).list();
@@ -86,7 +100,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         if (list != null) checkInCount = ((Long)list.get(0)).intValue();
 
         list = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingSubLot.id", parkingSubLot.getId()))
+                .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_OUT"))
                 .setProjection(Projections.rowCount()).list();
@@ -95,7 +109,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         if (list != null) checkOutCount = ((Long)list.get(0)).intValue();
 
         list = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingSubLot.id", parkingSubLot.getId()))
+                .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
                 .add(Restrictions.eq("eventType", "CHECKED_IN")).list();
@@ -104,7 +118,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
 
         list = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.eq("parkingSubLot.id", parkingSubLot.getId()))
+                .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
                 .add(Restrictions.eq("eventType", "CHECKED_OUT")).list();
