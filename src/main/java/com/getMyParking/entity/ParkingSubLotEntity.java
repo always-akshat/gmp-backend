@@ -3,6 +3,7 @@ package com.getMyParking.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class ParkingSubLotEntity {
     private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
     private ParkingLotEntity parkingLot;
+    private BigDecimal autoCheckoutCost;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -204,5 +206,15 @@ public class ParkingSubLotEntity {
 
     public void setReceiptContents(Set<ReceiptContentEntity> receiptContentsById) {
         this.receiptContents = receiptContentsById;
+    }
+
+    @Basic
+    @Column(name = "auto_checkout_cost", nullable = false, insertable = true, updatable = true)
+    public BigDecimal getAutoCheckoutCost() {
+        return autoCheckoutCost;
+    }
+
+    public void setAutoCheckoutCost(BigDecimal autoCheckoutCost) {
+        this.autoCheckoutCost = autoCheckoutCost;
     }
 }

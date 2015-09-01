@@ -73,14 +73,16 @@ public class AutoCheckoutJob implements Job {
                 parkingEvent.setType(oldParkingEvent.getType());
                 parkingEvent.setOperatorName("AUTO_CHECKOUT");
                 parkingEvent.setSubLotType(oldParkingEvent.getSubLotType());
+                parkingEvent.setCompanyId(oldParkingEvent.getCompanyId());
+                parkingEvent.setParkingId(oldParkingEvent.getParkingId());
+                parkingEvent.setParkingLotId(oldParkingEvent.getParkingLotId());
                 if (oldParkingEvent.getShiftNumber() != null) {
                     parkingEvent.setShiftNumber(oldParkingEvent.getShiftNumber());
                 }
                 if (oldParkingEvent.getParkingPassId() != null) {
                     parkingEvent.setParkingPassId(oldParkingEvent.getParkingPassId());
                 }
-
-                parkingEvent.setCost(new BigDecimal(PricingFunction.calculateInitialCost(pricingSlotMap, DateTime.now())));
+                parkingEvent.setCost(parkingSubLot.getAutoCheckoutCost());
                 parkingEvent.setUpdatedTime(DateTime.now());
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
                 count ++;

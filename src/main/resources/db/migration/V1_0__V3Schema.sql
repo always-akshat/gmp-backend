@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`parking_sub_lot` (
   `collection_model` VARCHAR(500) NOT NULL COMMENT 'PREPAID / POSTPAID / HYBRID',
   `taxi_time` TIME NULL,
   `auto_checkout_time` TIME NULL,
+  `auto_checkout_cost` DECIMAL(10,2) NULL,
   `parking_lot_id` INT NOT NULL,
   `plate_number_type` VARCHAR(45) NOT NULL,
   `mobile_required` VARCHAR(45) NOT NULL,
