@@ -121,9 +121,9 @@ public class ParkingEventResource {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
                 if (parkingEvent.getId() == null) {
-                    ParkingEventEntity pe = parkingEventDAO.findBySerialNumberAndEventType(parkingSubLotId,
+                    List<ParkingEventEntity> pe = parkingEventDAO.findBySerialNumberAndEventType(parkingSubLotId,
                             parkingEvent.getEventType(), parkingEvent.getSerialNumber());
-                    if (pe != null)
+                    if (pe != null && pe.size() > 0)
                         throw new WebApplicationException(Response.Status.CONFLICT);
                 }
                 parkingEvent.setParkingSubLot(parkingSubLot);
