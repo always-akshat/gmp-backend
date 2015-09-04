@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -14,20 +15,30 @@ import java.math.BigDecimal;
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking_v2")
 public class ParkingEventEntity {
     private Integer id;
+    @NotNull
     private String type;
+    @NotNull
     private String registrationNumber;
     private String mobileNumber;
     private String valetName;
+    @NotNull
     private DateTime eventTime;
+    @NotNull
     private String eventType;
+    @NotNull
     private BigDecimal cost;
+    @NotNull
     private String subLotType;
+    @NotNull
     private String serialNumber;
     private String shiftNumber;
     private DateTime updatedTime;
     private String operatorName;
+    @NotNull
     private Integer parkingLotId;
+    @NotNull
     private Integer parkingId;
+    @NotNull
     private Integer companyId;
     @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
