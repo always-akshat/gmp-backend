@@ -120,7 +120,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         environment.jersey().register(AuthFactory.binder(
                 new GMPAuthFactory(guiceBundle.getInjector().getInstance(GMPAuthenticator.class), "Oh! You Missed Something..")));
-        environment.jersey().register(new AuthenticationExceptionMapper());
         ManagedQuartzScheduler quartzScheduler = guiceBundle.getInjector().getInstance(ManagedQuartzScheduler.class);
         Scheduler scheduler = quartzScheduler.getScheduler();
         GuiceHelper.setInjector(guiceBundle.getInjector());
