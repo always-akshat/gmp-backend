@@ -1,14 +1,11 @@
 package com.getMyParking.service;
 
-import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
-import com.getMyParking.service.exceptionMapper.AuthenticationExceptionMapper;
-import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
 import com.google.common.collect.Lists;
@@ -43,6 +40,8 @@ import java.util.TimeZone;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
+
+import com.getMyParking.service.guice.GMPModule;
 
 /**
  * Created with IntelliJ IDEA.
