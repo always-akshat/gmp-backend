@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking_v2")
 public class ParkingEventEntity {
-    private Integer id;
+    private BigInteger id;
     @NotNull
     private String type;
     @NotNull
@@ -50,11 +51,11 @@ public class ParkingEventEntity {
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    public Integer getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -217,7 +218,7 @@ public class ParkingEventEntity {
 
         ParkingEventEntity that = (ParkingEventEntity) o;
 
-        if (id != that.id) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
         if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
@@ -236,7 +237,7 @@ public class ParkingEventEntity {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = (id != null) ? id.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (registrationNumber != null ? registrationNumber.hashCode() : 0);
         result = 31 * result + (mobileNumber != null ? mobileNumber.hashCode() : 0);
