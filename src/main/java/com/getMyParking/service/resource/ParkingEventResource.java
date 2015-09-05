@@ -5,7 +5,10 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
-import com.getMyParking.entity.*;
+import com.getMyParking.entity.GetParkingEventResponse;
+import com.getMyParking.entity.ParkingEventEntity;
+import com.getMyParking.entity.ParkingPassEntity;
+import com.getMyParking.entity.ParkingSubLotEntity;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -114,8 +117,8 @@ public class ParkingEventResource {
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     public BigInteger saveOrUpdateParkingEvent(@ApiParam (value = "Parking Event") @Valid ParkingEventEntity parkingEvent,
-                                        @PathParam("parkingSubLotId")int parkingSubLotId,
-                                        @Auth GMPUser gmpUser) {
+                                               @PathParam("parkingSubLotId")int parkingSubLotId,
+                                               @Auth GMPUser gmpUser) {
         if (gmpUser.getParkingSubLotIds().contains(parkingSubLotId)) {
             ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
             if (parkingSubLot == null) {
@@ -132,6 +135,39 @@ public class ParkingEventResource {
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }
             return parkingEvent.getId();
+        } else {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+    }
+
+    @PUT
+    @Path("/{parkingEventId}")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Update Parking Event",
+            notes = "Update a parking event, returns a parking event id",response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public BigInteger updateParkingEvent(@ApiParam (value = "Parking Event") @Valid ParkingEventEntity parkingEvent,
+                                               @PathParam("parkingEventId") BigInteger parkingEventId,
+                                               @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingEvent.getParkingSubLotId())) {
+            ParkingEventEntity pe = parkingEventDAO.findById(parkingEventId);
+            pe.copy(parkingEvent);
+            pe.setUpdatedTime(DateTime.now());
+            if (!pe.getParkingSubLotId().equals(parkingEvent.getParkingSubLotId())) {
+                ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingEvent.getParkingSubLotId());
+                pe.setParkingSubLot(parkingSubLot);
+            }
+            if (!pe.getParkingPassId().equals(parkingEvent.getParkingPassId())) {
+                ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingEvent.getParkingSubLotId());
+                pe.setParkingPass(parkingPass);
+            }
+            parkingEventDAO.saveOrUpdateParkingEvent(pe);
+            return pe.getId();
         } else {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }

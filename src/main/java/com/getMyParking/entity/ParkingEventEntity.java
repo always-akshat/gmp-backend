@@ -214,16 +214,26 @@ public class ParkingEventEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ParkingEventEntity)) return false;
 
         ParkingEventEntity that = (ParkingEventEntity) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
         if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
+        if (parkingId != null ? !parkingId.equals(that.parkingId) : that.parkingId != null) return false;
+        if (parkingLotId != null ? !parkingLotId.equals(that.parkingLotId) : that.parkingLotId != null) return false;
+        if (parkingPass != null ? !parkingPass.equals(that.parkingPass) : that.parkingPass != null) return false;
+        if (parkingPassId != null ? !parkingPassId.equals(that.parkingPassId) : that.parkingPassId != null)
+            return false;
+        if (parkingSubLot != null ? !parkingSubLot.equals(that.parkingSubLot) : that.parkingSubLot != null)
+            return false;
+        if (parkingSubLotId != null ? !parkingSubLotId.equals(that.parkingSubLotId) : that.parkingSubLotId != null)
+            return false;
         if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
             return false;
         if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
@@ -231,13 +241,14 @@ public class ParkingEventEntity {
         if (subLotType != null ? !subLotType.equals(that.subLotType) : that.subLotType != null) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
-        return !(valetName != null ? !valetName.equals(that.valetName) : that.valetName != null);
+        if (valetName != null ? !valetName.equals(that.valetName) : that.valetName != null) return false;
 
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = (id != null) ? id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (registrationNumber != null ? registrationNumber.hashCode() : 0);
         result = 31 * result + (mobileNumber != null ? mobileNumber.hashCode() : 0);
@@ -250,6 +261,13 @@ public class ParkingEventEntity {
         result = 31 * result + (shiftNumber != null ? shiftNumber.hashCode() : 0);
         result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
         result = 31 * result + (operatorName != null ? operatorName.hashCode() : 0);
+        result = 31 * result + (parkingLotId != null ? parkingLotId.hashCode() : 0);
+        result = 31 * result + (parkingId != null ? parkingId.hashCode() : 0);
+        result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
+        result = 31 * result + (parkingSubLot != null ? parkingSubLot.hashCode() : 0);
+        result = 31 * result + (parkingPass != null ? parkingPass.hashCode() : 0);
+        result = 31 * result + (parkingSubLotId != null ? parkingSubLotId.hashCode() : 0);
+        result = 31 * result + (parkingPassId != null ? parkingPassId.hashCode() : 0);
         return result;
     }
 
@@ -289,5 +307,23 @@ public class ParkingEventEntity {
     @Transient
     public Integer getParkingPassId() {
         return parkingPassId;
+    }
+
+    public void copy(ParkingEventEntity parkingEvent) {
+        if (parkingEvent.getType() != null) type = parkingEvent.getType();
+        if (parkingEvent.getRegistrationNumber() != null)
+            registrationNumber = parkingEvent.getRegistrationNumber();
+        if (parkingEvent.getMobileNumber() != null) mobileNumber = parkingEvent.getMobileNumber();
+        if (parkingEvent.getValetName() != null) valetName = parkingEvent.getValetName();
+        if (parkingEvent.getEventTime() != null) eventTime = parkingEvent.getEventTime();
+        if (parkingEvent.getEventType() != null) eventType = parkingEvent.getEventType();
+        if (parkingEvent.getCost() != null) cost = parkingEvent.getCost();
+        if (parkingEvent.getSubLotType() != null) subLotType = parkingEvent.getSubLotType();
+        if (parkingEvent.getSerialNumber() != null) serialNumber = parkingEvent.getSerialNumber();
+        if (parkingEvent.getShiftNumber() != null) shiftNumber = parkingEvent.getShiftNumber();
+        if (parkingEvent.getOperatorName() != null) operatorName = parkingEvent.getOperatorName();
+        if (parkingEvent.getCompanyId() != null) companyId = parkingEvent.getCompanyId();
+        if (parkingEvent.getParkingLotId() != null) parkingLotId = parkingEvent.getParkingLotId();
+        if (parkingEvent.getParkingId() != null) parkingId = parkingEvent.getParkingId();
     }
 }

@@ -13,6 +13,7 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
 
-    public ParkingEventEntity findById(Integer id) {
+    public ParkingEventEntity findById(BigInteger id) {
         return get(id);
     }
 
