@@ -158,11 +158,13 @@ public class ParkingEventResource {
             ParkingEventEntity pe = parkingEventDAO.findById(parkingEventId);
             pe.copy(parkingEvent);
             pe.setUpdatedTime(DateTime.now());
-            if (!pe.getParkingSubLotId().equals(parkingEvent.getParkingSubLotId())) {
+            if (parkingEvent.getParkingSubLotId() != null && pe.getParkingSubLot() != null
+                && !pe.getParkingSubLot().getId().equals(parkingEvent.getParkingSubLotId())) {
                 ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingEvent.getParkingSubLotId());
                 pe.setParkingSubLot(parkingSubLot);
             }
-            if (!pe.getParkingPassId().equals(parkingEvent.getParkingPassId())) {
+            if (parkingEvent.getParkingPassId() != null && pe.getParkingPass() != null
+                && !pe.getParkingPass().getId().equals(parkingEvent.getParkingPassId())) {
                 ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingEvent.getParkingSubLotId());
                 pe.setParkingPass(parkingPass);
             }

@@ -1,6 +1,7 @@
 package com.getMyParking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -45,7 +46,9 @@ public class ParkingEventEntity {
     private ParkingSubLotEntity parkingSubLot;
     @JsonIgnore
     private ParkingPassEntity parkingPass;
+    @JsonProperty
     private Integer parkingSubLotId;
+    @JsonProperty
     private Integer parkingPassId;
 
     @Id
