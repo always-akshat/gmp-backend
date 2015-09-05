@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -112,7 +113,7 @@ public class ParkingEventResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public int saveOrUpdateParkingEvent(@ApiParam (value = "Parking Event") @Valid ParkingEventEntity parkingEvent,
+    public BigInteger saveOrUpdateParkingEvent(@ApiParam (value = "Parking Event") @Valid ParkingEventEntity parkingEvent,
                                         @PathParam("parkingSubLotId")int parkingSubLotId,
                                         @Auth GMPUser gmpUser) {
         if (gmpUser.getParkingSubLotIds().contains(parkingSubLotId)) {
@@ -148,7 +149,7 @@ public class ParkingEventResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public int saveOrUpdateParkingPassEvent(@ApiParam (value = "Parking Event") @Valid ParkingEventEntity parkingEvent,
+    public BigInteger saveOrUpdateParkingPassEvent(@ApiParam (value = "Parking Event") @Valid ParkingEventEntity parkingEvent,
                                             @PathParam("parkingLotId")int parkingLotId,
                                             @PathParam("parkingPassId")int parkingPassId,
                                             @Auth GMPUser gmpUser) {
