@@ -21,6 +21,7 @@ public class ParkingLotEntity {
     private BigDecimal longitude;
     private BigDecimal latitude;
     private Set<ParkingSubLotEntity> parkingSubLots;
+    private Set<ParkingLotFocReasonsEntity> focReasons;
     @JsonIgnore
     private ParkingEntity parking;
 
@@ -130,5 +131,14 @@ public class ParkingLotEntity {
 
     public void setParkingSubLots(Set<ParkingSubLotEntity> parkingSubLotsById) {
         this.parkingSubLots = parkingSubLotsById;
+    }
+
+    @OneToMany(mappedBy = "parkingLot", fetch = FetchType.EAGER)
+    public Set<ParkingLotFocReasonsEntity> getFocReasons() {
+        return focReasons;
+    }
+
+    public void setFocReasons(Set<ParkingLotFocReasonsEntity> focReasons) {
+        this.focReasons = focReasons;
     }
 }

@@ -22,6 +22,8 @@
       <mapping class="com.getMyParking.entity.UserAccessEntity"/>
       <mapping class="com.getMyParking.entity.UserB2BEntity"/>
       <mapping class="com.getMyParking.entity.ParkingSubLotUserAccessEntity"/>
+      <mapping class="com.getMyParking.entity.FocReasonsEntity"/>
+      <mapping class="com.getMyParking.entity.ParkingLotFocReasonsEntity"/>
       <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>
