@@ -7,6 +7,7 @@ import java.math.BigDecimal;
  */
 public class ParkingReport {
 
+    private String type;
     private Integer checkInCount;
     private Integer checkOutCount;
     private BigDecimal checkInRevenue;
@@ -17,6 +18,14 @@ public class ParkingReport {
         this.checkOutCount = checkOutCount;
         this.checkInRevenue = checkInRevenue;
         this.checkOutRevenue = checkOutRevenue;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Integer getCheckInCount() {

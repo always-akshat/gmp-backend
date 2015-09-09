@@ -9,15 +9,20 @@ import com.getMyParking.entity.CompanyEntity;
 import com.getMyParking.entity.ParkingEntity;
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingReport;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.joda.time.LocalDate;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -106,5 +111,21 @@ public class ParkingResource {
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         ParkingEntity parking = parkingDAO.findById(parkingId);
         return parkingEventDAO.createReport(parking,fromDate.get(),toDate.get());
+    }
+
+    @Path("/{parkingId}/report/details")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking clubed by types", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public Map<LocalDate,List<ParkingReport>> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        ParkingEntity parking = parkingDAO.findById(parkingId);
+        List<String> typesList = Splitter.on(',').splitToList(types);
+        return parkingEventDAO.createReport(parking,fromDate.get(),toDate.get(),typesList);
     }
 }

@@ -1,6 +1,8 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
@@ -11,10 +13,12 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -74,60 +78,86 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
     public ParkingReport createReport(ParkingSubLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate,toDate);
+        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
-    public ParkingReport createReport(ParkingLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingLotId",parkingSubLot.getId()),fromDate,toDate);
+    public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingLotId", parkingLot.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
-    public ParkingReport createReport(ParkingEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingId",parkingSubLot.getId()),fromDate,toDate);
+    public ParkingReport createReport(ParkingEntity parking, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingId", parking.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
-    public ParkingReport createReport(CompanyEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("companyId",parkingSubLot.getId()),fromDate,toDate);
+    public ParkingReport createReport(CompanyEntity company, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("companyId", company.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
-    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate) {
+    public ParkingReport createReport(Criterion fetchCriteria, LocalDate fromDate, LocalDate toDate, String type) {
 
-        List list = currentSession().createCriteria(ParkingEventEntity.class)
+        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType","CHECKED_IN"))
-                .setProjection(Projections.rowCount()).list();
+                .setProjection(Projections.rowCount());
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        List list = criteria.list();
 
         Integer checkInCount = 0;
         if (list != null) checkInCount = ((Long)list.get(0)).intValue();
 
-        list = currentSession().createCriteria(ParkingEventEntity.class)
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .setProjection(Projections.rowCount()).list();
+                .setProjection(Projections.rowCount());
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        list = criteria.list();
 
         Integer checkOutCount = 0;
         if (list != null) checkOutCount = ((Long)list.get(0)).intValue();
 
-        list = currentSession().createCriteria(ParkingEventEntity.class)
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("eventType", "CHECKED_IN")).list();
+                .add(Restrictions.eq("eventType", "CHECKED_IN"));
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        list = criteria.list();
 
         BigDecimal checkInRevenue = (BigDecimal) list.get(0);
         if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
 
-        list = currentSession().createCriteria(ParkingEventEntity.class)
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT")).list();
+                .add(Restrictions.eq("eventType", "CHECKED_OUT"));
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        list = criteria.list();
 
         BigDecimal checkOutRevenue = (BigDecimal) list.get(0);
         if (checkOutRevenue == null) checkOutRevenue = new BigDecimal(0);
 
         return new ParkingReport(checkInCount,checkOutCount,checkInRevenue,checkOutRevenue);
 
+    }
+
+    public Map<LocalDate,List<ParkingReport>> createReport(ParkingEntity parking, DateTime from, DateTime to,
+                                            List<String> typesList) {
+
+        Map<LocalDate,List<ParkingReport>> parkingReportMap = Maps.newHashMap();
+
+        for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate()); date = date.plusDays(1)) {
+            List<ParkingReport> parkingReports = Lists.newArrayList();
+            for (String type : typesList) {
+                ParkingReport parkingReport =
+                        createReport(Restrictions.eq("parkingId",parking.getId()),date,date.plusDays(1),type);
+                parkingReport.setType(type);
+                parkingReports.add(parkingReport);
+            }
+            parkingReportMap.put(date,parkingReports);
+        }
+        return parkingReportMap;
     }
 }
