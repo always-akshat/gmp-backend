@@ -5,10 +5,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.dao.ParkingEventDAO;
-import com.getMyParking.entity.CompanyEntity;
-import com.getMyParking.entity.ParkingEntity;
-import com.getMyParking.entity.ParkingLotEntity;
-import com.getMyParking.entity.ParkingReport;
+import com.getMyParking.entity.*;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -122,7 +119,7 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public Map<LocalDate,List<ParkingReport>> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
+    public List<ParkingReportGroup> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         ParkingEntity parking = parkingDAO.findById(parkingId);
         List<String> typesList = Splitter.on(',').splitToList(types);

@@ -145,10 +145,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     }
 
-    public Map<LocalDate,List<ParkingReport>> createReport(ParkingEntity parking, DateTime from, DateTime to,
+    public List<ParkingReportGroup> createReport(ParkingEntity parking, DateTime from, DateTime to,
                                             List<String> typesList) {
 
-        Map<LocalDate,List<ParkingReport>> parkingReportMap = Maps.newHashMap();
+        List<ParkingReportGroup> parkingReportGroup = Lists.newArrayList();
 
         for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate()); date = date.plusDays(1)) {
             List<ParkingReport> parkingReports = Lists.newArrayList();
@@ -158,8 +158,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 parkingReport.setType(type);
                 parkingReports.add(parkingReport);
             }
-            parkingReportMap.put(date,parkingReports);
+            parkingReportGroup.add(new ParkingReportGroup(date,parkingReports));
         }
-        return parkingReportMap;
+        return parkingReportGroup;
     }
 }
