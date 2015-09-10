@@ -93,8 +93,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return createReport(Restrictions.eq("companyId", company.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
-    public ParkingReport createReport(Criterion fetchCriteria, LocalDate fromDate, LocalDate toDate, String type) {
+    public ParkingReport createReport(Criterion fetchCriteria, LocalDate from, LocalDate to, String type) {
 
+        DateTime fromDate = from.toDateTimeAtStartOfDay();
+        DateTime toDate = to.toDateTimeAtStartOfDay();
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
