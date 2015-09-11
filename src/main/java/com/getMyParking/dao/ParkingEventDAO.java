@@ -13,12 +13,14 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -78,25 +80,23 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
     public ParkingReport createReport(ParkingSubLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
+        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate,toDate,null);
     }
 
     public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingLotId", parkingLot.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
+        return createReport(Restrictions.eq("parkingLotId", parkingLot.getId()),fromDate,toDate,null);
     }
 
     public ParkingReport createReport(ParkingEntity parking, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingId", parking.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
+        return createReport(Restrictions.eq("parkingId", parking.getId()),fromDate,toDate,null);
     }
 
     public ParkingReport createReport(CompanyEntity company, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("companyId", company.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
+        return createReport(Restrictions.eq("companyId", company.getId()),fromDate,toDate,null);
     }
 
-    public ParkingReport createReport(Criterion fetchCriteria, LocalDate from, LocalDate to, String type) {
+    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
 
-        DateTime fromDate = from.toDateTimeAtStartOfDay();
-        DateTime toDate = to.toDateTimeAtStartOfDay();
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
@@ -150,11 +150,12 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
         List<ParkingReportGroup> parkingReportGroup = Lists.newArrayList();
 
-        for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate()); date = date.plusDays(1)) {
+        for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate().plusDays(1)); date = date.plusDays(1)) {
             List<ParkingReport> parkingReports = Lists.newArrayList();
             for (String type : typesList) {
                 ParkingReport parkingReport =
-                        createReport(Restrictions.eq("parkingId",parking.getId()),date,date.plusDays(1),type);
+                        createReport(Restrictions.eq("parkingId",parking.getId()),date.toDateTimeAtStartOfDay(),
+                                date.plusDays(1).toDateTimeAtStartOfDay(),type);
                 parkingReport.setType(type);
                 parkingReports.add(parkingReport);
             }
