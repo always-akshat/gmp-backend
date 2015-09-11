@@ -78,23 +78,25 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
     public ParkingReport createReport(ParkingSubLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate,toDate,null);
+        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
     public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingLotId", parkingLot.getId()),fromDate,toDate,null);
+        return createReport(Restrictions.eq("parkingLotId", parkingLot.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
     public ParkingReport createReport(ParkingEntity parking, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingId", parking.getId()),fromDate,toDate,null);
+        return createReport(Restrictions.eq("parkingId", parking.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
     public ParkingReport createReport(CompanyEntity company, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("companyId", company.getId()),fromDate,toDate,null);
+        return createReport(Restrictions.eq("companyId", company.getId()),fromDate.toLocalDate(),toDate.toLocalDate(),null);
     }
 
-    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
+    public ParkingReport createReport(Criterion fetchCriteria, LocalDate from, LocalDate to, String type) {
 
+        DateTime fromDate = from.toDateTimeAtStartOfDay();
+        DateTime toDate = to.toDateTimeAtStartOfDay();
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
@@ -152,8 +154,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             List<ParkingReport> parkingReports = Lists.newArrayList();
             for (String type : typesList) {
                 ParkingReport parkingReport =
-                        createReport(Restrictions.eq("parkingId",parking.getId()),date.toDateTimeAtStartOfDay(),
-                                date.plusDays(1).toDateTimeAtStartOfDay().minusSeconds(1),type);
+                        createReport(Restrictions.eq("parkingId",parking.getId()),date,date.plusDays(1),type);
                 parkingReport.setType(type);
                 parkingReports.add(parkingReport);
             }
