@@ -106,8 +106,7 @@ public class ParkingResource {
     })
     public ParkingReport report( @PathParam("parkingId") Integer parkingId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        ParkingEntity parking = parkingDAO.findById(parkingId);
-        return parkingEventDAO.createReport(parking,fromDate.get(),toDate.get());
+        return parkingEventDAO.createParkingReport(parkingId,fromDate.get(),toDate.get());
     }
 
     @Path("/{parkingId}/report/details")
@@ -121,8 +120,7 @@ public class ParkingResource {
     })
     public List<ParkingReportGroup> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        ParkingEntity parking = parkingDAO.findById(parkingId);
         List<String> typesList = Splitter.on(',').splitToList(types);
-        return parkingEventDAO.createReport(parking,fromDate.get(),toDate.get(),typesList);
+        return parkingEventDAO.createParkingReportByTypes(parkingId,fromDate.get(),toDate.get(),typesList);
     }
 }

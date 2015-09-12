@@ -97,8 +97,7 @@ public class CompanyResource {
     })
     public ParkingReport report( @PathParam("companyId") Integer companyId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        CompanyEntity company = companyDAO.findById(companyId);
-        return parkingEventDAO.createReport(company,fromDate.get(),toDate.get());
+        return parkingEventDAO.createCompanyReport(companyId,fromDate.get(),toDate.get());
     }
 
 }

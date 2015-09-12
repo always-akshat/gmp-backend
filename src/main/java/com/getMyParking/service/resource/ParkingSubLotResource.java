@@ -173,7 +173,6 @@ public class ParkingSubLotResource {
     })
     public ParkingReport report( @PathParam("parkingSubLotId") Integer parkingSubLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
-        return parkingEventDAO.createReport(parkingSubLot,fromDate.get(),toDate.get());
+        return parkingEventDAO.createParkingSubLotReport(parkingSubLotId,fromDate.get(),toDate.get());
     }
 }

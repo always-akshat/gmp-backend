@@ -79,20 +79,20 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return list(criteria);
     }
 
-    public ParkingReport createReport(ParkingSubLotEntity parkingSubLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLot.getId()),fromDate,toDate,null);
+    public ParkingReport createParkingSubLotReport(Integer parkingSubLotId, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLotId),fromDate,toDate,null);
     }
 
-    public ParkingReport createReport(ParkingLotEntity parkingLot, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingLotId", parkingLot.getId()),fromDate,toDate,null);
+    public ParkingReport createParkingLotReport(Integer parkingLotId, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingLotId", parkingLotId),fromDate,toDate,null);
     }
 
-    public ParkingReport createReport(ParkingEntity parking, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingId", parking.getId()),fromDate,toDate,null);
+    public ParkingReport createParkingReport(Integer parkingId, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("parkingId", parkingId),fromDate,toDate,null);
     }
 
-    public ParkingReport createReport(CompanyEntity company, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("companyId", company.getId()),fromDate,toDate,null);
+    public ParkingReport createCompanyReport(Integer companyId, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("companyId", companyId),fromDate,toDate,null);
     }
 
     public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
@@ -145,7 +145,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     }
 
-    public List<ParkingReportGroup> createReport(ParkingEntity parking, DateTime from, DateTime to,
+    public List<ParkingReportGroup> createParkingReportByTypes(Integer parkingId, DateTime from, DateTime to,
                                             List<String> typesList) {
 
         List<ParkingReportGroup> parkingReportGroup = Lists.newArrayList();
@@ -154,7 +154,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             List<ParkingReport> parkingReports = Lists.newArrayList();
             for (String type : typesList) {
                 ParkingReport parkingReport =
-                        createReport(Restrictions.eq("parkingId",parking.getId()),date.toDateTimeAtStartOfDay(),
+                        createReport(Restrictions.eq("parkingId",parkingId),date.toDateTimeAtStartOfDay(),
                                 date.plusDays(1).toDateTimeAtStartOfDay(),type);
                 parkingReport.setType(type);
                 parkingReports.add(parkingReport);
