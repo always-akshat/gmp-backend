@@ -42,6 +42,8 @@ public class ParkingEventEntity {
     private Integer parkingId;
     @NotNull
     private Integer companyId;
+    private String special;
+    private String focReason;
     @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
     @JsonIgnore
@@ -214,6 +216,26 @@ public class ParkingEventEntity {
         this.companyId = companyId;
     }
 
+    @Basic
+    @Column(name = "special", nullable = false, insertable = true, updatable = true)
+    public String getSpecial() {
+        return special;
+    }
+
+    public void setSpecial(String special) {
+        this.special = special;
+    }
+
+    @Basic
+    @Column(name = "foc_reason", nullable = false, insertable = true, updatable = true)
+    public String getFocReason() {
+        return focReason;
+    }
+
+    public void setFocReason(String focReason) {
+        this.focReason = focReason;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -225,6 +247,7 @@ public class ParkingEventEntity {
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
         if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
+        if (focReason != null ? !focReason.equals(that.focReason) : that.focReason != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
@@ -241,6 +264,7 @@ public class ParkingEventEntity {
             return false;
         if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
         if (shiftNumber != null ? !shiftNumber.equals(that.shiftNumber) : that.shiftNumber != null) return false;
+        if (special != null ? !special.equals(that.special) : that.special != null) return false;
         if (subLotType != null ? !subLotType.equals(that.subLotType) : that.subLotType != null) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
@@ -267,6 +291,8 @@ public class ParkingEventEntity {
         result = 31 * result + (parkingLotId != null ? parkingLotId.hashCode() : 0);
         result = 31 * result + (parkingId != null ? parkingId.hashCode() : 0);
         result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
+        result = 31 * result + (special != null ? special.hashCode() : 0);
+        result = 31 * result + (focReason != null ? focReason.hashCode() : 0);
         result = 31 * result + (parkingSubLot != null ? parkingSubLot.hashCode() : 0);
         result = 31 * result + (parkingPass != null ? parkingPass.hashCode() : 0);
         result = 31 * result + (parkingSubLotId != null ? parkingSubLotId.hashCode() : 0);

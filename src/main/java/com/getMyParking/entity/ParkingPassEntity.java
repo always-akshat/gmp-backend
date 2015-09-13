@@ -15,6 +15,10 @@ public class ParkingPassEntity {
     private Integer id;
     private String registrationNumber;
     private DateTime validTime;
+    private String operatorName;
+    private String mobileNumber;
+    private Integer cost;
+    private Integer isPaid;
     private Set<ParkingEventEntity> parkingEvents;
     private ParkingPassMasterEntity parkingPassMaster;
 
@@ -40,6 +44,46 @@ public class ParkingPassEntity {
     }
 
     @Basic
+    @Column(name = "operator_name", nullable = false, insertable = true, updatable = true)
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
+
+    @Basic
+    @Column(name = "mobile_number", nullable = false, insertable = true, updatable = true)
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobile_number) {
+        this.mobileNumber = mobile_number;
+    }
+
+    @Basic
+    @Column(name = "cost", nullable = false, insertable = true, updatable = true)
+    public Integer getCost() {
+        return cost;
+    }
+
+    public void setCost(Integer cost) {
+        this.cost = cost;
+    }
+
+    @Basic
+    @Column(name = "is_paid", nullable = false, insertable = true, updatable = true)
+    public Integer getIsPaid() {
+        return isPaid;
+    }
+
+    public void setIsPaid(Integer isPaid) {
+        this.isPaid = isPaid;
+    }
+
+    @Basic
     @Column(name = "valid_time", nullable = false, insertable = true, updatable = true)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     public DateTime getValidTime() {
@@ -53,11 +97,20 @@ public class ParkingPassEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ParkingPassEntity)) return false;
 
         ParkingPassEntity that = (ParkingPassEntity) o;
 
-        if (id != that.id) return false;
+        if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
+        if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null)
+            return false;
+        if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
+        if (parkingEvents != null ? !parkingEvents.equals(that.parkingEvents) : that.parkingEvents != null)
+            return false;
+        if (parkingPassMaster != null ? !parkingPassMaster.equals(that.parkingPassMaster) : that.parkingPassMaster != null)
+            return false;
         if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
             return false;
         if (validTime != null ? !validTime.equals(that.validTime) : that.validTime != null) return false;
@@ -67,9 +120,15 @@ public class ParkingPassEntity {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (registrationNumber != null ? registrationNumber.hashCode() : 0);
         result = 31 * result + (validTime != null ? validTime.hashCode() : 0);
+        result = 31 * result + (operatorName != null ? operatorName.hashCode() : 0);
+        result = 31 * result + (mobileNumber != null ? mobileNumber.hashCode() : 0);
+        result = 31 * result + (cost != null ? cost.hashCode() : 0);
+        result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
+        result = 31 * result + (parkingEvents != null ? parkingEvents.hashCode() : 0);
+        result = 31 * result + (parkingPassMaster != null ? parkingPassMaster.hashCode() : 0);
         return result;
     }
 

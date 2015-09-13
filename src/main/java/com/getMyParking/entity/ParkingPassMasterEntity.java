@@ -15,7 +15,7 @@ public class ParkingPassMasterEntity {
     private Integer price;
     private String vehicleType;
     private String isActive;
-    private ParkingSubLotEntity parkingSubLot;
+    private ParkingEntity parking;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -68,7 +68,6 @@ public class ParkingPassMasterEntity {
         this.price = price;
     }
 
-
     @Basic
     @Column(name = "vehicle_type", nullable = false, insertable = true, updatable = true, length = 45)
     public String getVehicleType() {
@@ -120,12 +119,12 @@ public class ParkingPassMasterEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLot() {
-        return parkingSubLot;
+    @JoinColumn(name = "parking_id", referencedColumnName = "id", nullable = false)
+    public ParkingEntity getParking() {
+        return parking;
     }
 
-    public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLot = parkingSubLotByParkingSubLotId;
+    public void setParking(ParkingEntity parkingSubLotByParkingSubLotId) {
+        this.parking = parkingSubLotByParkingSubLotId;
     }
 }

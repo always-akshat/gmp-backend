@@ -108,7 +108,7 @@ public class ParkingSubLotResource {
         if (parkingSubLot == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
-            parkingPassMasterEntity.setParkingSubLot(parkingSubLot);
+            parkingPassMasterEntity.setParking(parkingSubLot);
             parkingSubLot.getParkingPasses().add(parkingPassMasterEntity);
             parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);
         }

@@ -34,7 +34,7 @@ ON UPDATE NO ACTION;
 
 ALTER TABLE `get_my_parking_v2`.`parking_pass`
 ADD COLUMN `operator_name` VARCHAR(255) NULL,
-ADD COLUMN `mobile_numbre` VARCHAR(255) NULL,
+ADD COLUMN `mobile_number` VARCHAR(255) NULL,
 ADD COLUMN `cost` INT NOT NULL,
 ADD COLUMN `is_paid` INT NOT NULL;
 
@@ -66,9 +66,9 @@ DROP TABLE IF EXISTS `get_my_parking_v2`.`foc_reasons_has_parking_lot` ;
 
 CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`foc_reasons_has_parking_lot` (
   `foc_reasons_reason_title` VARCHAR(255) NOT NULL,
-  `parking_lot_id` INT NOT NULL,
-  PRIMARY KEY (`foc_reasons_reason_title`, `parking_lot_id`),
-  INDEX `fk_foc_reasons_has_parking_lot_parking_lot1_idx` (`parking_lot_id` ASC),
+  `parking_sub_lot_id` INT NOT NULL,
+  PRIMARY KEY (`foc_reasons_reason_title`, `parking_sub_lot_id`),
+  INDEX `fk_foc_reasons_has_parking_lot_parking_lot1_idx` (`parking_sub_lot_id` ASC),
   INDEX `fk_foc_reasons_has_parking_lot_foc_reasons1_idx` (`foc_reasons_reason_title` ASC),
   CONSTRAINT `fk_foc_reasons_has_parking_lot_foc_reasons1`
   FOREIGN KEY (`foc_reasons_reason_title`)
@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`foc_reasons_has_parking_lot` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_foc_reasons_has_parking_lot_parking_lot1`
-  FOREIGN KEY (`parking_lot_id`)
-  REFERENCES `get_my_parking_v2`.`parking_lot` (`id`)
+  FOREIGN KEY (`parking_sub_lot_id`)
+  REFERENCES `get_my_parking_v2`.`parking_sub_lot` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
   ENGINE = InnoDB;

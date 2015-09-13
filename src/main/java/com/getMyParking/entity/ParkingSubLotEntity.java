@@ -23,7 +23,6 @@ public class ParkingSubLotEntity {
     private String mobileRequired;
     private String valetName;
     private Time lastCheckinUpdateTime;
-    private Set<ParkingPassMasterEntity> parkingPasses;
     private Set<PricingSlotEntity> pricingSlots;
     private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
@@ -169,15 +168,6 @@ public class ParkingSubLotEntity {
         result = 31 * result + valetName.hashCode();
         result = 31 * result + (lastCheckinUpdateTime != null ? lastCheckinUpdateTime.hashCode() : 0);
         return result;
-    }
-
-    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
-    public Set<ParkingPassMasterEntity> getParkingPasses() {
-        return parkingPasses;
-    }
-
-    public void setParkingPasses(Set<ParkingPassMasterEntity> parkingPassMastersById) {
-        this.parkingPasses = parkingPassMastersById;
     }
 
     @ManyToOne
