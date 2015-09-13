@@ -123,4 +123,27 @@ public class ParkingResource {
         List<String> typesList = Splitter.on(',').splitToList(types);
         return parkingEventDAO.createParkingReportByTypes(parkingId,fromDate.get(),toDate.get(),typesList);
     }
+
+    @Path("/{parkingId}/parking_pass")
+    @POST
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Update parking entity with parking pass", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public int saveOrUpdateParkingPass(@ApiParam("Parking Sub Lot")@Valid ParkingPassMasterEntity parkingPassMasterEntity,
+                                       @PathParam("parkingId") int parkingId) {
+        ParkingEntity parking = parkingDAO.findById(parkingId);
+        if (parking == null) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } else {
+            parkingPassMasterEntity.setParking(parking);
+            parking.getParkingPasses().add(parkingPassMasterEntity);
+            parkingDAO.saveOrUpdateParking(parking);
+        }
+        return parkingPassMasterEntity.getId();
+    }
 }

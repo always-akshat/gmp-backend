@@ -93,28 +93,6 @@ public class ParkingSubLotResource {
         return parkingLot.getId();
     }
 
-    @Path("/{parkingSubLotId}/parking_pass")
-    @POST
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    @ApiOperation(value = "Update parking sub lot entity with parking pass", response = Integer.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public int saveOrUpdateParkingPass(@ApiParam("Parking Sub Lot")@Valid ParkingPassMasterEntity parkingPassMasterEntity, @PathParam("parkingSubLotId") int parkingSubLotId) {
-        ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
-        if (parkingSubLot == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } else {
-            parkingPassMasterEntity.setParking(parkingSubLot);
-            parkingSubLot.getParkingPasses().add(parkingPassMasterEntity);
-            parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);
-        }
-        return parkingPassMasterEntity.getId();
-    }
-
     @Path("/{parkingSubLotId}/pricing_slot")
     @POST
     @Timed
