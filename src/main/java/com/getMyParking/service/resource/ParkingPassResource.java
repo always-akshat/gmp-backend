@@ -62,7 +62,8 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public int saveOrUpdateParkingPass(@ApiParam("Parking Pass Entity") @Valid ParkingPassEntity parkingPassEntity,@PathParam("parkingPassMasterId") int parkingPassMasterId) {
+    public int saveOrUpdateParkingPass(@ApiParam("Parking Pass Entity") @Valid ParkingPassEntity parkingPassEntity,
+                                       @PathParam("parkingPassMasterId") int parkingPassMasterId) {
         ParkingPassMasterEntity parkingPassMaster = parkingPassMasterDAO.findById(parkingPassMasterId);
         if (parkingPassMaster == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

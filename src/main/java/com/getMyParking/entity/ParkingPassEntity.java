@@ -1,9 +1,11 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -13,13 +15,20 @@ import java.util.Set;
 @Table(name = "parking_pass", schema = "", catalog = "get_my_parking_v2")
 public class ParkingPassEntity {
     private Integer id;
+    @NotNull
     private String registrationNumber;
     private DateTime validTime;
     private String operatorName;
     private String mobileNumber;
+    @NotNull
     private Integer cost;
+    @NotNull
     private Integer isPaid;
+    @NotNull
+    private DateTime createdAt;
+    @JsonIgnore
     private Set<ParkingEventEntity> parkingEvents;
+    @JsonIgnore
     private ParkingPassMasterEntity parkingPassMaster;
 
     @Id
@@ -71,6 +80,17 @@ public class ParkingPassEntity {
 
     public void setCost(Integer cost) {
         this.cost = cost;
+    }
+
+    @Basic
+    @Column(name = "created_at", nullable = false, insertable = true, updatable = true)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    public DateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(DateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Basic
