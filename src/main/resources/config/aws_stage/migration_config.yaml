@@ -33,7 +33,7 @@ database:
   password: gmp2015
 
   # the JDBC URL
-  url: jdbc:mysql://ec2-54-255-182-90.ap-southeast-1.compute.amazonaws.com:3306/
+  url: jdbc:mysql://localhost:3306/
 
   # any properties specific to your JDBC driver:
   properties:
