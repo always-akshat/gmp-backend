@@ -18,6 +18,9 @@ ADD FOREIGN KEY (`vehicle_type`)
 REFERENCES `get_my_parking_v2`.`sub_lot_type` (`type_name`);
 
 ALTER TABLE `get_my_parking_v2`.`parking_pass_master`
+DROP FOREIGN KEY `fk_parking_pass_parking_lot1`;
+
+ALTER TABLE `get_my_parking_v2`.`parking_pass_master`
 DROP COLUMN parking_sub_lot_id;
 
 ALTER TABLE `get_my_parking_v2`.`parking_pass_master`
