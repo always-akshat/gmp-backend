@@ -28,6 +28,7 @@ public class ParkingSubLotEntity {
     @JsonIgnore
     private ParkingLotEntity parkingLot;
     private BigDecimal autoCheckoutCost;
+    private Set<FocReasonsForParkingLotEntity> focReasons;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -206,5 +207,14 @@ public class ParkingSubLotEntity {
 
     public void setAutoCheckoutCost(BigDecimal autoCheckoutCost) {
         this.autoCheckoutCost = autoCheckoutCost;
+    }
+
+    @OneToMany(mappedBy = "parkingSubLot")
+    public Set<FocReasonsForParkingLotEntity> getFocReasonsHasParkingLotsById() {
+        return focReasons;
+    }
+
+    public void setFocReasonsHasParkingLotsById(Set<FocReasonsForParkingLotEntity> focReasons) {
+        this.focReasons = focReasons;
     }
 }

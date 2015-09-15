@@ -27,6 +27,7 @@ public class ParkingPassEntity {
     @NotNull
     private DateTime createdAt;
     private String cardId;
+    private Integer parkingPassMasterId;
     @JsonIgnore
     private Set<ParkingEventEntity> parkingEvents;
     @JsonIgnore
@@ -123,6 +124,15 @@ public class ParkingPassEntity {
 
     public void setCardId(String cardId) {
         this.cardId = cardId;
+    }
+
+    @Transient
+    public Integer getParkingPassMasterId() {
+        return parkingPassMasterId;
+    }
+
+    public void setParkingPassMasterId(Integer parkingPassMasterId) {
+        this.parkingPassMasterId = parkingPassMasterId;
     }
 
     @Override
