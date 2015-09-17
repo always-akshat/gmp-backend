@@ -154,8 +154,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             List<ParkingReport> parkingReports = Lists.newArrayList();
             for (String type : typesList) {
                 ParkingReport parkingReport =
-                        createReport(Restrictions.eq("parkingId",parkingId),date.toDateTimeAtStartOfDay(),
-                                date.plusDays(1).toDateTimeAtStartOfDay(),type);
+                        createReport(Restrictions.eq("parkingId",parkingId),date.toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30)),
+                                date.plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5,30)),type);
                 parkingReport.setType(type);
                 parkingReports.add(parkingReport);
             }
