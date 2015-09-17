@@ -1,8 +1,10 @@
 package com.getMyParking.service.auth;
 
 import com.google.common.base.Optional;
-import com.google.common.io.BaseEncoding;
-import io.dropwizard.auth.*;
+import io.dropwizard.auth.AuthFactory;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.DefaultUnauthorizedHandler;
+import io.dropwizard.auth.UnauthorizedHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by rahulgupta.s on 19/07/15.

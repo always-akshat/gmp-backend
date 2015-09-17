@@ -78,7 +78,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 ParkingSubLotUserAccessEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
                 PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
                 SessionEntity.class, UserB2BEntity.class, ParkingSubLotEntity.class, StyleMasterEntity.class,
-                UserAccessEntity.class
+                UserAccessEntity.class, FocReasonsForParkingLotEntity.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {

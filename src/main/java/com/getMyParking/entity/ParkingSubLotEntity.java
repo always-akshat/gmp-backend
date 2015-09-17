@@ -210,11 +210,11 @@ public class ParkingSubLotEntity {
     }
 
     @OneToMany(mappedBy = "parkingSubLot")
-    public Set<FocReasonsForParkingLotEntity> getFocReasonsHasParkingLotsById() {
+    public Set<FocReasonsForParkingLotEntity> getFocReasons() {
         return focReasons;
     }
 
-    public void setFocReasonsHasParkingLotsById(Set<FocReasonsForParkingLotEntity> focReasons) {
+    public void setFocReasons(Set<FocReasonsForParkingLotEntity> focReasons) {
         this.focReasons = focReasons;
     }
 }

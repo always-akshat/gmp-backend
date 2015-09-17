@@ -67,9 +67,10 @@ CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`foc_reasons` (
 DROP TABLE IF EXISTS `get_my_parking_v2`.`foc_reasons_has_parking_lot` ;
 
 CREATE TABLE IF NOT EXISTS `get_my_parking_v2`.`foc_reasons_has_parking_lot` (
+  `id` INT NOT NULL,
   `foc_reasons_reason_title` VARCHAR(255) NOT NULL,
   `parking_sub_lot_id` INT NOT NULL,
-  PRIMARY KEY (`foc_reasons_reason_title`, `parking_sub_lot_id`),
+  PRIMARY KEY (`id`),
   INDEX `fk_foc_reasons_has_parking_lot_parking_lot1_idx` (`parking_sub_lot_id` ASC),
   INDEX `fk_foc_reasons_has_parking_lot_foc_reasons1_idx` (`foc_reasons_reason_title` ASC),
   CONSTRAINT `fk_foc_reasons_has_parking_lot_foc_reasons1`

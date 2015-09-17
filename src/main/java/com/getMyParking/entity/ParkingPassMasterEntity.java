@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -15,6 +17,7 @@ public class ParkingPassMasterEntity {
     private Integer price;
     private String vehicleType;
     private String isActive;
+    @JsonIgnore
     private ParkingEntity parking;
 
     @Id
