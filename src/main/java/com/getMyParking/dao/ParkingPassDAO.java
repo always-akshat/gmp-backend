@@ -1,12 +1,15 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.ParkingPassEntity;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -31,7 +34,14 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
     }
 
     public List<ParkingPassEntity> findByIds(List<String> parkingPassIds) {
-        return list(criteria().add(Restrictions.in("parkingPassMaster.id",parkingPassIds))
+        List<Integer> parkingPassIdInts = Lists.transform(parkingPassIds, new Function<String, Integer>() {
+            @Nullable
+            @Override
+            public Integer apply(String input) {
+                return Integer.parseInt(input);
+            }
+        });
+        return list(criteria().add(Restrictions.in("parkingPassMaster.id",parkingPassIdInts))
                               .add(Restrictions.gt("validTime", DateTime.now())));
     }
 }
