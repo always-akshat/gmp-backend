@@ -4,7 +4,6 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
-import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
 import com.google.common.base.Splitter;
@@ -94,7 +93,7 @@ public class ParkingPassResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
-            parkingPassDAO.saveOrUpdateParkingLot(parkingPassEntity);
+            parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
         }
         return parkingPassEntity.getId();
     }

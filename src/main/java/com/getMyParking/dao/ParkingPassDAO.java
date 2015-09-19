@@ -25,7 +25,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
     public ParkingPassDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
-    public void saveOrUpdateParkingLot(ParkingPassEntity parkingPass) {
+    public void saveOrUpdateParkingPass(ParkingPassEntity parkingPass) {
         persist(parkingPass);
     }
 
