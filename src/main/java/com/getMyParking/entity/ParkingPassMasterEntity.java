@@ -94,16 +94,17 @@ public class ParkingPassMasterEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ParkingPassMasterEntity)) return false;
 
         ParkingPassMasterEntity that = (ParkingPassMasterEntity) o;
 
-        if (id != that.id) return false;
-        if (numbers != that.numbers) return false;
-        if (price != that.price) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (isActive != null ? !isActive.equals(that.isActive) : that.isActive != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (numbers != null ? !numbers.equals(that.numbers) : that.numbers != null) return false;
+        if (parking != null ? !parking.equals(that.parking) : that.parking != null) return false;
         if (passType != null ? !passType.equals(that.passType) : that.passType != null) return false;
+        if (price != null ? !price.equals(that.price) : that.price != null) return false;
         if (vehicleType != null ? !vehicleType.equals(that.vehicleType) : that.vehicleType != null) return false;
 
         return true;
@@ -111,13 +112,14 @@ public class ParkingPassMasterEntity {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (passType != null ? passType.hashCode() : 0);
-        result = 31 * result + numbers;
-        result = 31 * result + price;
+        result = 31 * result + (numbers != null ? numbers.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (isActive != null ? isActive.hashCode() : 0);
+        result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }
 
