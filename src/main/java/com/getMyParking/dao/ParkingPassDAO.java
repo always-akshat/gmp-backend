@@ -44,4 +44,15 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         return list(criteria().add(Restrictions.in("parkingPassMaster.id",parkingPassIdInts))
                               .add(Restrictions.gt("validTime", DateTime.now())));
     }
+
+    public List<ParkingPassEntity> findByPassIds(List<String> parkingPassIds) {
+        List<Integer> parkingPassIdInts = Lists.transform(parkingPassIds, new Function<String, Integer>() {
+            @Nullable
+            @Override
+            public Integer apply(String input) {
+                return Integer.parseInt(input);
+            }
+        });
+        return list(criteria().add(Restrictions.in("id",parkingPassIdInts)));
+    }
 }

@@ -45,12 +45,17 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public ParkingPassEntity getParkingPass(@PathParam("parkingPassId")int id) {
-        ParkingPassEntity parkingPassEntity = parkingPassDAO.findById(id);
-        if (parkingPassEntity == null) {
+    public List<ParkingPassEntity> getParkingPass(@PathParam("parkingPassId")String ids) {
+        List<String> parkingPassIds = Splitter.on(",").splitToList(ids);
+        List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByPassIds(parkingPassIds);
+        if (parkingPassList == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } else {
+            for (ParkingPassEntity passEntity : parkingPassList) {
+                passEntity.setParkingPassMasterId(passEntity.getParkingPassMaster().getId());
+            }
         }
-        return parkingPassEntity;
+        return parkingPassList;
     }
 
     @GET
