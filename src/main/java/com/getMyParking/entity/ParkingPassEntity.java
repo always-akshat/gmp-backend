@@ -1,6 +1,7 @@
 package com.getMyParking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -27,6 +28,7 @@ public class ParkingPassEntity {
     @NotNull
     private DateTime createdAt;
     private String cardId;
+    @JsonProperty
     private Integer parkingPassMasterId;
     @JsonIgnore
     private Set<ParkingEventEntity> parkingEvents;
