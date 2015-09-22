@@ -28,6 +28,7 @@ public class ParkingPassEntity {
     @NotNull
     private DateTime createdAt;
     private String cardId;
+    private String customerName;
     @JsonProperty
     private Integer parkingPassMasterId;
     @JsonIgnore
@@ -128,6 +129,16 @@ public class ParkingPassEntity {
         this.cardId = cardId;
     }
 
+    @Basic
+    @Column(name = "customer_name", nullable = false, insertable = true, updatable = true)
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
     @Transient
     public Integer getParkingPassMasterId() {
         return parkingPassMasterId;
@@ -135,6 +146,34 @@ public class ParkingPassEntity {
 
     public void setParkingPassMasterId(Integer parkingPassMasterId) {
         this.parkingPassMasterId = parkingPassMasterId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ParkingPassEntity)) return false;
+
+        ParkingPassEntity that = (ParkingPassEntity) o;
+
+        if (cardId != null ? !cardId.equals(that.cardId) : that.cardId != null) return false;
+        if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
+        if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
+        if (customerName != null ? !customerName.equals(that.customerName) : that.customerName != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
+        if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
+        if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
+        if (parkingEvents != null ? !parkingEvents.equals(that.parkingEvents) : that.parkingEvents != null)
+            return false;
+        if (parkingPassMaster != null ? !parkingPassMaster.equals(that.parkingPassMaster) : that.parkingPassMaster != null)
+            return false;
+        if (parkingPassMasterId != null ? !parkingPassMasterId.equals(that.parkingPassMasterId) : that.parkingPassMasterId != null)
+            return false;
+        if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
+            return false;
+        if (validTime != null ? !validTime.equals(that.validTime) : that.validTime != null) return false;
+
+        return true;
     }
 
     @Override
@@ -148,34 +187,11 @@ public class ParkingPassEntity {
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (cardId != null ? cardId.hashCode() : 0);
+        result = 31 * result + (customerName != null ? customerName.hashCode() : 0);
+        result = 31 * result + (parkingPassMasterId != null ? parkingPassMasterId.hashCode() : 0);
         result = 31 * result + (parkingEvents != null ? parkingEvents.hashCode() : 0);
         result = 31 * result + (parkingPassMaster != null ? parkingPassMaster.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ParkingPassEntity)) return false;
-
-        ParkingPassEntity that = (ParkingPassEntity) o;
-
-        if (cardId != null ? !cardId.equals(that.cardId) : that.cardId != null) return false;
-        if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
-        if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
-        if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
-        if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
-        if (parkingEvents != null ? !parkingEvents.equals(that.parkingEvents) : that.parkingEvents != null)
-            return false;
-        if (parkingPassMaster != null ? !parkingPassMaster.equals(that.parkingPassMaster) : that.parkingPassMaster != null)
-            return false;
-        if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
-            return false;
-        if (validTime != null ? !validTime.equals(that.validTime) : that.validTime != null) return false;
-
-        return true;
     }
 
     @OneToMany(mappedBy = "parkingPass")

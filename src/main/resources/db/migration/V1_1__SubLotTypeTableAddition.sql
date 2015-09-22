@@ -24,7 +24,10 @@ ALTER TABLE `get_my_parking_v2`.`parking_pass_master`
 DROP COLUMN parking_sub_lot_id;
 
 ALTER TABLE `get_my_parking_v2`.`parking_pass_master`
-ADD COLUMN `parking_id` INT NOT NULL;
+ADD COLUMN `parking_id` INT NOT NULL,
+ADD COLUMN `is_name` VARCHAR(255) NOT NULL,
+ADD COLUMN `is_mobile_number` VARCHAR(255) NOT NULL,
+ADD COLUMN `is_registration_number` VARCHAR(255) NOT NULL;
 
 ALTER TABLE `get_my_parking_v2`.`parking_pass_master`
 ADD FOREIGN KEY (`parking_id`)
@@ -37,6 +40,7 @@ ADD COLUMN `operator_name` VARCHAR(255) NULL,
 ADD COLUMN `mobile_number` VARCHAR(255) NULL,
 ADD COLUMN `cost` INT NOT NULL,
 ADD COLUMN `card_id` VARCHAR(255) NULL,
+ADD COLUMN `customer_name` VARCHAR(255) NULL,
 ADD COLUMN `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN `is_paid` INT NOT NULL;
 

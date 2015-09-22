@@ -17,6 +17,9 @@ public class ParkingPassMasterEntity {
     private Integer price;
     private String vehicleType;
     private String isActive;
+    private String isRegistrationNumber;
+    private String isName;
+    private String isMobileNumber;
     @JsonIgnore
     private ParkingEntity parking;
 
@@ -91,6 +94,36 @@ public class ParkingPassMasterEntity {
         this.isActive = isActive;
     }
 
+    @Basic
+    @Column(name = "is_registration_number", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getIsRegistrationNumber() {
+        return isRegistrationNumber;
+    }
+
+    public void setIsRegistrationNumber(String isRegistrationNumber) {
+        this.isRegistrationNumber = isRegistrationNumber;
+    }
+
+    @Basic
+    @Column(name = "is_name", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getIsName() {
+        return isName;
+    }
+
+    public void setIsName(String isName) {
+        this.isName = isName;
+    }
+
+    @Basic
+    @Column(name = "is_mobile_number", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getIsMobileNumber() {
+        return isMobileNumber;
+    }
+
+    public void setIsMobileNumber(String isMobileNumber) {
+        this.isMobileNumber = isMobileNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,6 +133,11 @@ public class ParkingPassMasterEntity {
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (isActive != null ? !isActive.equals(that.isActive) : that.isActive != null) return false;
+        if (isMobileNumber != null ? !isMobileNumber.equals(that.isMobileNumber) : that.isMobileNumber != null)
+            return false;
+        if (isName != null ? !isName.equals(that.isName) : that.isName != null) return false;
+        if (isRegistrationNumber != null ? !isRegistrationNumber.equals(that.isRegistrationNumber) : that.isRegistrationNumber != null)
+            return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (numbers != null ? !numbers.equals(that.numbers) : that.numbers != null) return false;
         if (parking != null ? !parking.equals(that.parking) : that.parking != null) return false;
@@ -119,6 +157,9 @@ public class ParkingPassMasterEntity {
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (vehicleType != null ? vehicleType.hashCode() : 0);
         result = 31 * result + (isActive != null ? isActive.hashCode() : 0);
+        result = 31 * result + (isRegistrationNumber != null ? isRegistrationNumber.hashCode() : 0);
+        result = 31 * result + (isName != null ? isName.hashCode() : 0);
+        result = 31 * result + (isMobileNumber != null ? isMobileNumber.hashCode() : 0);
         result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }
