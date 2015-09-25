@@ -32,8 +32,6 @@ public class ParkingPassEntity {
     @JsonProperty
     private Integer parkingPassMasterId;
     @JsonIgnore
-    private Set<ParkingEventEntity> parkingEvents;
-    @JsonIgnore
     private ParkingPassMasterEntity parkingPassMaster;
 
     @Id
@@ -163,8 +161,6 @@ public class ParkingPassEntity {
         if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
-        if (parkingEvents != null ? !parkingEvents.equals(that.parkingEvents) : that.parkingEvents != null)
-            return false;
         if (parkingPassMaster != null ? !parkingPassMaster.equals(that.parkingPassMaster) : that.parkingPassMaster != null)
             return false;
         if (parkingPassMasterId != null ? !parkingPassMasterId.equals(that.parkingPassMasterId) : that.parkingPassMasterId != null)
@@ -189,18 +185,8 @@ public class ParkingPassEntity {
         result = 31 * result + (cardId != null ? cardId.hashCode() : 0);
         result = 31 * result + (customerName != null ? customerName.hashCode() : 0);
         result = 31 * result + (parkingPassMasterId != null ? parkingPassMasterId.hashCode() : 0);
-        result = 31 * result + (parkingEvents != null ? parkingEvents.hashCode() : 0);
         result = 31 * result + (parkingPassMaster != null ? parkingPassMaster.hashCode() : 0);
         return result;
-    }
-
-    @OneToMany(mappedBy = "parkingPass")
-    public Set<ParkingEventEntity> getParkingEvents() {
-        return parkingEvents;
-    }
-
-    public void setParkingEvents(Set<ParkingEventEntity> parkingEventsById) {
-        this.parkingEvents = parkingEventsById;
     }
 
     @ManyToOne
