@@ -1,5 +1,6 @@
 package com.getMyParking.service.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.UserAccessEntity;
 import com.getMyParking.entity.UserB2BEntity;

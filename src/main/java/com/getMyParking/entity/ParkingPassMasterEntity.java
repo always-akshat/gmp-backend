@@ -3,6 +3,7 @@ package com.getMyParking.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -20,6 +21,7 @@ public class ParkingPassMasterEntity {
     private String isRegistrationNumber;
     private String isName;
     private String isMobileNumber;
+    private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
     private ParkingEntity parking;
 
@@ -172,5 +174,14 @@ public class ParkingPassMasterEntity {
 
     public void setParking(ParkingEntity parkingSubLotByParkingSubLotId) {
         this.parking = parkingSubLotByParkingSubLotId;
+    }
+
+    @OneToMany(mappedBy = "parkingPassMaster", fetch = FetchType.EAGER)
+    public Set<ReceiptContentEntity> getReceiptContents() {
+        return receiptContents;
+    }
+
+    public void setReceiptContents(Set<ReceiptContentEntity> receiptContentsById) {
+        this.receiptContents = receiptContentsById;
     }
 }

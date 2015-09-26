@@ -8,11 +8,8 @@ import com.getMyParking.dao.SessionDAO;
 import com.getMyParking.dao.UserB2BDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -27,7 +24,6 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -87,6 +83,31 @@ public class UserResource {
         }
     }
 
+    @ApiOperation(value = "Change Password Api", response = GMPUser.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    @POST
+    @Path("/changePassword")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    public void changePassword( @Auth GMPUser gmpUser, @FormParam("oldPassword") String oldPassword,
+                                @FormParam("newPassword") String newPassword) {
+        if (!Strings.isNullOrEmpty(oldPassword) && !Strings.isNullOrEmpty(newPassword)) {
+            UserB2BEntity user = userB2BDAO.findById(gmpUser.getUserName());
+            if (user != null && user.getPassword().equals(oldPassword)) {
+                user.setPassword(newPassword);
+                userB2BDAO.updateUser(user);
+            } else {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+        } else {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+    }
+
     @ApiOperation(value = "Create User Api")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
@@ -112,7 +133,7 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addParkingLot(@ApiParam(value = "List of Parking Lot Ids", required = true)
+    public void addParkingSubLot(@ApiParam(value = "List of Parking Lot Ids", required = true)
                               List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessList,
                               @PathParam("username") String username,
                               @Auth GMPUser gmpUser) {
@@ -144,7 +165,7 @@ public class UserResource {
     @ExceptionMetered
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<CompanyEntity> addParkingLot(@Auth GMPUser gmpUser) {
+    public List<CompanyEntity> getUserAccessData(@Auth GMPUser gmpUser) {
         List<CompanyEntity> responseCompanies = Lists.newArrayList();
         for (Integer companyId : gmpUser.getCompanyIds()) {
             CompanyEntity companyEntity = companyDAO.findById(companyId);
