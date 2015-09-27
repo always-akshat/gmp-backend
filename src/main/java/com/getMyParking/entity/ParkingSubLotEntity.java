@@ -209,7 +209,7 @@ public class ParkingSubLotEntity {
         this.autoCheckoutCost = autoCheckoutCost;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot")
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
     public Set<FocReasonsForParkingLotEntity> getFocReasons() {
         return focReasons;
     }

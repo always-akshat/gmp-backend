@@ -83,9 +83,9 @@ public class UserResource {
         }
     }
 
-    @ApiOperation(value = "Change Password Api", response = GMPUser.class)
+    @ApiOperation(value = "Change Password Api", response = void.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 204, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     @POST
