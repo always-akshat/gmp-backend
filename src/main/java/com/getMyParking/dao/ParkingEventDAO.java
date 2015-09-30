@@ -95,6 +95,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return createReport(Restrictions.eq("companyId", companyId),fromDate,toDate,null);
     }
 
+    public ParkingReport createUserReport(String operatorName, DateTime fromDate, DateTime toDate) {
+        return createReport(Restrictions.eq("operatorName", operatorName),fromDate,toDate,null);
+    }
+
     public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
 
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)

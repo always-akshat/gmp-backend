@@ -2,10 +2,7 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.getMyParking.dao.CompanyDAO;
-import com.getMyParking.dao.ParkingLotHasUserB2BDAO;
-import com.getMyParking.dao.SessionDAO;
-import com.getMyParking.dao.UserB2BDAO;
+import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Strings;
@@ -18,6 +15,7 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 import org.joda.time.DateTime;
 
 import javax.validation.Valid;
@@ -41,14 +39,18 @@ public class UserResource {
     private ParkingLotHasUserB2BDAO parkingLotHasUserB2BDAO;
     private LoadingCache<String,GMPUser> authTokenCache;
     private CompanyDAO companyDAO;
+    private ParkingEventDAO parkingEventDAO;
+
     @Inject
     public UserResource(UserB2BDAO userB2BDAO, SessionDAO sessionDAO, ParkingLotHasUserB2BDAO parkingLotHasUserB2BDAO,
-                        CompanyDAO companyDAO,@Named("authTokenCache")LoadingCache<String, GMPUser> authTokenCache) {
+                        CompanyDAO companyDAO,@Named("authTokenCache")LoadingCache<String, GMPUser> authTokenCache,
+                        ParkingEventDAO parkingEventDAO) {
         this.userB2BDAO = userB2BDAO;
         this.sessionDAO = sessionDAO;
         this.parkingLotHasUserB2BDAO = parkingLotHasUserB2BDAO;
         this.authTokenCache = authTokenCache;
         this.companyDAO = companyDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
 
     @ApiOperation(value = "Login User Api", response = GMPUser.class)
@@ -200,6 +202,21 @@ public class UserResource {
         }
         return responseCompanies;
     }
+
+    @Path("/{operatorName}/report")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by Operator Name", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public ParkingReport report( @PathParam("operatorName") String operatorName,
+                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        return parkingEventDAO.createUserReport(operatorName,fromDate.get(),toDate.get());
+    }
+
 
 
 }
