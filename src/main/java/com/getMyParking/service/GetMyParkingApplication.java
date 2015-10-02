@@ -1,12 +1,12 @@
 package com.getMyParking.service;
 
 import com.getMyParking.dao.ParkingSubLotDAO;
-import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
+import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
 import com.google.common.collect.Lists;
@@ -23,7 +23,6 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
-import io.dropwizard.hibernate.ScanningHibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
@@ -44,8 +43,6 @@ import java.util.logging.Logger;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
-
-import com.getMyParking.service.guice.GMPModule;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,7 +75,13 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         };
 
         HibernateBundle<GetMyParkingConfiguration> hibernateBundle =
-                new ScanningHibernateBundle<GetMyParkingConfiguration>("com.getMyParking.dao") {
+                new HibernateBundle<GetMyParkingConfiguration>(
+                CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
+                ParkingSubLotUserAccessEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
+                PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
+                SessionEntity.class, UserB2BEntity.class, ParkingSubLotEntity.class, StyleMasterEntity.class,
+                UserAccessEntity.class, FocReasonsForParkingLotEntity.class
+        ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
                 return getMyParkingConfiguration.getDataSourceFactory();
