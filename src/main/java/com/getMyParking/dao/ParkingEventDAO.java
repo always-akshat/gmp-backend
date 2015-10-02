@@ -1,9 +1,7 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.ParkingReport;
-import com.getMyParking.entity.ParkingReportGroup;
-import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
+import com.getMyParking.entity.*;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -19,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -174,8 +173,24 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public List<ParkingReportGroupByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
                                                                List<ParkingSubLotUserAccessEntity> users) {
 
-        Map<String,ParkingReportGroupByUser> parkingReports = Maps.newHashMap();
+        List<ParkingSubLotUserAccessEntity> filteredUsers = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity user : users) {
+            List<String> userAccess = Lists.transform(Lists.newArrayList(user.getUserB2B().getUserAccesses()),
+                    new Function<UserAccessEntity, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(UserAccessEntity input) {
+                            return input.getAccessTitle();
+                        }
+                    });
+
+            if (userAccess.contains("CHECKED_IN") || userAccess.contains("CHECKED_OUT")) {
+                filteredUsers.add(user);
+            }
+        }
+
+        Map<String,ParkingReportGroupByUser> parkingReports = Maps.newHashMap();
+        for (ParkingSubLotUserAccessEntity user : filteredUsers) {
             String username = user.getUserB2B().getUsername();
             ParkingReportGroupByUser userParkingReport;
             if (parkingReports.containsKey(username)) {
