@@ -1,6 +1,9 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.*;
+import com.getMyParking.entity.ParkingEventEntity;
+import com.getMyParking.entity.ParkingReport;
+import com.getMyParking.entity.ParkingReportGroup;
+import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -18,9 +21,9 @@ import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -166,5 +169,32 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             parkingReportGroup.add(new ParkingReportGroup(date,parkingReports));
         }
         return parkingReportGroup;
+    }
+
+    public List<ParkingReportGroupByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
+                                                               List<ParkingSubLotUserAccessEntity> users) {
+
+        Map<String,ParkingReportGroupByUser> parkingReports = Maps.newHashMap();
+        for (ParkingSubLotUserAccessEntity user : users) {
+            String username = user.getUserB2B().getUsername();
+            ParkingReportGroupByUser userParkingReport;
+            if (parkingReports.containsKey(username)) {
+                userParkingReport =  parkingReports.get(username);
+            } else {
+                userParkingReport = new ParkingReportGroupByUser();
+                userParkingReport.setUsername(username);
+                userParkingReport.setCompanyId(user.getCompanyId());
+                userParkingReport.setParkingId(user.getParkingId());
+                userParkingReport.setParkingLotId(user.getParkingLotId());
+                userParkingReport.setParkingReports(new ArrayList<ParkingReport>());
+                parkingReports.put(username,userParkingReport);
+            }
+            ParkingReport parkingReport =
+                    createReport(Restrictions.eq("parkingSubLotId",user.getParkingSubLotId()),fromDateTime,toDateTime,null);
+            parkingReport.setParkingSubLotId(user.getParkingSubLotId());
+            userParkingReport.getParkingReports().add(parkingReport);
+        }
+
+        return Lists.newArrayList(parkingReports.values());
     }
 }

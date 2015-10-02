@@ -2,10 +2,9 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.getMyParking.dao.CompanyDAO;
-import com.getMyParking.dao.ParkingDAO;
-import com.getMyParking.dao.ParkingEventDAO;
+import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -14,6 +13,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
 import org.joda.time.LocalDate;
 
+import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -32,12 +32,15 @@ public class ParkingResource {
 
     private ParkingDAO parkingDAO;
     private CompanyDAO companyDAO;
+    private ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO;
     private ParkingEventDAO parkingEventDAO;
 
     @Inject
-    public ParkingResource(ParkingDAO parkingDAO, CompanyDAO companyDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingResource(ParkingDAO parkingDAO, CompanyDAO companyDAO,
+                           ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO, ParkingEventDAO parkingEventDAO) {
         this.parkingDAO = parkingDAO;
         this.companyDAO = companyDAO;
+        this.parkingSubLotUserAccessDAO = parkingSubLotUserAccessDAO;
         this.parkingEventDAO = parkingEventDAO;
     }
 
@@ -113,7 +116,7 @@ public class ParkingResource {
     @GET
     @Timed
     @UnitOfWork
-    @ApiOperation(value = "Report by parking clubed by types", response = ParkingReport.class)
+    @ApiOperation(value = "Report by parking clubbed by types", response = ParkingReport.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -122,6 +125,21 @@ public class ParkingResource {
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<String> typesList = Splitter.on(',').splitToList(types);
         return parkingEventDAO.createParkingReportByTypes(parkingId,fromDate.get(),toDate.get(),typesList);
+    }
+
+    @Path("/{parkingId}/userReport/details")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking for all operators ", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingReportGroupByUser> userReport( @PathParam("parkingId") Integer parkingId,
+                                            @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParking(parkingId);
+        return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
     }
 
     @Path("/{parkingId}/parking_pass")

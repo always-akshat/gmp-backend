@@ -217,6 +217,4 @@ public class UserResource {
         return parkingEventDAO.createUserReport(operatorName,fromDate.get(),toDate.get());
     }
 
-
-
 }

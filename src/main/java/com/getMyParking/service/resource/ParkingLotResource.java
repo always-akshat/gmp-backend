@@ -2,9 +2,7 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.getMyParking.dao.ParkingDAO;
-import com.getMyParking.dao.ParkingEventDAO;
-import com.getMyParking.dao.ParkingLotDAO;
+import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
@@ -33,12 +31,15 @@ public class ParkingLotResource {
     private ParkingDAO parkingDAO;
     private ParkingLotDAO parkingLotDAO;
     private ParkingEventDAO parkingEventDAO;
+    private ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO;
 
     @Inject
-    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingLotResource(ParkingDAO parkingDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO,
+                              ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO) {
         this.parkingDAO = parkingDAO;
         this.parkingLotDAO = parkingLotDAO;
         this.parkingEventDAO = parkingEventDAO;
+        this.parkingSubLotUserAccessDAO = parkingSubLotUserAccessDAO;
     }
 
     @GET
@@ -112,6 +113,21 @@ public class ParkingLotResource {
     public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         return parkingEventDAO.createParkingLotReport(parkingLotId,fromDate.get(),toDate.get());
+    }
+
+    @Path("/{parkingLotId}/userReport/details")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking lot for all operators ", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingReportGroupByUser> userReport( @PathParam("parkingLotId") Integer parkingLotId,
+                                                      @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingLot(parkingLotId);
+        return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
     }
 
 }

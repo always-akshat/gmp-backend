@@ -1,6 +1,7 @@
 package com.getMyParking.service;
 
 import com.getMyParking.dao.ParkingSubLotDAO;
+import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
@@ -22,6 +23,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.hibernate.ScanningHibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
@@ -75,13 +77,8 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
             }
         };
 
-        HibernateBundle<GetMyParkingConfiguration> hibernateBundle = new HibernateBundle<GetMyParkingConfiguration>(
-                CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
-                ParkingSubLotUserAccessEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
-                PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
-                SessionEntity.class, UserB2BEntity.class, ParkingSubLotEntity.class, StyleMasterEntity.class,
-                UserAccessEntity.class, FocReasonsForParkingLotEntity.class
-        ) {
+        HibernateBundle<GetMyParkingConfiguration> hibernateBundle =
+                new ScanningHibernateBundle<GetMyParkingConfiguration>("com.getMyParking.dao") {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
                 return getMyParkingConfiguration.getDataSourceFactory();
