@@ -3,6 +3,7 @@ package com.getMyParking.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.awt.geom.Area;
 import java.util.Collection;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public class ParkingEntity {
     private Set<ParkingLotEntity> parkingLots;
     @JsonIgnore
     private CompanyEntity company;
+    private Set<ParkingPassMasterEntity> parkingPasses;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -116,5 +118,14 @@ public class ParkingEntity {
 
     public void setParkingLots(Set<ParkingLotEntity> parkingLotsById) {
         this.parkingLots = parkingLotsById;
+    }
+
+    @OneToMany(mappedBy = "parking", fetch = FetchType.EAGER)
+    public Set<ParkingPassMasterEntity> getParkingPasses() {
+        return parkingPasses;
+    }
+
+    public void setParkingPasses(Set<ParkingPassMasterEntity> parkingPasses) {
+        this.parkingPasses = parkingPasses;
     }
 }

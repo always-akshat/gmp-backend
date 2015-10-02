@@ -4,9 +4,9 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
-import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.google.common.base.Splitter;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 01/06/15.
@@ -44,12 +45,40 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public ParkingPassEntity getParkingPass(@PathParam("parkingPassId")int id) {
-        ParkingPassEntity parkingPassEntity = parkingPassDAO.findById(id);
-        if (parkingPassEntity == null) {
+    public List<ParkingPassEntity> getParkingPass(@PathParam("parkingPassId")String ids) {
+        List<String> parkingPassIds = Splitter.on(",").splitToList(ids);
+        List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByPassIds(parkingPassIds);
+        if (parkingPassList == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } else {
+            for (ParkingPassEntity passEntity : parkingPassList) {
+                passEntity.setParkingPassMasterId(passEntity.getParkingPassMaster().getId());
+            }
         }
-        return parkingPassEntity;
+        return parkingPassList;
+    }
+
+    @GET
+    @Path("/active")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Returns the list of active passes", response = ParkingPassEntity.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingPassEntity> getActiveParkingPass(@QueryParam("parkingPassIds")String id) {
+        List<String> parkingPassIds = Splitter.on(",").splitToList(id);
+        List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByIds(parkingPassIds);
+        if (parkingPassList == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } else {
+            for (ParkingPassEntity passEntity : parkingPassList) {
+                passEntity.setParkingPassMasterId(passEntity.getParkingPassMaster().getId());
+            }
+        }
+        return parkingPassList;
     }
 
     @POST
@@ -62,13 +91,14 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public int saveOrUpdateParkingPass(@ApiParam("Parking Pass Entity") @Valid ParkingPassEntity parkingPassEntity,@PathParam("parkingPassMasterId") int parkingPassMasterId) {
+    public int saveOrUpdateParkingPass(@ApiParam("Parking Pass Entity") @Valid ParkingPassEntity parkingPassEntity,
+                                       @PathParam("parkingPassMasterId") Integer parkingPassMasterId) {
         ParkingPassMasterEntity parkingPassMaster = parkingPassMasterDAO.findById(parkingPassMasterId);
         if (parkingPassMaster == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
-            parkingPassDAO.saveOrUpdateParkingLot(parkingPassEntity);
+            parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
         }
         return parkingPassEntity.getId();
     }

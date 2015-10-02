@@ -44,4 +44,8 @@ public class UserB2BDAO extends AbstractDAO<UserB2BEntity> {
     public UserB2BEntity findById(String username) {
         return get(username);
     }
+
+    public void updateUser(UserB2BEntity userB2BEntity) {
+        currentSession().update(userB2BEntity);
+    }
 }

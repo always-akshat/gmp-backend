@@ -1,13 +1,17 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.math.BigDecimal;
 
 /**
  * Created by rahulgupta.s on 21/08/15.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ParkingReport {
 
     private String type;
+    private Integer parkingSubLotId;
     private Integer checkInCount;
     private Integer checkOutCount;
     private BigDecimal checkInRevenue;
@@ -18,6 +22,14 @@ public class ParkingReport {
         this.checkOutCount = checkOutCount;
         this.checkInRevenue = checkInRevenue;
         this.checkOutRevenue = checkOutRevenue;
+    }
+
+    public Integer getParkingSubLotId() {
+        return parkingSubLotId;
+    }
+
+    public void setParkingSubLotId(Integer parkingSubLotId) {
+        this.parkingSubLotId = parkingSubLotId;
     }
 
     public String getType() {

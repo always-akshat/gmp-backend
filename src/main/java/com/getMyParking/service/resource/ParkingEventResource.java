@@ -132,6 +132,9 @@ public class ParkingEventResource {
                 }
                 parkingEvent.setParkingSubLot(parkingSubLot);
                 parkingEvent.setUpdatedTime(DateTime.now());
+                if (parkingEvent.getParkingPassId() != null) {
+                    parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
+                }
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }
             return parkingEvent.getId();

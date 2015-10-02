@@ -23,12 +23,12 @@ public class ParkingSubLotEntity {
     private String mobileRequired;
     private String valetName;
     private Time lastCheckinUpdateTime;
-    private Set<ParkingPassMasterEntity> parkingPasses;
     private Set<PricingSlotEntity> pricingSlots;
     private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
     private ParkingLotEntity parkingLot;
     private BigDecimal autoCheckoutCost;
+    private Set<FocReasonsForParkingLotEntity> focReasons;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -171,15 +171,6 @@ public class ParkingSubLotEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
-    public Set<ParkingPassMasterEntity> getParkingPasses() {
-        return parkingPasses;
-    }
-
-    public void setParkingPasses(Set<ParkingPassMasterEntity> parkingPassMastersById) {
-        this.parkingPasses = parkingPassMastersById;
-    }
-
     @ManyToOne
     @JoinColumn(name = "parking_lot_id", referencedColumnName = "id", nullable = false)
     public ParkingLotEntity getParkingLot() {
@@ -216,5 +207,14 @@ public class ParkingSubLotEntity {
 
     public void setAutoCheckoutCost(BigDecimal autoCheckoutCost) {
         this.autoCheckoutCost = autoCheckoutCost;
+    }
+
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
+    public Set<FocReasonsForParkingLotEntity> getFocReasons() {
+        return focReasons;
+    }
+
+    public void setFocReasons(Set<FocReasonsForParkingLotEntity> focReasons) {
+        this.focReasons = focReasons;
     }
 }
