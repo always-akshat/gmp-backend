@@ -15,4 +15,4 @@ ADD COLUMN `is_paid` VARCHAR(50) NULL;
 
 
 INSERT INTO `sub_lot_type`(`type_name`) Values ('CAR');
-INSERT INTO `sub_lot_type`(`type_name`) Values ('BIKEgit');
+INSERT INTO `sub_lot_type`(`type_name`) Values ('BIKE');
