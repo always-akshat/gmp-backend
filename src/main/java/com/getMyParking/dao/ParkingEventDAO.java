@@ -205,7 +205,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 parkingReports.put(username,userParkingReport);
             }
             ParkingReport parkingReport =
-                    createReport(Restrictions.eq("parkingSubLot.id",user.getParkingSubLotId()),fromDateTime,toDateTime,null);
+                    createReport(Restrictions.and(Restrictions.eq("parkingSubLot.id", user.getParkingSubLotId()),
+                            Restrictions.eq("operatorName",username)),fromDateTime,toDateTime,null);
             parkingReport.setParkingSubLotId(user.getParkingSubLotId());
             userParkingReport.getParkingReports().add(parkingReport);
         }
