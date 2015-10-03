@@ -21,6 +21,8 @@ public class ParkingPassMasterEntity {
     private String isRegistrationNumber;
     private String isName;
     private String isMobileNumber;
+    private String isRFID;
+    private String isPaid;
     private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
     private ParkingEntity parking;
@@ -126,6 +128,26 @@ public class ParkingPassMasterEntity {
         this.isMobileNumber = isMobileNumber;
     }
 
+    @Basic
+    @Column(name = "is_rfid", nullable = false, insertable = true, updatable = true, length = 50)
+    public String getIsRFID() {
+        return isRFID;
+    }
+
+    public void setIsRFID(String isRFID) {
+        this.isRFID = isRFID;
+    }
+
+    @Basic
+    @Column(name = "is_paid", nullable = false, insertable = true, updatable = true, length = 50)
+    public String getIsPaid() {
+        return isPaid;
+    }
+
+    public void setIsPaid(String isPaid) {
+        this.isPaid = isPaid;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -138,6 +160,8 @@ public class ParkingPassMasterEntity {
         if (isMobileNumber != null ? !isMobileNumber.equals(that.isMobileNumber) : that.isMobileNumber != null)
             return false;
         if (isName != null ? !isName.equals(that.isName) : that.isName != null) return false;
+        if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
+        if (isRFID != null ? !isRFID.equals(that.isRFID) : that.isRFID != null) return false;
         if (isRegistrationNumber != null ? !isRegistrationNumber.equals(that.isRegistrationNumber) : that.isRegistrationNumber != null)
             return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -145,6 +169,8 @@ public class ParkingPassMasterEntity {
         if (parking != null ? !parking.equals(that.parking) : that.parking != null) return false;
         if (passType != null ? !passType.equals(that.passType) : that.passType != null) return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
+        if (receiptContents != null ? !receiptContents.equals(that.receiptContents) : that.receiptContents != null)
+            return false;
         if (vehicleType != null ? !vehicleType.equals(that.vehicleType) : that.vehicleType != null) return false;
 
         return true;
@@ -162,6 +188,9 @@ public class ParkingPassMasterEntity {
         result = 31 * result + (isRegistrationNumber != null ? isRegistrationNumber.hashCode() : 0);
         result = 31 * result + (isName != null ? isName.hashCode() : 0);
         result = 31 * result + (isMobileNumber != null ? isMobileNumber.hashCode() : 0);
+        result = 31 * result + (isRFID != null ? isRFID.hashCode() : 0);
+        result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
+        result = 31 * result + (receiptContents != null ? receiptContents.hashCode() : 0);
         result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }

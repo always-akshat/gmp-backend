@@ -103,7 +103,7 @@ public class ReceiptContentEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = true)
     public ParkingSubLotEntity getParkingSubLot() {
         return parkingSubLot;
     }
@@ -113,7 +113,7 @@ public class ReceiptContentEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "parking_pass_master_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parking_pass_master_id", referencedColumnName = "id", nullable = true)
     public ParkingPassMasterEntity getParkingPassMaster() {
         return parkingPassMaster;
     }

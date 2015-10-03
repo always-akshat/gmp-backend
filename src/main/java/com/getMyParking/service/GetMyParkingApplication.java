@@ -76,11 +76,12 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         HibernateBundle<GetMyParkingConfiguration> hibernateBundle =
                 new HibernateBundle<GetMyParkingConfiguration>(
-                CompanyEntity.class, ParkingEntity.class, ParkingEventEntity.class, ParkingLotEntity.class,
-                ParkingSubLotUserAccessEntity.class, ParkingPassEntity.class, ParkingPassMasterEntity.class,
-                PriceGridEntity.class, PricingSlotEntity.class, ReceiptContentEntity.class,
-                SessionEntity.class, UserB2BEntity.class, ParkingSubLotEntity.class, StyleMasterEntity.class,
-                UserAccessEntity.class, FocReasonsForParkingLotEntity.class
+                        CompanyEntity.class, FocReasonsForParkingLotEntity.class, ParkingEntity.class,
+                        ParkingEventEntity.class, ParkingLotEntity.class, ParkingPassEntity.class,
+                        ParkingSubLotEntity.class, ParkingSubLotUserAccessEntity.class, PriceGridEntity.class,
+                        PricingSlotEntity.class, ReceiptContentEntity.class, SessionEntity.class,
+                        StyleMasterEntity.class, SubLotTypeEntity.class, UserAccessEntity.class,
+                        UserB2BEntity.class, ParkingPassMasterEntity.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
