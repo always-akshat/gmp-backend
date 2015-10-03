@@ -14,5 +14,5 @@ ADD COLUMN `is_rfid` VARCHAR(50) NULL,
 ADD COLUMN `is_paid` VARCHAR(50) NULL;
 
 
-INSERT INTO sub_lot_type('type_name') VALUES
-  ('CAR'),('BIKE');
+INSERT INTO `sub_lot_type`(`type_name`) Values ('CAR');
+INSERT INTO `sub_lot_type`(`type_name`) Values ('BIKEgit');
