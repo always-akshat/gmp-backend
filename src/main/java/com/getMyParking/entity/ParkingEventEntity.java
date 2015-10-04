@@ -46,11 +46,10 @@ public class ParkingEventEntity {
     private String focReason;
     @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
-    @JsonIgnore
     private ParkingPassEntity parkingPass;
     @JsonProperty
     private Integer parkingSubLotId;
-    @JsonProperty
+    @JsonIgnore
     private Integer parkingPassId;
 
     @Id
