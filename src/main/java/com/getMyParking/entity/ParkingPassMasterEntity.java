@@ -169,8 +169,6 @@ public class ParkingPassMasterEntity {
         if (parking != null ? !parking.equals(that.parking) : that.parking != null) return false;
         if (passType != null ? !passType.equals(that.passType) : that.passType != null) return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
-        if (receiptContents != null ? !receiptContents.equals(that.receiptContents) : that.receiptContents != null)
-            return false;
         if (vehicleType != null ? !vehicleType.equals(that.vehicleType) : that.vehicleType != null) return false;
 
         return true;
@@ -190,7 +188,6 @@ public class ParkingPassMasterEntity {
         result = 31 * result + (isMobileNumber != null ? isMobileNumber.hashCode() : 0);
         result = 31 * result + (isRFID != null ? isRFID.hashCode() : 0);
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
-        result = 31 * result + (receiptContents != null ? receiptContents.hashCode() : 0);
         result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }
