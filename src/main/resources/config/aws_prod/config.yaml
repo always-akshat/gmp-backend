@@ -1,5 +1,22 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 9000
+  adminConnectors:
+    - type: http
+      port: 9001
+  requestLog:
+    timeZone: IST
+    appenders:
+      - type: file
+        currentLogFilename: /var/log/gmp-v3/requests.log
+        archive: true
+        archivedLogFilenamePattern: /var/log/gmp-v3/requests-%d{yyyy-MM-dd}.log.gz
+        archivedFileCount: 50
+
+
 logging:
-  level: DEBUG
+  level: INFO
   appenders:
     - type: console
       threshold: INFO
@@ -22,22 +39,26 @@ logging:
       archivedLogFilenamePattern: /var/log/gmp-v3/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
 
+swagger:
+  resourcePackage: com.getMyParking.service.resource
+
 database:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver
 
   # the username
-  user: root
+  user: gmp
 
   # the password
-  password:
+  password: gmp2015gmp
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/
+  url: jdbc:mysql://gmp-backend.c3qwswoi0j9e.ap-southeast-1.rds.amazonaws.com:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
 
   # the maximum amount of time to wait on an empty pool before throwing an exception
   maxWaitForConnection: 1s
@@ -45,11 +66,13 @@ database:
   # the SQL query to run when validating a connection's liveness
   validationQuery: "/* MyService Health Check */ SELECT 1"
 
+  checkConnectionOnBorrow: true
+
   # the minimum number of connections to keep open
   minSize: 8
 
   # the maximum number of connections to keep open
-  maxSize: 32
+  maxSize: 96
 
   # whether or not idle connections should be validated
   checkConnectionWhileIdle: false

@@ -27,13 +27,13 @@ database:
   driverClass: com.mysql.jdbc.Driver
 
   # the username
-  user: root
+  user: gmp
 
   # the password
-  password:
+  password: gmp2015gmp
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/
+  url: jdbc:mysql://gmp-backend.c3qwswoi0j9e.ap-southeast-1.rds.amazonaws.com:3306/
 
   # any properties specific to your JDBC driver:
   properties:

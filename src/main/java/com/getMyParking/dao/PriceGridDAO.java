@@ -1,6 +1,6 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.ParkingEntity;
+import com.getMyParking.entity.PriceGridEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Query;
@@ -9,29 +9,29 @@ import org.hibernate.SessionFactory;
 /**
  * Created by rahulgupta.s on 31/05/15.
  */
-public class ParkingDAO extends AbstractDAO<ParkingEntity> {
+public class PriceGridDAO extends AbstractDAO<PriceGridEntity> {
     /**
      * Creates a new DAO with a given session provider.
      *
      * @param sessionFactory a session provider
      */
     @Inject
-    public ParkingDAO(SessionFactory sessionFactory) {
+    public PriceGridDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
-    public void saveOrUpdateParking(ParkingEntity parking) {
-        persist(parking);
+    public PriceGridEntity findById(Integer priceGridId) {
+        return get(priceGridId);
     }
 
-
-    public ParkingEntity findById(Integer parkingId) {
-        return get(parkingId);
+    public void saveOrUpdatePricingSlot(PriceGridEntity priceGrid) {
+        persist(priceGrid);
     }
 
     public void deleteById(Integer parkingId) {
-        Query q = currentSession().createQuery("delete from ParkingEntity where id =:id");
+        Query q = currentSession().createQuery("delete from PriceGridEntity where id =:id");
         q.setInteger("id", parkingId);
         q.executeUpdate();
     }
+
 }

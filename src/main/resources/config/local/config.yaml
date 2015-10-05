@@ -1,17 +1,17 @@
 server:
   applicationConnectors:
     - type: http
-      port: 8080
+      port: 9000
   adminConnectors:
     - type: http
-      port: 8081
+      port: 9001
   requestLog:
     timeZone: IST
     appenders:
       - type: file
-        currentLogFilename: /var/log/gmp/requests.log
+        currentLogFilename: /var/log/gmp-v3/requests.log
         archive: true
-        archivedLogFilenamePattern: /var/log/gmp/requests-%d{yyyy-MM-dd}.log.gz
+        archivedLogFilenamePattern: /var/log/gmp-v3/requests-%d{yyyy-MM-dd}.log.gz
         archivedFileCount: 50
 
 
@@ -19,25 +19,28 @@ logging:
   level: DEBUG
   appenders:
     - type: console
-      threshold: DEBUG
+      threshold: INFO
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
     - type: file
       threshold: INFO
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/gmp/services-info.log
+      currentLogFilename: /var/log/gmp-v3/services-info.log
       archive: true
-      archivedLogFilenamePattern: /var/log/gmp/services-info-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp-v3/services-info-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
     - type: file
       threshold: ERROR
       timeZone: IST
       logFormat: "[%date] [%-5level] [%thread] [%X{id}] [%logger{10}] [%msg]%n"
-      currentLogFilename: /var/log/gmp/services-error.log
+      currentLogFilename: /var/log/gmp-v3/services-error.log
       archive: true
-      archivedLogFilenamePattern: /var/log/gmp/services-error-%d{yyyy-MM-dd}.log.gz
+      archivedLogFilenamePattern: /var/log/gmp-v3/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
+
+swagger:
+  resourcePackage: com.getMyParking.service.resource
 
 database:
   # the name of your JDBC driver
@@ -50,11 +53,13 @@ database:
   password:
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/get_my_parking?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://localhost:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    show.sql: true
 
   # the maximum amount of time to wait on an empty pool before throwing an exception
   maxWaitForConnection: 1s
@@ -78,7 +83,7 @@ flyway:
   encoding: UTF-8
   # The schemas managed by Flyway. (default: default schema of the connection)
   schemas:
-    - get_my_parking
+    - get_my_parking_v2
   # The name of the schema metadata table that will be used by Flyway. (default: schema_version)
   metaDataTableName: schema_version
   # The file name prefix for sql migrations (default: V)
