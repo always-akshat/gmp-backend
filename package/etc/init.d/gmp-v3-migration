@@ -19,8 +19,8 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="GMP Backend Service v3"
-NAME=gmp-v3
+DESC="GMP Backend Service v3 migration"
+NAME=gmp-v3-migration
 DAEMON=/usr/share/$NAME/$NAME
 DAEMON_ARGS="--options args"
 PIDFILE=/var/run/$NAME.pid
