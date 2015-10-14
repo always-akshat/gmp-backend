@@ -96,6 +96,7 @@ public class ParkingEventResource {
             GetParkingEventResponse parkingEventResponse = new GetParkingEventResponse();
             parkingEventResponse.setParkingSubLotId(parkingSubLotId);
             List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingSubLotId, lastUpdateTime.get());
+            parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
                 if (parkingEvent.getParkingPass() != null)
