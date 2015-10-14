@@ -64,16 +64,15 @@ public class SessionEntity {
 
         SessionEntity that = (SessionEntity) o;
 
-        if (id != that.id) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (authToken != null ? !authToken.equals(that.authToken) : that.authToken != null) return false;
-        if (validTime != null ? !validTime.equals(that.validTime) : that.validTime != null) return false;
+        return !(validTime != null ? !validTime.equals(that.validTime) : that.validTime != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (authToken != null ? authToken.hashCode() : 0);
         result = 31 * result + (validTime != null ? validTime.hashCode() : 0);
         return result;

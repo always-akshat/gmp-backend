@@ -30,9 +30,8 @@ public class SubLotTypeEntity {
 
         SubLotTypeEntity that = (SubLotTypeEntity) o;
 
-        if (typeName != null ? !typeName.equals(that.typeName) : that.typeName != null) return false;
+        return !(typeName != null ? !typeName.equals(that.typeName) : that.typeName != null);
 
-        return true;
     }
 
     @Override

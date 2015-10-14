@@ -151,27 +151,27 @@ public class ParkingPassMasterEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ParkingPassMasterEntity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         ParkingPassMasterEntity that = (ParkingPassMasterEntity) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (isActive != null ? !isActive.equals(that.isActive) : that.isActive != null) return false;
-        if (isMobileNumber != null ? !isMobileNumber.equals(that.isMobileNumber) : that.isMobileNumber != null)
-            return false;
-        if (isName != null ? !isName.equals(that.isName) : that.isName != null) return false;
-        if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
-        if (isRFID != null ? !isRFID.equals(that.isRFID) : that.isRFID != null) return false;
-        if (isRegistrationNumber != null ? !isRegistrationNumber.equals(that.isRegistrationNumber) : that.isRegistrationNumber != null)
-            return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (numbers != null ? !numbers.equals(that.numbers) : that.numbers != null) return false;
-        if (parking != null ? !parking.equals(that.parking) : that.parking != null) return false;
         if (passType != null ? !passType.equals(that.passType) : that.passType != null) return false;
+        if (numbers != null ? !numbers.equals(that.numbers) : that.numbers != null) return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
         if (vehicleType != null ? !vehicleType.equals(that.vehicleType) : that.vehicleType != null) return false;
+        if (isActive != null ? !isActive.equals(that.isActive) : that.isActive != null) return false;
+        if (isRegistrationNumber != null ? !isRegistrationNumber.equals(that.isRegistrationNumber) : that.isRegistrationNumber != null)
+            return false;
+        if (isName != null ? !isName.equals(that.isName) : that.isName != null) return false;
+        if (isMobileNumber != null ? !isMobileNumber.equals(that.isMobileNumber) : that.isMobileNumber != null)
+            return false;
+        if (isRFID != null ? !isRFID.equals(that.isRFID) : that.isRFID != null) return false;
+        if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
 
-        return true;
+        return !(parking != null ? !parking.equals(that.parking) : that.parking != null);
+
     }
 
     @Override
