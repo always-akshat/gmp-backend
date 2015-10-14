@@ -67,13 +67,11 @@ public class UserB2BEntity {
 
         UserB2BEntity that = (UserB2BEntity) o;
 
-        if (contactNumber != null ? !contactNumber.equals(that.contactNumber) : that.contactNumber != null)
-            return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
+        if (password != null ? !password.equals(that.password) : that.password != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return !(contactNumber != null ? !contactNumber.equals(that.contactNumber) : that.contactNumber != null);
 
-        return true;
     }
 
     @Override

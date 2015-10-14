@@ -59,6 +59,7 @@ database:
   properties:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.jdbc.batch_size: 10
 
   # the maximum amount of time to wait on an empty pool before throwing an exception
   maxWaitForConnection: 1s
@@ -69,7 +70,7 @@ database:
   checkConnectionOnBorrow: true
 
   # the minimum number of connections to keep open
-  minSize: 8
+  minSize: 60
 
   # the maximum number of connections to keep open
   maxSize: 96

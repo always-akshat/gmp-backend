@@ -138,36 +138,38 @@ public class ParkingSubLotEntity {
 
         ParkingSubLotEntity that = (ParkingSubLotEntity) o;
 
-        if (capacity != that.capacity) return false;
-        if (id != that.id) return false;
-        if (mobileRequired != that.mobileRequired) return false;
-        if (valetName != that.valetName) return false;
-        if (autoCheckoutTime != null ? !autoCheckoutTime.equals(that.autoCheckoutTime) : that.autoCheckoutTime != null)
-            return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        if (capacity != null ? !capacity.equals(that.capacity) : that.capacity != null) return false;
         if (collectionModel != null ? !collectionModel.equals(that.collectionModel) : that.collectionModel != null)
             return false;
-        if (lastCheckinUpdateTime != null ? !lastCheckinUpdateTime.equals(that.lastCheckinUpdateTime) : that.lastCheckinUpdateTime != null)
+        if (taxiTime != null ? !taxiTime.equals(that.taxiTime) : that.taxiTime != null) return false;
+        if (autoCheckoutTime != null ? !autoCheckoutTime.equals(that.autoCheckoutTime) : that.autoCheckoutTime != null)
             return false;
         if (plateNumberType != null ? !plateNumberType.equals(that.plateNumberType) : that.plateNumberType != null)
             return false;
-        if (taxiTime != null ? !taxiTime.equals(that.taxiTime) : that.taxiTime != null) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        if (mobileRequired != null ? !mobileRequired.equals(that.mobileRequired) : that.mobileRequired != null)
+            return false;
+        if (valetName != null ? !valetName.equals(that.valetName) : that.valetName != null) return false;
+        if (lastCheckinUpdateTime != null ? !lastCheckinUpdateTime.equals(that.lastCheckinUpdateTime) : that.lastCheckinUpdateTime != null)
+            return false;
+        return !(autoCheckoutCost != null ? !autoCheckoutCost.equals(that.autoCheckoutCost) : that.autoCheckoutCost != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + capacity;
+        result = 31 * result + (capacity != null ? capacity.hashCode() : 0);
         result = 31 * result + (collectionModel != null ? collectionModel.hashCode() : 0);
         result = 31 * result + (taxiTime != null ? taxiTime.hashCode() : 0);
         result = 31 * result + (autoCheckoutTime != null ? autoCheckoutTime.hashCode() : 0);
         result = 31 * result + (plateNumberType != null ? plateNumberType.hashCode() : 0);
-        result = 31 * result + mobileRequired.hashCode();
-        result = 31 * result + valetName.hashCode();
+        result = 31 * result + (mobileRequired != null ? mobileRequired.hashCode() : 0);
+        result = 31 * result + (valetName != null ? valetName.hashCode() : 0);
         result = 31 * result + (lastCheckinUpdateTime != null ? lastCheckinUpdateTime.hashCode() : 0);
+        result = 31 * result + (autoCheckoutCost != null ? autoCheckoutCost.hashCode() : 0);
         return result;
     }
 

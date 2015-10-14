@@ -67,20 +67,20 @@ public class PricingSlotEntity {
 
         PricingSlotEntity that = (PricingSlotEntity) o;
 
-        if (day != that.day) return false;
-        if (endMinutesOfDay != that.endMinutesOfDay) return false;
-        if (id != that.id) return false;
-        if (startMinutesOfDay != that.startMinutesOfDay) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (day != null ? !day.equals(that.day) : that.day != null) return false;
+        if (startMinutesOfDay != null ? !startMinutesOfDay.equals(that.startMinutesOfDay) : that.startMinutesOfDay != null)
+            return false;
+        return !(endMinutesOfDay != null ? !endMinutesOfDay.equals(that.endMinutesOfDay) : that.endMinutesOfDay != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + day;
-        result = 31 * result + startMinutesOfDay;
-        result = 31 * result + endMinutesOfDay;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (day != null ? day.hashCode() : 0);
+        result = 31 * result + (startMinutesOfDay != null ? startMinutesOfDay.hashCode() : 0);
+        result = 31 * result + (endMinutesOfDay != null ? endMinutesOfDay.hashCode() : 0);
         return result;
     }
 

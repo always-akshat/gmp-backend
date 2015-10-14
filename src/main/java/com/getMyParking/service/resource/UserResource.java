@@ -152,7 +152,7 @@ public class UserResource {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 

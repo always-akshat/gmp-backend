@@ -72,14 +72,13 @@ public class ParkingSubLotUserAccessEntity {
 
         ParkingSubLotUserAccessEntity that = (ParkingSubLotUserAccessEntity) o;
 
-        if (companyId != that.companyId) return false;
         if (id != that.id) return false;
-        if (parkingId != that.parkingId) return false;
-        if (parkingLotId != that.parkingLotId) return false;
         if (parkingSubLotId != that.parkingSubLotId) return false;
-        if (userB2B != null ? !userB2B.equals(that.userB2B) : that.userB2B != null) return false;
+        if (parkingLotId != that.parkingLotId) return false;
+        if (parkingId != that.parkingId) return false;
+        if (companyId != that.companyId) return false;
+        return !(userB2B != null ? !userB2B.equals(that.userB2B) : that.userB2B != null);
 
-        return true;
     }
 
     @Override
