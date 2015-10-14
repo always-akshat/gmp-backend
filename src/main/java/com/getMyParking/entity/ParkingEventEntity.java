@@ -49,7 +49,6 @@ public class ParkingEventEntity {
     private ParkingPassEntity parkingPass;
     @JsonProperty
     private Integer parkingSubLotId;
-    @JsonIgnore
     private Integer parkingPassId;
 
     @Id
