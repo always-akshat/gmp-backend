@@ -11,6 +11,7 @@ import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
@@ -65,6 +66,7 @@ public class ParkingEventResource {
             parkingEventResponse.setParkingSubLotId(parkingSubLotId);
             List<ParkingEventEntity> parkingEvents =
                     parkingEventDAO.getParkingEvents(parkingSubLotId,DateTime.now().minusDays(duration.get()),DateTime.now());
+            parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
                 if (parkingEvent.getParkingPass() != null)
