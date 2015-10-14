@@ -6,9 +6,13 @@ import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.validation.Valid;
@@ -68,12 +72,13 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingPassEntity> getActiveParkingPass(@QueryParam("parkingPassIds")String id) {
+    public List<ParkingPassEntity> getActiveParkingPass(@QueryParam("parkingPassIds")String id, @Auth GMPUser  gmpUser) {
         List<String> parkingPassIds = Splitter.on(",").splitToList(id);
         List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByIds(parkingPassIds);
         if (parkingPassList == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } else {
+            parkingPassList = Lists.newArrayList(Sets.newHashSet(parkingPassList));
             for (ParkingPassEntity passEntity : parkingPassList) {
                 passEntity.setParkingPassMasterId(passEntity.getParkingPassMaster().getId());
             }
