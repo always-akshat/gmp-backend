@@ -124,23 +124,62 @@ public class ParkingEventResource {
             if (parkingSubLot == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
-                if (parkingEvent.getId() == null) {
-                    List<ParkingEventEntity> pe = parkingEventDAO.findBySerialNumberAndEventType(parkingSubLotId,
-                            parkingEvent.getEventType(), parkingEvent.getSerialNumber());
-                    if (pe != null && pe.size() > 0)
-                        throw new WebApplicationException(Response.Status.CONFLICT);
-                }
-                parkingEvent.setParkingSubLot(parkingSubLot);
-                parkingEvent.setUpdatedTime(DateTime.now());
-                if (parkingEvent.getParkingPassId() != null) {
-                    parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
-                }
-                parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+                return saveParkingEvent(parkingEvent,parkingSubLot);
             }
-            return parkingEvent.getId();
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+    }
+
+    @POST
+    @Path("/parking_sub_lot/{parkingSubLotId}/batch")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Save or Update Parking Events",
+            notes = "Creates or Update a list of parking events, returns a list of parking event ",response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<BigInteger> saveOrUpdateParkingEvents(@ApiParam (value = "Parking Event") @Valid List<ParkingEventEntity> parkingEvents,
+                                               @PathParam("parkingSubLotId")int parkingSubLotId,
+                                               @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingSubLotId)) {
+            ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
+            List<BigInteger> parkingEventIds = Lists.newArrayList();
+            if (parkingSubLot == null) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            } else {
+                for (ParkingEventEntity parkingEvent : parkingEvents) {
+                    try {
+                        parkingEventIds.add(saveParkingEvent(parkingEvent, parkingSubLot));
+                    } catch (WebApplicationException ex) {
+                        parkingEventIds.add(BigInteger.ZERO);
+                    }
+                }
+            }
+            return parkingEventIds;
+        } else {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+    }
+
+    private BigInteger saveParkingEvent(ParkingEventEntity parkingEvent, ParkingSubLotEntity parkingSubLot) {
+        if (parkingEvent.getId() == null) {
+            List<ParkingEventEntity> pe = parkingEventDAO.findBySerialNumberAndEventType(parkingSubLot.getId(),
+                    parkingEvent.getEventType(), parkingEvent.getSerialNumber());
+            if (pe != null && pe.size() > 0) {
+                throw new WebApplicationException(Response.Status.CONFLICT);
+            }
+        }
+        parkingEvent.setParkingSubLot(parkingSubLot);
+        parkingEvent.setUpdatedTime(DateTime.now());
+        if (parkingEvent.getParkingPassId() != null) {
+            parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
+        }
+        parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+        return parkingEvent.getId();
     }
 
     @PUT
@@ -174,7 +213,7 @@ public class ParkingEventResource {
             parkingEventDAO.saveOrUpdateParkingEvent(pe);
             return pe.getId();
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 
@@ -206,7 +245,7 @@ public class ParkingEventResource {
             }
             return parkingEvent.getId();
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 
