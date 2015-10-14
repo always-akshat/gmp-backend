@@ -71,10 +71,7 @@ public class PricingSlotEntity {
         if (day != null ? !day.equals(that.day) : that.day != null) return false;
         if (startMinutesOfDay != null ? !startMinutesOfDay.equals(that.startMinutesOfDay) : that.startMinutesOfDay != null)
             return false;
-        if (endMinutesOfDay != null ? !endMinutesOfDay.equals(that.endMinutesOfDay) : that.endMinutesOfDay != null)
-            return false;
-        if (priceGrids != null ? !priceGrids.equals(that.priceGrids) : that.priceGrids != null) return false;
-        return !(parkingSubLot != null ? !parkingSubLot.equals(that.parkingSubLot) : that.parkingSubLot != null);
+        return !(endMinutesOfDay != null ? !endMinutesOfDay.equals(that.endMinutesOfDay) : that.endMinutesOfDay != null);
 
     }
 
@@ -84,8 +81,6 @@ public class PricingSlotEntity {
         result = 31 * result + (day != null ? day.hashCode() : 0);
         result = 31 * result + (startMinutesOfDay != null ? startMinutesOfDay.hashCode() : 0);
         result = 31 * result + (endMinutesOfDay != null ? endMinutesOfDay.hashCode() : 0);
-        result = 31 * result + (priceGrids != null ? priceGrids.hashCode() : 0);
-        result = 31 * result + (parkingSubLot != null ? parkingSubLot.hashCode() : 0);
         return result;
     }
 
