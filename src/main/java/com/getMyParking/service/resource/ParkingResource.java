@@ -7,6 +7,7 @@ import com.getMyParking.entity.*;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -140,6 +142,20 @@ public class ParkingResource {
                                             @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParking(parkingId);
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
+    }
+
+    @Path("/{parkingId}/events")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Get All Parking Events by Parking Id", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public Set<ParkingEventEntity> getAllParkingEvents( @PathParam("parkingId") Integer parkingId,
+                                                      @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        return Sets.newHashSet(parkingEventDAO.getAllParkingEventsByParking(parkingId, fromDate.get(), toDate.get()));
     }
 
     @Path("/{parkingId}/parking_pass")

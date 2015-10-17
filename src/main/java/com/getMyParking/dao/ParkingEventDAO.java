@@ -56,6 +56,12 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return list(q);
     }
 
+    public List<ParkingEventEntity> getAllParkingEventsByParking(Integer parkingId, DateTime fromDate, DateTime toDate) {
+        return list(currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingId",parkingId))
+                .add(Restrictions.between("eventTime", fromDate, toDate)));
+    }
+
 
     public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime fromDate, DateTime toDate) {
 
