@@ -3,16 +3,16 @@ set -e
 
 case "$1" in
     configure)
-	if [-d "/etc/monit/" ] then
+	if [ -d "/etc/monit/" ]; then
 		monit stop gmp-v3
 		monit start gmp-v3
 	else
-		/init.d/gmp-v3 stop
-		/init.d/gmp-v3 start
+		/etc/init.d/gmp-v3 stop
+		/etc/init.d/gmp-v3 start
 	fi
     ;;
     *)
-        echo "preinst called with unknown argument \`$1'" >&2
+        echo "postinst called with unknown argument \`$1'" >&2
         exit 1
     ;;
 esac
