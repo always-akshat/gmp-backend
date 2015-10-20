@@ -105,6 +105,7 @@ public class ParkingEventResource {
                 if (parkingEvent.getParkingPass() != null)
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
             }
+            Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
             parkingEventsResponseList.add(parkingEventResponse);
         }
