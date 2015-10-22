@@ -5,6 +5,7 @@ import com.getMyParking.entity.ParkingSubLotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
@@ -27,7 +28,10 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
         persist(parkingSubLot);
     }
 
-    public List<ParkingSubLotEntity> getAllParkingLots(){
-        return list(criteria());
+    public List<ParkingSubLotEntity> getAllAutoCheckoutParkingLots(){
+        return list(
+                criteria()
+                .add(Restrictions.neOrIsNotNull("autoCheckoutTime",null))
+        );
     }
 }
