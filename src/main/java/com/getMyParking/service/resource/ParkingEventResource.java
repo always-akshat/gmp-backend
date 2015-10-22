@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -254,6 +255,49 @@ public class ParkingEventResource {
         } else {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+    }
+
+    @GET
+    @Path("/events/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking Events by last update time stamp", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "UnAuthorized"),
+    })
+    public List<ParkingEventEntity> getParkingEventsById(@QueryParam("parkingSubLotId")Optional<IntParam> parkingSubLotId,
+                                                         @QueryParam("parkingLotId")Optional<IntParam> parkingLotId,
+                                                         @QueryParam("parkingId")Optional<IntParam> parkingId,
+                                                         @QueryParam("companyId")Optional<IntParam> companyId,
+                                                         @QueryParam("registrationNumber") Optional<String> registrationNumber,
+                                                         @QueryParam("fromDate") Optional<DateTimeParam> fromDate,
+                                                         @QueryParam("toDate") Optional<DateTimeParam> toDate,
+                                                         @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
+                                                         @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
+                                                         @Auth GMPUser gmpUser) {
+
+        if (companyId.isPresent() && !gmpUser.getCompanyIds().contains(companyId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingId.isPresent() && !gmpUser.getParkingIds().contains(parkingId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingLotId.isPresent() && !gmpUser.getParkingLotIds().contains(parkingLotId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingSubLotId.isPresent() && !gmpUser.getParkingSubLotIds().contains(parkingSubLotId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
+
+        return parkingEventDAO.searchParkingEvents(companyId,parkingId,parkingLotId,parkingSubLotId,registrationNumber,
+                fromDate,toDate,pageNumberParam.get(),pageSize);
     }
 
 }
