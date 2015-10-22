@@ -9,13 +9,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Comparator;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking_v2")
-public class ParkingEventEntity {
+public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     private BigInteger id;
     @NotNull
     private String type;
@@ -346,5 +347,10 @@ public class ParkingEventEntity {
         if (parkingEvent.getCompanyId() != null) companyId = parkingEvent.getCompanyId();
         if (parkingEvent.getParkingLotId() != null) parkingLotId = parkingEvent.getParkingLotId();
         if (parkingEvent.getParkingId() != null) parkingId = parkingEvent.getParkingId();
+    }
+
+    @Override
+    public int compareTo(ParkingEventEntity that) {
+        return this.getEventType().compareTo(that.getEventType());
     }
 }

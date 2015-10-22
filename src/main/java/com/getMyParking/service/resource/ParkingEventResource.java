@@ -25,6 +25,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -72,9 +73,11 @@ public class ParkingEventResource {
                 if (parkingEvent.getParkingPass() != null)
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
             }
+            Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
             parkingEventsResponseList.add(parkingEventResponse);
         }
+
         return parkingEventsResponseList;
     }
 
@@ -102,6 +105,7 @@ public class ParkingEventResource {
                 if (parkingEvent.getParkingPass() != null)
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
             }
+            Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
             parkingEventsResponseList.add(parkingEventResponse);
         }
