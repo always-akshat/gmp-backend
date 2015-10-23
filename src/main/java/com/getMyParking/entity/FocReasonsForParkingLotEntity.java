@@ -40,19 +40,19 @@ public class FocReasonsForParkingLotEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FocReasonsForParkingLotEntity)) return false;
-        FocReasonsForParkingLotEntity that = (FocReasonsForParkingLotEntity) o;
-        if (parkingSubLot != null ? !parkingSubLot.equals(that.parkingSubLot) : that.parkingSubLot != null)
-            return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return true;
+        FocReasonsForParkingLotEntity that = (FocReasonsForParkingLotEntity) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return !(title != null ? !title.equals(that.title) : that.title != null);
+
     }
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
-        result = 31 * result + (parkingSubLot != null ? parkingSubLot.hashCode() : 0);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
 

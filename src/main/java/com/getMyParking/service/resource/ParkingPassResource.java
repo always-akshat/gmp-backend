@@ -8,9 +8,13 @@ import com.getMyParking.dao.ParkingPassMasterDAO;
 import com.getMyParking.entity.ParkingEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.validation.Valid;
@@ -72,12 +76,13 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingPassEntity> getActiveParkingPass(@QueryParam("parkingPassIds")String id) {
+    public List<ParkingPassEntity> getActiveParkingPass(@QueryParam("parkingPassIds")String id, @Auth GMPUser  gmpUser) {
         List<String> parkingPassIds = Splitter.on(",").splitToList(id);
         List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByIds(parkingPassIds);
         if (parkingPassList == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } else {
+            parkingPassList = Lists.newArrayList(Sets.newHashSet(parkingPassList));
             for (ParkingPassEntity passEntity : parkingPassList) {
                 passEntity.setParkingPassMasterId(passEntity.getParkingPassMaster().getId());
             }
@@ -113,20 +118,35 @@ public class ParkingPassResource {
     @ExceptionMetered
     @UnitOfWork
     @ApiOperation(value = "Save or Update a parking pass master entity", response = Integer.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
     public int saveOrUpdateParkingPassMaster(@ApiParam("Parking Pass Master Entity") @Valid ParkingPassMasterEntity parkingPassMasterEntity,
                                        @PathParam("parkingId") Integer parkingId) {
         ParkingEntity parkingEntity = parkingDAO.findById(parkingId);
-        if(parkingEntity == null ){
+        if (parkingEntity == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }else{
+        } else {
             parkingPassMasterEntity.setParking(parkingEntity);
             parkingPassMasterDAO.saveOrUpdateParking(parkingPassMasterEntity);
         }
         return parkingPassMasterEntity.getId();
+    }
+
+    @Path("/updateCounter/{parkingPassId}")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Update a parking pass counter", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public Integer saveParkingPassCounter(@FormParam("value") int counter,
+                                       @PathParam("parkingPassId") Integer parkingPassId) {
+        ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingPassId);
+        if (parkingPass.getCounter() < counter) {
+            parkingPass.setCounter(counter);
+            parkingPassDAO.saveOrUpdateParkingPass(parkingPass);
+        }
+        return parkingPass.getId();
     }
 
 }

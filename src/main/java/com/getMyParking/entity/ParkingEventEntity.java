@@ -9,13 +9,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Comparator;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
 @Table(name = "parking_event", schema = "", catalog = "get_my_parking_v2")
-public class ParkingEventEntity {
+public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     private BigInteger id;
     @NotNull
     private String type;
@@ -46,11 +47,10 @@ public class ParkingEventEntity {
     private String focReason;
     @JsonIgnore
     private ParkingSubLotEntity parkingSubLot;
-    @JsonIgnore
     private ParkingPassEntity parkingPass;
     @JsonProperty
     private Integer parkingSubLotId;
-    @JsonProperty
+    @JsonIgnore
     private Integer parkingPassId;
 
     @Id
@@ -239,38 +239,33 @@ public class ParkingEventEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ParkingEventEntity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         ParkingEventEntity that = (ParkingEventEntity) o;
 
-        if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
-        if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
-        if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
-        if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
-        if (focReason != null ? !focReason.equals(that.focReason) : that.focReason != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
-        if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
-        if (parkingId != null ? !parkingId.equals(that.parkingId) : that.parkingId != null) return false;
-        if (parkingLotId != null ? !parkingLotId.equals(that.parkingLotId) : that.parkingLotId != null) return false;
-        if (parkingPass != null ? !parkingPass.equals(that.parkingPass) : that.parkingPass != null) return false;
-        if (parkingPassId != null ? !parkingPassId.equals(that.parkingPassId) : that.parkingPassId != null)
-            return false;
-        if (parkingSubLot != null ? !parkingSubLot.equals(that.parkingSubLot) : that.parkingSubLot != null)
-            return false;
-        if (parkingSubLotId != null ? !parkingSubLotId.equals(that.parkingSubLotId) : that.parkingSubLotId != null)
-            return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (registrationNumber != null ? !registrationNumber.equals(that.registrationNumber) : that.registrationNumber != null)
             return false;
+        if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
+        if (valetName != null ? !valetName.equals(that.valetName) : that.valetName != null) return false;
+        if (eventTime != null ? !eventTime.equals(that.eventTime) : that.eventTime != null) return false;
+        if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
+        if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
+        if (subLotType != null ? !subLotType.equals(that.subLotType) : that.subLotType != null) return false;
         if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
         if (shiftNumber != null ? !shiftNumber.equals(that.shiftNumber) : that.shiftNumber != null) return false;
-        if (special != null ? !special.equals(that.special) : that.special != null) return false;
-        if (subLotType != null ? !subLotType.equals(that.subLotType) : that.subLotType != null) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
-        if (valetName != null ? !valetName.equals(that.valetName) : that.valetName != null) return false;
+        if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
+        if (parkingLotId != null ? !parkingLotId.equals(that.parkingLotId) : that.parkingLotId != null) return false;
+        if (parkingId != null ? !parkingId.equals(that.parkingId) : that.parkingId != null) return false;
+        if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
+        if (special != null ? !special.equals(that.special) : that.special != null) return false;
+        if (focReason != null ? !focReason.equals(that.focReason) : that.focReason != null) return false;
+        if (parkingSubLotId != null ? !parkingSubLotId.equals(that.parkingSubLotId) : that.parkingSubLotId != null)
+            return false;
+        return !(parkingPassId != null ? !parkingPassId.equals(that.parkingPassId) : that.parkingPassId != null);
 
-        return true;
     }
 
     @Override
@@ -293,8 +288,6 @@ public class ParkingEventEntity {
         result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
         result = 31 * result + (special != null ? special.hashCode() : 0);
         result = 31 * result + (focReason != null ? focReason.hashCode() : 0);
-        result = 31 * result + (parkingSubLot != null ? parkingSubLot.hashCode() : 0);
-        result = 31 * result + (parkingPass != null ? parkingPass.hashCode() : 0);
         result = 31 * result + (parkingSubLotId != null ? parkingSubLotId.hashCode() : 0);
         result = 31 * result + (parkingPassId != null ? parkingPassId.hashCode() : 0);
         return result;
@@ -354,5 +347,10 @@ public class ParkingEventEntity {
         if (parkingEvent.getCompanyId() != null) companyId = parkingEvent.getCompanyId();
         if (parkingEvent.getParkingLotId() != null) parkingLotId = parkingEvent.getParkingLotId();
         if (parkingEvent.getParkingId() != null) parkingId = parkingEvent.getParkingId();
+    }
+
+    @Override
+    public int compareTo(ParkingEventEntity that) {
+        return this.getEventType().compareTo(that.getEventType());
     }
 }

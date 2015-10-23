@@ -76,25 +76,25 @@ public class PriceGridEntity {
 
         PriceGridEntity that = (PriceGridEntity) o;
 
-        if (cost != that.cost) return false;
-        if (duration != that.duration) return false;
-        if (id != that.id) return false;
-        if (sequenceNumber != that.sequenceNumber) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (priceStructure != null ? !priceStructure.equals(that.priceStructure) : that.priceStructure != null)
             return false;
+        if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
+        if (duration != null ? !duration.equals(that.duration) : that.duration != null) return false;
+        if (sequenceNumber != null ? !sequenceNumber.equals(that.sequenceNumber) : that.sequenceNumber != null)
+            return false;
+        return !(pricingSlot != null ? !pricingSlot.equals(that.pricingSlot) : that.pricingSlot != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result =0;
-        if (id!=null)
-            result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (priceStructure != null ? priceStructure.hashCode() : 0);
-        result = 31 * result + cost;
-        result = 31 * result + duration;
-        result = 31 * result + sequenceNumber;
+        result = 31 * result + (cost != null ? cost.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
+        result = 31 * result + (sequenceNumber != null ? sequenceNumber.hashCode() : 0);
+        result = 31 * result + (pricingSlot != null ? pricingSlot.hashCode() : 0);
         return result;
     }
 

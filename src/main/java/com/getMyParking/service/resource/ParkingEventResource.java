@@ -11,6 +11,7 @@ import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
@@ -24,7 +25,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -65,14 +68,17 @@ public class ParkingEventResource {
             parkingEventResponse.setParkingSubLotId(parkingSubLotId);
             List<ParkingEventEntity> parkingEvents =
                     parkingEventDAO.getParkingEvents(parkingSubLotId,DateTime.now().minusDays(duration.get()),DateTime.now());
+            parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
                 if (parkingEvent.getParkingPass() != null)
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
             }
+            Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
             parkingEventsResponseList.add(parkingEventResponse);
         }
+
         return parkingEventsResponseList;
     }
 
@@ -94,11 +100,13 @@ public class ParkingEventResource {
             GetParkingEventResponse parkingEventResponse = new GetParkingEventResponse();
             parkingEventResponse.setParkingSubLotId(parkingSubLotId);
             List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingSubLotId, lastUpdateTime.get());
+            parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
                 if (parkingEvent.getParkingPass() != null)
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
             }
+            Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
             parkingEventsResponseList.add(parkingEventResponse);
         }
@@ -124,23 +132,62 @@ public class ParkingEventResource {
             if (parkingSubLot == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
-                if (parkingEvent.getId() == null) {
-                    List<ParkingEventEntity> pe = parkingEventDAO.findBySerialNumberAndEventType(parkingSubLotId,
-                            parkingEvent.getEventType(), parkingEvent.getSerialNumber());
-                    if (pe != null && pe.size() > 0)
-                        throw new WebApplicationException(Response.Status.CONFLICT);
-                }
-                parkingEvent.setParkingSubLot(parkingSubLot);
-                parkingEvent.setUpdatedTime(DateTime.now());
-                if (parkingEvent.getParkingPassId() != null) {
-                    parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
-                }
-                parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+                return saveParkingEvent(parkingEvent,parkingSubLot);
             }
-            return parkingEvent.getId();
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+    }
+
+    @POST
+    @Path("/parking_sub_lot/{parkingSubLotId}/batch")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Save or Update Parking Events",
+            notes = "Creates or Update a list of parking events, returns a list of parking event ",response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<BigInteger> saveOrUpdateParkingEvents(@ApiParam (value = "Parking Event") @Valid List<ParkingEventEntity> parkingEvents,
+                                               @PathParam("parkingSubLotId")int parkingSubLotId,
+                                               @Auth GMPUser gmpUser) {
+        if (gmpUser.getParkingSubLotIds().contains(parkingSubLotId)) {
+            ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
+            List<BigInteger> parkingEventIds = Lists.newArrayList();
+            if (parkingSubLot == null) {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            } else {
+                for (ParkingEventEntity parkingEvent : parkingEvents) {
+                    try {
+                        parkingEventIds.add(saveParkingEvent(parkingEvent, parkingSubLot));
+                    } catch (WebApplicationException ex) {
+                        parkingEventIds.add(BigInteger.ZERO);
+                    }
+                }
+            }
+            return parkingEventIds;
+        } else {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+    }
+
+    private BigInteger saveParkingEvent(ParkingEventEntity parkingEvent, ParkingSubLotEntity parkingSubLot) {
+        if (parkingEvent.getId() == null) {
+            List<ParkingEventEntity> pe = parkingEventDAO.findBySerialNumberAndEventType(parkingSubLot.getId(),
+                    parkingEvent.getEventType(), parkingEvent.getSerialNumber());
+            if (pe != null && pe.size() > 0) {
+                throw new WebApplicationException(Response.Status.CONFLICT);
+            }
+        }
+        parkingEvent.setParkingSubLot(parkingSubLot);
+        parkingEvent.setUpdatedTime(DateTime.now());
+        if (parkingEvent.getParkingPassId() != null) {
+            parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
+        }
+        parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+        return parkingEvent.getId();
     }
 
     @PUT
@@ -174,7 +221,7 @@ public class ParkingEventResource {
             parkingEventDAO.saveOrUpdateParkingEvent(pe);
             return pe.getId();
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 
@@ -206,8 +253,51 @@ public class ParkingEventResource {
             }
             return parkingEvent.getId();
         } else {
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+    }
+
+    @GET
+    @Path("/events/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking Events by last update time stamp", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "UnAuthorized"),
+    })
+    public List<ParkingEventEntity> getParkingEventsById(@QueryParam("parkingSubLotId")Optional<IntParam> parkingSubLotId,
+                                                         @QueryParam("parkingLotId")Optional<IntParam> parkingLotId,
+                                                         @QueryParam("parkingId")Optional<IntParam> parkingId,
+                                                         @QueryParam("companyId")Optional<IntParam> companyId,
+                                                         @QueryParam("registrationNumber") Optional<String> registrationNumber,
+                                                         @QueryParam("fromDate") Optional<DateTimeParam> fromDate,
+                                                         @QueryParam("toDate") Optional<DateTimeParam> toDate,
+                                                         @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
+                                                         @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
+                                                         @Auth GMPUser gmpUser) {
+
+        if (companyId.isPresent() && !gmpUser.getCompanyIds().contains(companyId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingId.isPresent() && !gmpUser.getParkingIds().contains(parkingId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingLotId.isPresent() && !gmpUser.getParkingLotIds().contains(parkingLotId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingSubLotId.isPresent() && !gmpUser.getParkingSubLotIds().contains(parkingSubLotId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
+
+        return parkingEventDAO.searchParkingEvents(companyId,parkingId,parkingLotId,parkingSubLotId,registrationNumber,
+                fromDate,toDate,pageNumberParam.get(),pageSize);
     }
 
 }

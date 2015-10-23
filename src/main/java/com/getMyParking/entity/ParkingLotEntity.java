@@ -92,24 +92,24 @@ public class ParkingLotEntity {
 
         ParkingLotEntity that = (ParkingLotEntity) o;
 
-        if (id != that.id) return false;
-        if (closeTime != null ? !closeTime.equals(that.closeTime) : that.closeTime != null) return false;
-        if (latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) return false;
-        if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (openTime != null ? !openTime.equals(that.openTime) : that.openTime != null) return false;
+        if (closeTime != null ? !closeTime.equals(that.closeTime) : that.closeTime != null) return false;
+        if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
+        return !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (openTime != null ? openTime.hashCode() : 0);
         result = 31 * result + (closeTime != null ? closeTime.hashCode() : 0);
         result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
+        result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }
 

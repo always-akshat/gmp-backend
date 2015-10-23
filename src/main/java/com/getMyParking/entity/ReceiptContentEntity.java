@@ -73,21 +73,16 @@ public class ReceiptContentEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ReceiptContentEntity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         ReceiptContentEntity that = (ReceiptContentEntity) o;
 
-        if (content != null ? !content.equals(that.content) : that.content != null) return false;
-        if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (parkingPassMaster != null ? !parkingPassMaster.equals(that.parkingPassMaster) : that.parkingPassMaster != null)
-            return false;
-        if (parkingSubLot != null ? !parkingSubLot.equals(that.parkingSubLot) : that.parkingSubLot != null)
-            return false;
+        if (content != null ? !content.equals(that.content) : that.content != null) return false;
         if (sequence != null ? !sequence.equals(that.sequence) : that.sequence != null) return false;
-        if (styleTitle != null ? !styleTitle.equals(that.styleTitle) : that.styleTitle != null) return false;
+        if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) return false;
+        return !(styleTitle != null ? !styleTitle.equals(that.styleTitle) : that.styleTitle != null);
 
-        return true;
     }
 
     @Override
@@ -96,8 +91,6 @@ public class ReceiptContentEntity {
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + (sequence != null ? sequence.hashCode() : 0);
         result = 31 * result + (eventType != null ? eventType.hashCode() : 0);
-        result = 31 * result + (parkingSubLot != null ? parkingSubLot.hashCode() : 0);
-        result = 31 * result + (parkingPassMaster != null ? parkingPassMaster.hashCode() : 0);
         result = 31 * result + (styleTitle != null ? styleTitle.hashCode() : 0);
         return result;
     }

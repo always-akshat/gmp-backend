@@ -6,6 +6,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import io.dropwizard.jersey.params.DateTimeParam;
+import io.dropwizard.jersey.params.IntParam;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -23,6 +25,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -54,6 +57,12 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         q.setInteger("id", parkingSubLotId);
         q.setString("updatedTime",lastUpdateTime.toString());
         return list(q);
+    }
+
+    public List<ParkingEventEntity> getAllParkingEventsByParking(Integer parkingId, DateTime fromDate, DateTime toDate) {
+        return list(currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.eq("parkingId",parkingId))
+                .add(Restrictions.between("eventTime", fromDate, toDate)));
     }
 
 
@@ -214,9 +223,47 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return Lists.newArrayList(parkingReports.values());
     }
 
-    public void deleteBySubLotId(Integer id){
+    public void deleteBySubLotId(Integer id) {
         Query q = currentSession().createQuery("delete from ParkingEventEntity where parking_id =:id");
         q.setInteger("id", id);
         q.executeUpdate();
+    }
+
+    public List<ParkingEventEntity> searchParkingEvents(Optional<IntParam> companyId, Optional<IntParam> parkingId,
+                                                        Optional<IntParam> parkingLotId, Optional<IntParam> parkingSubLotId,
+                                                        Optional<String> registrationNumber, Optional<DateTimeParam> fromDate,
+                                                        Optional<DateTimeParam> toDate, Integer integer, Integer pageSize) {
+
+        Criteria criteria = criteria();
+
+        if (companyId.isPresent()) {
+            criteria.add(Restrictions.eq("companyId",companyId.get().get()));
+        }
+
+        if (parkingId.isPresent()) {
+            criteria.add(Restrictions.eq("parkingId",parkingId.get().get()));
+        }
+
+        if (parkingLotId.isPresent()) {
+            criteria.add(Restrictions.eq("parkingLotId",parkingLotId.get().get()));
+        }
+
+        if (parkingSubLotId.isPresent()) {
+            criteria.add(Restrictions.eq("parkingSubLot.id",parkingSubLotId.get().get()));
+        }
+
+        if (registrationNumber.isPresent()) {
+            criteria.add(Restrictions.eq("registrationNumber",registrationNumber.get()));
+        }
+
+        if (fromDate.isPresent() && toDate.isPresent()) {
+            criteria.add(Restrictions.between("eventTime",fromDate.get().get(),toDate.get().get()));
+        }
+
+        criteria.setFirstResult((integer-1)*pageSize);
+        criteria.setMaxResults(pageSize);
+
+        return list(criteria);
+
     }
 }

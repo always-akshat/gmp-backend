@@ -66,7 +66,7 @@ public class ParkingSubLotResource {
                     parkingSubLotEntities.add(parkingSubLotEntity);
                 }
             } else {
-                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+                throw new WebApplicationException(Response.Status.FORBIDDEN);
             }
         }
         return parkingSubLotEntities;

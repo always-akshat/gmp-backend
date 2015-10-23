@@ -93,15 +93,14 @@ public class StyleMasterEntity {
 
         StyleMasterEntity that = (StyleMasterEntity) o;
 
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (font != null ? !font.equals(that.font) : that.font != null) return false;
         if (doubleHeight != null ? !doubleHeight.equals(that.doubleHeight) : that.doubleHeight != null) return false;
         if (doubleWidth != null ? !doubleWidth.equals(that.doubleWidth) : that.doubleWidth != null) return false;
-        if (feed != null ? !feed.equals(that.feed) : that.feed != null) return false;
-        if (font != null ? !font.equals(that.font) : that.font != null) return false;
         if (negative != null ? !negative.equals(that.negative) : that.negative != null) return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
         if (underline != null ? !underline.equals(that.underline) : that.underline != null) return false;
+        return !(feed != null ? !feed.equals(that.feed) : that.feed != null);
 
-        return true;
     }
 
     @Override

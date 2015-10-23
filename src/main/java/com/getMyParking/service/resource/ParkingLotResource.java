@@ -67,7 +67,7 @@ public class ParkingLotResource {
                 return parkingLotEntity;
             }
         }
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
     @Path("/parking/{parkingId}")

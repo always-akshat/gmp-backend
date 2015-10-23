@@ -23,6 +23,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.java8.Java8Bundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
@@ -119,6 +120,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(flywayBundle);
         bootstrap.addBundle(guiceBundle);
+        bootstrap.addBundle(new Java8Bundle());
     }
 
     @Override
@@ -134,7 +136,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         ManagedSessionContext.bind(session);
         ParkingSubLotDAO parkingSubLotDAO = guiceBundle.getInjector().getInstance(ParkingSubLotDAO.class);
         List<ParkingSubLotEntity> parkingSubLots =
-                Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllParkingLots()));
+                Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllAutoCheckoutParkingLots()));
 
         final FilterRegistration.Dynamic cors =
                 environment.servlets().addFilter("CORSFilter", CorsFilter.class);
