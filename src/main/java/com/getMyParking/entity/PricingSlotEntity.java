@@ -77,7 +77,12 @@ public class PricingSlotEntity {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result=0;
+        if(id!=null)
+            result = id;
+        if(day == null){
+            System.out.println("day null" + result);
+        }
         result = 31 * result + day;
         result = 31 * result + startMinutesOfDay;
         result = 31 * result + endMinutesOfDay;

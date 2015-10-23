@@ -2,8 +2,10 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import com.getMyParking.dao.ParkingDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
+import com.getMyParking.entity.ParkingEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
 import com.google.common.base.Splitter;
@@ -28,11 +30,13 @@ public class ParkingPassResource {
 
     private ParkingPassDAO parkingPassDAO;
     private ParkingPassMasterDAO parkingPassMasterDAO;
+    private ParkingDAO parkingDAO;
 
     @Inject
-    public ParkingPassResource(ParkingPassDAO parkingPassDAO, ParkingPassMasterDAO parkingPassMasterDAO) {
+    public ParkingPassResource(ParkingPassDAO parkingPassDAO, ParkingPassMasterDAO parkingPassMasterDAO,ParkingDAO parkingDAO) {
         this.parkingPassDAO = parkingPassDAO;
         this.parkingPassMasterDAO = parkingPassMasterDAO;
+        this.parkingDAO = parkingDAO;
     }
 
     @GET
@@ -101,6 +105,28 @@ public class ParkingPassResource {
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
         }
         return parkingPassEntity.getId();
+    }
+
+    @POST
+    @Path("/master/{parkingId}")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Save or Update a parking pass master entity", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public int saveOrUpdateParkingPassMaster(@ApiParam("Parking Pass Master Entity") @Valid ParkingPassMasterEntity parkingPassMasterEntity,
+                                       @PathParam("parkingId") Integer parkingId) {
+        ParkingEntity parkingEntity = parkingDAO.findById(parkingId);
+        if(parkingEntity == null ){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }else{
+            parkingPassMasterEntity.setParking(parkingEntity);
+            parkingPassMasterDAO.saveOrUpdateParking(parkingPassMasterEntity);
+        }
+        return parkingPassMasterEntity.getId();
     }
 
 }

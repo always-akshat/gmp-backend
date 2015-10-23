@@ -164,4 +164,25 @@ public class ParkingResource {
         }
         return parkingPassMasterEntity.getId();
     }
+
+    @GET
+    @Path("/search/{name}")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking by Parking Id", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingEntity> searchByName(@ApiParam(value = "Parking name")@PathParam("name")String name) {
+        System.out.println(name);
+        List<ParkingEntity> parkingEntity = parkingDAO.findByName(name);
+        if (parkingEntity == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        return parkingEntity;
+    }
+
+
 }

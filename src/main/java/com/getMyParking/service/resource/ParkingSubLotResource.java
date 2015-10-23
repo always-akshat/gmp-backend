@@ -9,6 +9,7 @@ import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
@@ -91,6 +92,32 @@ public class ParkingSubLotResource {
             parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);
         }
         return parkingLot.getId();
+    }
+
+    @Path("/parking_lot1/{parkingLotId}")
+    @POST
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Save or Update parking sub lot entity, returns Id on successful completion", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public int createParkingSubLot(@ApiParam ("Parking Sub Lot")@Valid String json,
+                                         @PathParam("parkingLotId") int parkingLotId) {
+        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
+        if (parkingLot == null) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } else {
+
+            Gson gson = new Gson();
+            ParkingSubLotEntity parkingSubLotEntity = gson.fromJson(json,ParkingSubLotEntity.class);
+            parkingSubLotEntity.setParkingLot(parkingLot);
+            System.out.println(parkingSubLotEntity.getCapacity()+" "+parkingSubLotEntity.getPricingSlots().size()+" ");
+            parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLotEntity);
+            return parkingSubLotEntity.getId();
+        }
     }
 
     @Path("/{parkingSubLotId}/pricing_slot")

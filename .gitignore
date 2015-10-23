@@ -1,2 +1,7 @@
 .idea/
 src/main/main.iml
+*.iml
+*.log
+/out
+/target
+

@@ -5,14 +5,17 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
 
+import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -88,6 +91,32 @@ public class ParkingLotResource {
         return parkingLot.getId();
     }
 
+    @Path("/parking1/{parkingId}")
+    @POST
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Save or update the parking lot", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public int createParkingLot(@ApiParam("Parking Lot") @Valid String json, @PathParam("parkingId") int parkingId) {
+        ParkingEntity parking = parkingDAO.findById(parkingId);
+        if (parking == null) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } else {
+            System.out.println(json);
+            Gson gson = new Gson();
+            ParkingLotEntity parkingLotEntity = gson.fromJson(json, ParkingLotEntity.class);
+            System.out.println(parkingLotEntity.getName());
+            parkingLotEntity.setParking(parking);
+            parkingLotDAO.saveOrUpdateParkingLot(parkingLotEntity);
+            return parkingLotEntity.getId();
+        }
+
+    }
+
     @DELETE
     @Path("/{parkingLotId}")
     @Timed
@@ -129,5 +158,28 @@ public class ParkingLotResource {
         List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingLot(parkingLotId);
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
     }
+
+    @Path("/sublot/user")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking lot for all operators ", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingSubLotUserAccessEntity> subLotUserS( @QueryParam("parkingSubLotIds") String ids) {
+        List<String> parkingSubLotIds = Splitter.on(",").splitToList(ids);
+        List<Integer> parkingSubLotsIdInts = Lists.transform(parkingSubLotIds, new Function<String, Integer>() {
+            @Nullable
+            @Override
+            public Integer apply(String input) {
+                return Integer.parseInt(input);
+            }
+        });
+        return parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingSubLots(parkingSubLotsIdInts);
+    }
+
+
 
 }

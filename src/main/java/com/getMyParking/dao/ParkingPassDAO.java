@@ -5,6 +5,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -55,4 +56,12 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         });
         return list(criteria().add(Restrictions.in("id",parkingPassIdInts)));
     }
+
+    public void deleteByMasterId(Integer id){
+        Query q = currentSession().createQuery("delete from ParkingPassEntity where parking_pass_master_id =:id");
+        q.setInteger("id", id);
+        q.executeUpdate();
+    }
+
+
 }

@@ -16,8 +16,8 @@ import java.util.Set;
 public class ParkingLotEntity {
     private Integer id;
     private String name;
-    private Time openTime;
-    private Time closeTime;
+    private String openTime;
+    private String closeTime;
     private BigDecimal longitude;
     private BigDecimal latitude;
     private Set<ParkingSubLotEntity> parkingSubLots;
@@ -47,21 +47,21 @@ public class ParkingLotEntity {
 
     @Basic
     @Column(name = "open_time", nullable = false, insertable = true, updatable = true)
-    public Time getOpenTime() {
+    public String getOpenTime() {
         return openTime;
     }
 
-    public void setOpenTime(Time openTime) {
+    public void setOpenTime(String openTime) {
         this.openTime = openTime;
     }
 
     @Basic
     @Column(name = "close_time", nullable = false, insertable = true, updatable = true)
-    public Time getCloseTime() {
+    public String getCloseTime() {
         return closeTime;
     }
 
-    public void setCloseTime(Time closeTime) {
+    public void setCloseTime(String closeTime) {
         this.closeTime = closeTime;
     }
 

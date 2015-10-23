@@ -88,7 +88,9 @@ public class PriceGridEntity {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result =0;
+        if (id!=null)
+            result = id;
         result = 31 * result + (priceStructure != null ? priceStructure.hashCode() : 0);
         result = 31 * result + cost;
         result = 31 * result + duration;
