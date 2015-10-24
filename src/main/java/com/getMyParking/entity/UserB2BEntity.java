@@ -1,6 +1,11 @@
 package com.getMyParking.entity;
 
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
@@ -93,6 +98,7 @@ public class UserB2BEntity {
     }
 
     @OneToMany(mappedBy = "userB2BEntity", fetch = FetchType.EAGER)
+    @Cascade(CascadeType.SAVE_UPDATE)
     public Set<UserAccessEntity> getUserAccesses() {
         return userAccesses;
     }

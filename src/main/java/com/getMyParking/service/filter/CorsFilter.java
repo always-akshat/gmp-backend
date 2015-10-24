@@ -1,4 +1,4 @@
-package com.getMyParking.service;
+package com.getMyParking.service.filter;
 
 import javax.inject.Singleton;
 import javax.servlet.*;
