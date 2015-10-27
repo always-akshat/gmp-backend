@@ -266,4 +266,86 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return list(criteria);
 
     }
+
+    public List<AdminReport> createParkingReportForAdmin(int offset,DateTime from,DateTime to){
+        SQLQuery query = currentSession().createSQLQuery("select parking_id,p.name,count(pe.id) as CheckInCount, sum(pe.cost) as CheckInCost " +
+                "from parking_event pe,parking p where " +
+                "event_type = \"CHECKED_IN\" " +
+                "and pe.parking_id between :start and :end " +
+                "and event_time between :fromTime and :toTime " +
+                "and p.id = pe.parking_id " +
+                "group by pe.parking_id;");
+
+        query.setParameter("start", offset+1);
+        query.setParameter("end", offset+20);
+        query.setParameter("fromTime", from.toString());
+        query.setParameter("toTime", to.toString());
+
+        List<Object[]> list = query.list();
+
+        query = currentSession().createSQLQuery("select parking_id,count(pe.id) as CheckInCount, sum(pe.cost) as CheckInCost " +
+                "from parking_event pe where " +
+                "event_type = \"CHECKED_OUT\" " +
+                "and pe.parking_id between :start and :end " +
+                "and event_time between :fromTime and :toTime " +
+                "group by pe.parking_id;");
+
+        query.setParameter("start", offset+1);
+        query.setParameter("end", offset+20);
+        query.setParameter("fromTime", from.toString());
+        query.setParameter("toTime", to.toString());
+
+        List<Object[]> list1 = query.list();
+        String ids = "";
+        List<AdminReport> reports = new ArrayList<AdminReport>();
+        for (int i=0;i<list.size();i++) {
+
+            Object[] row = list.get(i);
+            Object[] row1 = null;
+            try {
+                row1 = list1.get(i);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            boolean found=true;
+            System.out.println(row[0]+" "+row[1]);
+            if (row1!=null) {
+                if((Integer)row[0] != (Integer)row1[0]) {
+                    found=false;
+                    for (Object[] temp : list1) {
+                        if ((Integer) row[0] == (Integer) temp[0]) {
+                            row1 = temp;
+                            found=true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(found) {
+                AdminReport temp = new AdminReport((String) row[1], (BigInteger) row[2], (BigInteger) row1[1], (BigDecimal) row[3], (BigDecimal) row1[2]);
+                reports.add(temp);
+                ids+=(Integer)row[0]+",";
+            }else{
+                AdminReport temp = new AdminReport((String) row[1], (BigInteger) row[2], BigInteger.ZERO, (BigDecimal) row[3], BigDecimal.ZERO);
+                reports.add(temp);
+                ids+=(Integer)row[0]+",";
+            }
+        }
+
+        if(ids!="") {
+            query = currentSession().createSQLQuery("select parking_id,max(event_time) " +
+                    "from parking_event pe where " +
+                    "event_type = \"CHECKED_OUT\" " +
+                    "and pe.parking_id in (:ids) " +
+                    "group by parking_id;");
+
+            query.setParameter("ids", ids.substring(0, ids.length() - 1));
+            List<Object[]> list2 = query.list();
+            for (int i = 0; i < reports.size(); i++) {
+                reports.get(i).setLastCheckInTime((String) list2.get(i)[1].toString());
+            }
+        }
+        return reports;
+    }
 }
