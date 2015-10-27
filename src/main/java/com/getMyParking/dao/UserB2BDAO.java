@@ -22,11 +22,9 @@ public class UserB2BDAO extends AbstractDAO<UserB2BEntity> {
      *
      * @param sessionFactory a session provider
      */
-    private UserAccessDao userAccessDao;
     @Inject
     public UserB2BDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
-        this.userAccessDao=new UserAccessDao(sessionFactory);
     }
 
 
@@ -41,13 +39,10 @@ public class UserB2BDAO extends AbstractDAO<UserB2BEntity> {
     public void saveUser(UserB2BEntity user) {
         UserB2BEntity userEntity = get(user.getUsername());
         if (userEntity == null) {
-            persist(user);
-            System.out.println("size is "+user.getUserAccesses().size());
-            for(UserAccessEntity temp : user.getUserAccesses()) {
-                temp.setUserB2BEntity(user);
-                userAccessDao.saveUserAccess(temp);
+            for (UserAccessEntity userAccess : user.getUserAccesses()) {
+                userAccess.setUserB2BEntity(user);
             }
-            System.out.println("size is "+user.getUserAccesses().size());
+            persist(user);
         }
         else
             throw new WebApplicationException(Response.status(401).entity("Username already exists").build());

@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "user_access", schema = "", catalog = "get_my_parking_v2")
-@Inheritance(strategy=InheritanceType.JOINED)
 public class UserAccessEntity {
     @NotNull
     private String accessTitle;
