@@ -223,6 +223,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return Lists.newArrayList(parkingReports.values());
     }
 
+
     public void deleteBySubLotId(Integer id) {
         Query q = currentSession().createQuery("delete from ParkingEventEntity where parking_id =:id");
         q.setInteger("id", id);
@@ -266,6 +267,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return list(criteria);
 
     }
+
 
     public List<AdminReport> createParkingReportForAdmin(int offset,DateTime from,DateTime to){
         SQLQuery query = currentSession().createSQLQuery("select parking_id,p.name,count(pe.id) as CheckInCount, sum(pe.cost) as CheckInCost " +
@@ -348,4 +350,5 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         }
         return reports;
     }
+
 }
