@@ -136,7 +136,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         ParkingSubLotDAO parkingSubLotDAO = guiceBundle.getInjector().getInstance(ParkingSubLotDAO.class);
         List<ParkingSubLotEntity> parkingSubLots =
                 Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllAutoCheckoutParkingLots()));
-/*<<<<<<< HEAD
 
         final FilterRegistration.Dynamic cors =
                 environment.servlets().addFilter("CORSFilter", CorsFilter.class);
@@ -149,8 +148,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         // Add URL mapping
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "*//*");
-=======
->>>>>>> 2b476799be00b747af0144f3e6968ebf25d5b218*/
+
 
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
 

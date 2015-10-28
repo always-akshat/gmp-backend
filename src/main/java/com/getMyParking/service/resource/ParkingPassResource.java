@@ -135,19 +135,19 @@ public class ParkingPassResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    @ApiOperation(value = "Update a parking pass counter", response = Void.class)
+    @ApiOperation(value = "Update a parking pass counter", response = Integer.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public void saveParkingPassCounter(@FormParam("value") int counter,
+    public Integer saveParkingPassCounter(@FormParam("value") int counter,
                                        @PathParam("parkingPassId") Integer parkingPassId) {
         ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingPassId);
         if (parkingPass.getCounter() < counter) {
             parkingPass.setCounter(counter);
             parkingPassDAO.saveOrUpdateParkingPass(parkingPass);
         }
-
+        return parkingPassId;
     }
 
 }
