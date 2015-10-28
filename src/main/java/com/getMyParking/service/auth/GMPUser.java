@@ -1,8 +1,7 @@
 package com.getMyParking.service.auth;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
-import com.getMyParking.entity.UserAccessEntity;
 import com.getMyParking.entity.UserB2BEntity;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
@@ -20,7 +19,7 @@ public class GMPUser {
     private List<Integer> parkingLotIds;
     private List<Integer> parkingIds;
     private List<Integer> companyIds;
-    private List<UserAccessEntity> userAccesses;
+    private List<AccessMasterEntity> userAccesses;
     private String authToken;
     private DateTime validTime;
 
@@ -99,11 +98,11 @@ public class GMPUser {
         this.name = name;
     }
 
-    public List<UserAccessEntity> getUserAccesses() {
+    public List<AccessMasterEntity> getUserAccesses() {
         return userAccesses;
     }
 
-    public void setUserAccesses(List<UserAccessEntity> userAccesses) {
+    public void setUserAccesses(List<AccessMasterEntity> userAccesses) {
         this.userAccesses = userAccesses;
     }
 

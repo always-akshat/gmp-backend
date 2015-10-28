@@ -185,10 +185,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         List<ParkingSubLotUserAccessEntity> filteredUsers = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity user : users) {
             List<String> userAccess = Lists.transform(Lists.newArrayList(user.getUserB2B().getUserAccesses()),
-                    new Function<UserAccessEntity, String>() {
+                    new Function<AccessMasterEntity, String>() {
                         @Nullable
                         @Override
-                        public String apply(UserAccessEntity input) {
+                        public String apply(AccessMasterEntity input) {
                             return input.getAccessTitle();
                         }
                     });
