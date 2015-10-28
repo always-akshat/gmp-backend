@@ -13,6 +13,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -112,16 +113,25 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
 
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.rowCount());
+        projectionList.add(Projections.sum("cost"));
+
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType","CHECKED_IN"))
-                .setProjection(Projections.rowCount());
+                .setProjection(projectionList);
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        List list = criteria.list();
+        List<Object[]> list = criteria.list();
+        Object[] row = list.get(0);
 
         Integer checkInCount = 0;
-        if (list != null) checkInCount = ((Long)list.get(0)).intValue();
+        if (row != null) checkInCount = ((Long)row[0]).intValue();
+
+        BigDecimal checkInRevenue = null;
+        if (row != null) checkInRevenue = (BigDecimal) row[1];
+        if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
 
         criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
@@ -130,30 +140,13 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         list = criteria.list();
+        row = list.get(0);
 
         Integer checkOutCount = 0;
-        if (list != null) checkOutCount = ((Long)list.get(0)).intValue();
+        if (row != null) checkOutCount = ((Long)row[0]).intValue();
 
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("eventType", "CHECKED_IN"));
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        list = criteria.list();
-
-        BigDecimal checkInRevenue = (BigDecimal) list.get(0);
-        if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .setProjection(Projections.sum("cost"))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"));
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        list = criteria.list();
-
-        BigDecimal checkOutRevenue = (BigDecimal) list.get(0);
+        BigDecimal checkOutRevenue = null;
+        if (row != null) checkOutRevenue = (BigDecimal) row[1];
         if (checkOutRevenue == null) checkOutRevenue = new BigDecimal(0);
 
         return new ParkingReport(checkInCount,checkOutCount,checkInRevenue,checkOutRevenue);
@@ -185,10 +178,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         List<ParkingSubLotUserAccessEntity> filteredUsers = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity user : users) {
             List<String> userAccess = Lists.transform(Lists.newArrayList(user.getUserB2B().getUserAccesses()),
-                    new Function<UserAccessEntity, String>() {
+                    new Function<AccessMasterEntity, String>() {
                         @Nullable
                         @Override
-                        public String apply(UserAccessEntity input) {
+                        public String apply(AccessMasterEntity input) {
                             return input.getAccessTitle();
                         }
                     });
@@ -210,7 +203,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 userParkingReport.setCompanyId(user.getCompanyId());
                 userParkingReport.setParkingId(user.getParkingId());
                 userParkingReport.setParkingLotId(user.getParkingLotId());
-                userParkingReport.setParkingReports(new ArrayList<ParkingReport>());
+                userParkingReport.setParkingReports(new ArrayList<>());
                 parkingReports.put(username,userParkingReport);
             }
             ParkingReport parkingReport =

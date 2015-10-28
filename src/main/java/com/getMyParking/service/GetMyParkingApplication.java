@@ -84,14 +84,15 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                         ParkingEventEntity.class, ParkingLotEntity.class, ParkingPassEntity.class,
                         ParkingSubLotEntity.class, ParkingSubLotUserAccessEntity.class, PriceGridEntity.class,
                         PricingSlotEntity.class, ReceiptContentEntity.class, SessionEntity.class,
-                        StyleMasterEntity.class, SubLotTypeEntity.class, UserAccessEntity.class,
+                        StyleMasterEntity.class, SubLotTypeEntity.class,
                         UserB2BEntity.class, ParkingPassMasterEntity.class, AccessMasterEntity.class
-                ) {
-                    @Override
-                    public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
-                        return getMyParkingConfiguration.getDataSourceFactory();
-                    }
-                };
+        ) {
+            @Override
+            public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
+                return getMyParkingConfiguration.getDataSourceFactory();
+            }
+        };
+
 
         guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
                 .addModule(new GMPModule(hibernateBundle, bootstrap))
