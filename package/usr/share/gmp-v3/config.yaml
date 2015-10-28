@@ -1,3 +1,20 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 9000
+  adminConnectors:
+    - type: http
+      port: 9001
+  requestLog:
+    timeZone: IST
+    appenders:
+      - type: file
+        currentLogFilename: /var/log/gmp-v3/requests.log
+        archive: true
+        archivedLogFilenamePattern: /var/log/gmp-v3/requests-%d{yyyy-MM-dd}.log.gz
+        archivedFileCount: 50
+
+
 logging:
   level: DEBUG
   appenders:
@@ -22,6 +39,9 @@ logging:
       archivedLogFilenamePattern: /var/log/gmp-v3/services-error-%d{yyyy-MM-dd}.log.gz
       archivedFileCount: 50
 
+swagger:
+  resourcePackage: com.getMyParking.service.resource
+
 database:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver
@@ -30,20 +50,24 @@ database:
   user: root
 
   # the password
-  password: letsintern12
+  password:
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/
+  url: jdbc:mysql://localhost:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    show.sql: true
 
   # the maximum amount of time to wait on an empty pool before throwing an exception
   maxWaitForConnection: 1s
 
   # the SQL query to run when validating a connection's liveness
   validationQuery: "/* MyService Health Check */ SELECT 1"
+
+  checkConnectionOnBorrow: true
 
   # the minimum number of connections to keep open
   minSize: 8

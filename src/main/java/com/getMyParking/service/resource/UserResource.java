@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -122,6 +123,13 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public void createUser(@ApiParam(value = "Create User Object", required = true) @Valid UserB2BEntity user) {
         userB2BDAO.saveUser(user);
+        System.out.println("saved user at" + user.getUsername());
+        List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessEntities = new ArrayList<ParkingSubLotUserAccessEntity>();
+        for(ParkingSubLotUserAccessEntity parkingSubLotUserAccessEntity : user.getParkingSubLots()){
+            parkingSubLotUserAccessEntity.setUserB2B(user);
+            parkingSubLotUserAccessEntities.add(parkingSubLotUserAccessEntity);
+        }
+        parkingLotHasUserB2BDAO.saveUserAccess(parkingSubLotUserAccessEntities);
     }
 
     @ApiOperation(value = "Add parking sub lot to user Api")

@@ -30,7 +30,7 @@ database:
   user: root
 
   # the password
-  password: letsintern12
+  password:
 
   # the JDBC URL
   url: jdbc:mysql://localhost:3306/

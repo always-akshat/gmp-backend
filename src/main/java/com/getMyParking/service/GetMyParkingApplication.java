@@ -6,6 +6,7 @@ import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
+import com.getMyParking.service.filter.CorsFilter;
 import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
@@ -36,7 +37,9 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
-import java.util.Calendar;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Logger;
@@ -81,8 +84,8 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                         ParkingEventEntity.class, ParkingLotEntity.class, ParkingPassEntity.class,
                         ParkingSubLotEntity.class, ParkingSubLotUserAccessEntity.class, PriceGridEntity.class,
                         PricingSlotEntity.class, ReceiptContentEntity.class, SessionEntity.class,
-                        StyleMasterEntity.class, SubLotTypeEntity.class, UserB2BEntity.class,
-                        ParkingPassMasterEntity.class, AccessMasterEntity.class
+                        StyleMasterEntity.class, SubLotTypeEntity.class,
+                        UserB2BEntity.class, ParkingPassMasterEntity.class, AccessMasterEntity.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(GetMyParkingConfiguration getMyParkingConfiguration) {
@@ -90,21 +93,22 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
             }
         };
 
+
         guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
-                                 .addModule(new GMPModule(hibernateBundle,bootstrap))
-                                 .enableAutoConfig(getClass().getPackage().getName())
-                                 .setInjectorFactory(new InjectorFactory() {
-                                     @Override
-                                     public Injector create(Stage stage, List<Module> list) {
-                                         return LifecycleInjector.builder()
-                                                 .inStage(Stage.PRODUCTION)
-                                                 .withModules(list)
-                                                 .build()
-                                                 .createInjector();
-                                     }
-                                 })
-                                 .setConfigClass(GetMyParkingConfiguration.class)
-                                 .build();
+                .addModule(new GMPModule(hibernateBundle, bootstrap))
+                .enableAutoConfig(getClass().getPackage().getName())
+                .setInjectorFactory(new InjectorFactory() {
+                    @Override
+                    public Injector create(Stage stage, List<Module> list) {
+                        return LifecycleInjector.builder()
+                                .inStage(Stage.PRODUCTION)
+                                .withModules(list)
+                                .build()
+                                .createInjector();
+                    }
+                })
+                .setConfigClass(GetMyParkingConfiguration.class)
+                .build();
 
         bootstrap.addBundle(new SwaggerBundle<GetMyParkingConfiguration>() {
             @Override
@@ -134,6 +138,19 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         List<ParkingSubLotEntity> parkingSubLots =
                 Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllAutoCheckoutParkingLots()));
 
+        final FilterRegistration.Dynamic cors =
+                environment.servlets().addFilter("CORSFilter", CorsFilter.class);
+
+        // Configure CORS parameters
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+        cors.setInitParameter("allowedCredentials", "true");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
+
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
 
             if (parkingSubLot.getAutoCheckoutTime() == null) continue;
@@ -142,15 +159,18 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                     .usingJobData("parkingSubLotId", parkingSubLot.getId())
                     .withIdentity("autoCheckout", String.valueOf(parkingSubLot.getId()))
                     .build();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(parkingSubLot.getAutoCheckoutTime());
-            String cronExpression = calendar.get(Calendar.SECOND) + " " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(parkingSubLot.getAutoCheckoutTime());
+            String[] cronTime = parkingSubLot.getAutoCheckoutTime().split(":");
+
+//            String cronExpression = calendar.get(Calendar.SECOND) + " " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
+            String cronExpression = cronTime[2] + " " + cronTime[1] + " " + cronTime[0] + " * * ?";
             Trigger trigger = newTrigger()
                     .withIdentity("autoCheckoutTrigger", String.valueOf(parkingSubLot.getId()))
                     .forJob(jobDetail)
                     .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                     .build();
-            scheduler.scheduleJob(jobDetail,trigger);
+            scheduler.scheduleJob(jobDetail, trigger);
         }
         session.close();
     }
