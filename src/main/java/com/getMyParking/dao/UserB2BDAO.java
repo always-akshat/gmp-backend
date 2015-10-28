@@ -1,6 +1,5 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.UserAccessEntity;
 import com.getMyParking.entity.UserB2BEntity;
 import com.getMyParking.service.auth.GMPAdmin;
 import com.google.inject.Inject;
@@ -38,12 +37,8 @@ public class UserB2BDAO extends AbstractDAO<UserB2BEntity> {
 
     public void saveUser(UserB2BEntity user) {
         UserB2BEntity userEntity = get(user.getUsername());
-        if (userEntity == null) {
-            for (UserAccessEntity userAccess : user.getUserAccesses()) {
-                userAccess.setUserB2BEntity(user);
-            }
+        if (userEntity == null)
             persist(user);
-        }
         else
             throw new WebApplicationException(Response.status(401).entity("Username already exists").build());
     }

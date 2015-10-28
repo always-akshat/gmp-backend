@@ -91,7 +91,7 @@ public class ParkingLotResource {
         return parkingLot.getId();
     }
 
-    @Path("/parking1/{parkingId}")
+    /*@Path("/parking1/{parkingId}")
     @POST
     @Timed
     @ExceptionMetered
@@ -115,7 +115,7 @@ public class ParkingLotResource {
             return parkingLotEntity.getId();
         }
 
-    }
+    }*/
 
     @DELETE
     @Path("/{parkingLotId}")
