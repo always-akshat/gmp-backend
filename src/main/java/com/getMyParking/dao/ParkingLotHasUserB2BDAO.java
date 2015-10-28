@@ -23,7 +23,8 @@ public class ParkingLotHasUserB2BDAO extends AbstractDAO<ParkingSubLotUserAccess
 
 
     public void saveUserAccess(List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessList) {
-        for (ParkingSubLotUserAccessEntity parkingSubLotUserAccess : parkingSubLotUserAccessList)
+        for (ParkingSubLotUserAccessEntity parkingSubLotUserAccess : parkingSubLotUserAccessList) {
             persist(parkingSubLotUserAccess);
+        }
     }
 }

@@ -148,7 +148,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         cors.setInitParameter("allowedCredentials", "true");
 
         // Add URL mapping
-        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "*//*");
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
 
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
