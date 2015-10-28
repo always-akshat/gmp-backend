@@ -3,7 +3,7 @@ Version: 0.0.1
 Section: misc
 Priority: optional
 Architecture: all
-Depends: oracle-java7-installer
+Depends: oracle-java8-installer
 Maintainer: GMP <rahul@getmyparking.com>
 Description: GMP Backend
 Distribution: production
