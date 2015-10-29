@@ -1,12 +1,18 @@
 package com.getMyParking.dao;
 
+import com.getMyParking.dto.ActiveParkingPassDTO;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.BigDecimalType;
+import org.hibernate.type.IntegerType;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
@@ -41,8 +47,30 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 return Integer.parseInt(input);
             }
         });
-        return list(criteria().add(Restrictions.in("parkingPassMaster.id",parkingPassIdInts))
-                              .add(Restrictions.gt("validTime", DateTime.now())));
+
+        SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*, Count(*) as count,  SUM(`parking_pass`.`is_paid`) as isPaidCount " +
+                "from `parking_pass` inner join `parking_pass_master` on `parking_pass`.`parking_pass_master_id` = `parking_pass_master`.`id` " +
+                "where `parking_pass`.`valid_time` >= CURRENT_TIMESTAMP and `parking_pass`.`parking_pass_master_id` IN" +
+                " :parkingPassIds group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");
+        query.setParameterList("parkingPassIds",parkingPassIdInts);
+        query.addEntity("parking_pass",ParkingPassEntity.class);
+        query.addScalar("count", IntegerType.INSTANCE);
+        query.addScalar("isPaidCount", IntegerType.INSTANCE);
+        query.setResultTransformer(Transformers.aliasToBean(ActiveParkingPassDTO.class));
+
+        List<ActiveParkingPassDTO> list = query.list();
+
+        return Lists.transform(list, new Function<ActiveParkingPassDTO, ParkingPassEntity>() {
+            @Nullable
+            @Override
+            public ParkingPassEntity apply(ActiveParkingPassDTO activeParkingPassDTO) {
+                ParkingPassEntity entity = activeParkingPassDTO.getParkingPass();
+                entity.setBalanceAmount(
+                        entity.getParkingPassMaster().getPrice()*(activeParkingPassDTO.getCount() - activeParkingPassDTO.getIsPaidCount())
+                );
+                return entity;
+            }
+        });
     }
 
     public List<ParkingPassEntity> findByPassIds(List<String> parkingPassIds) {

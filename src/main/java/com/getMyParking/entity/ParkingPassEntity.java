@@ -34,6 +34,8 @@ public class ParkingPassEntity {
     @JsonIgnore
     private ParkingPassMasterEntity parkingPassMaster;
     private Integer counter;
+    @JsonProperty
+    private Integer balanceAmount;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -138,12 +140,12 @@ public class ParkingPassEntity {
         this.customerName = customerName;
     }
 
-    @Basic
-    @Column(name = "counter", nullable = false, insertable = true, updatable = true)
     public void setCounter(Integer counter) {
         this.counter = counter;
     }
 
+    @Basic
+    @Column(name = "counter", nullable = false, insertable = true, updatable = true)
     public Integer getCounter() {
         return counter;
     }
@@ -155,6 +157,15 @@ public class ParkingPassEntity {
 
     public void setParkingPassMasterId(Integer parkingPassMasterId) {
         this.parkingPassMasterId = parkingPassMasterId;
+    }
+
+    @Transient
+    public Integer getBalanceAmount() {
+        return balanceAmount;
+    }
+
+    public void setBalanceAmount(Integer balanceAmount) {
+        this.balanceAmount = balanceAmount;
     }
 
     @Override
@@ -204,7 +215,7 @@ public class ParkingPassEntity {
         return parkingPassMaster;
     }
 
-    public void setParkingPassMaster(ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId) {
-        this.parkingPassMaster = parkingPassMasterByParkingPassMasterId;
+    public void setParkingPassMaster(ParkingPassMasterEntity parkingPassMaster) {
+        this.parkingPassMaster = parkingPassMaster;
     }
 }
