@@ -168,13 +168,13 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public int saveOrUpdateParkingPass(@ApiParam("Parking Sub Lot")@Valid ParkingPassMasterEntity parkingPassMasterEntity,
+    public int saveOrUpdateParkingPass(@ApiParam("Parking Pass Master")@Valid ParkingPassMasterEntity parkingPassMasterEntity,
                                        @PathParam("parkingId") int parkingId) {
         ParkingEntity parking = parkingDAO.findById(parkingId);
         if (parking == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
-            parkingPassMasterEntity.setParking(parking);
+            parkingPassMasterEntity.setParkingId(parkingId);
             parking.getParkingPasses().add(parkingPassMasterEntity);
             parkingDAO.saveOrUpdateParking(parking);
         }

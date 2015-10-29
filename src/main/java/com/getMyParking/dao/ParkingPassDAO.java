@@ -6,17 +6,17 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.*;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
+import io.dropwizard.jersey.params.IntParam;
+import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
-import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.IntegerType;
-import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 01/06/15.
@@ -82,5 +82,23 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
             }
         });
         return list(criteria().add(Restrictions.in("id",parkingPassIdInts)));
+    }
+
+    public List<ParkingPassEntity> searchParkingPass(Optional<IntParam> parkingId, Optional<String> registrationNumber,
+                                                     Integer integer, Integer pageSize) {
+        Criteria criteria = criteria();
+
+        if (parkingId.isPresent()) {
+            criteria.add(Restrictions.eq("parkingPassMaster.parkingId",parkingId.get().get()));
+        }
+
+        if (registrationNumber.isPresent()) {
+            criteria.add(Restrictions.eq("registrationNumber",registrationNumber.get()));
+        }
+
+        criteria.setFirstResult((integer-1)*pageSize);
+        criteria.setMaxResults(pageSize);
+
+        return list(criteria);
     }
 }
