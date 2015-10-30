@@ -1,15 +1,20 @@
 #!/bin/sh
+PIDFILE=/var/run/gmp-v3-migration.pid
 set -e
 
 case "$1" in
     configure)
 	if [ -d "/etc/monit/" ]; then
 		monit stop gmp-v3
-		monit start gmp-v3-migration
+		/etc/init.d/gmp-v3-migration start
+		PID=`cat $PIDFILE`
+		wait PID
 		monit start gmp-v3
 	else
 		/etc/init.d/gmp-v3 stop
 		/etc/init.d/gmp-v3-migration start
+		PID=`cat $PIDFILE`
+        wait PID
 		/etc/init.d/gmp-v3 start
 	fi
     ;;

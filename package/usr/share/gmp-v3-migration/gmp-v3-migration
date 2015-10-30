@@ -1,3 +1,7 @@
 #!/bin/bash
 
 exec java  -Xms512m -Xmx512m -Xloggc:/var/log/gmp-v3/gc.out -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=9002 -Dcom.sun.management.jmxremote.authenticate=false -jar /usr/share/gmp-v3-migration/getMyParking-0.0.1.jar db migrate /usr/share/gmp-v3-migration/migration_config.yaml > /tmp/null &
+
+PID=$!
+echo $PID
+echo $PID > /var/run/gmp-v3-migration.pid

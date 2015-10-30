@@ -71,7 +71,6 @@ do_stop()
 	#   other if a failure occurred
 	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
 	RETVAL="$?"
-	echo $RETVAL
 	[ "$RETVAL" = 2 ] && return 2
 	# Wait for children to finish too if this is a daemon that forks
 	# and if the daemon is only ever run from this initscript.
@@ -84,7 +83,7 @@ do_stop()
 	kill -9 $PID
 	[ "$?" = 2 ] && return 2
 	# Many daemons don't delete their pidfiles when they exit.
-	#rm -f $PIDFILE
+	rm -f $PIDFILE
 	return "$RETVAL"
 }
 
