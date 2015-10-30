@@ -24,7 +24,8 @@ public class ParkingPassMasterEntity {
     private String isRFID;
     private String isPaid;
     private Set<ReceiptContentEntity> receiptContents;
-    private Integer parkingId;
+    @JsonIgnore
+    private ParkingEntity parking;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -147,16 +148,6 @@ public class ParkingPassMasterEntity {
         this.isPaid = isPaid;
     }
 
-    @Basic
-    @Column(name = "parking_id", nullable = false, insertable = true, updatable = true)
-    public Integer getParkingId() {
-        return parkingId;
-    }
-
-    public void setParkingId(Integer parkingId) {
-        this.parkingId = parkingId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -179,7 +170,7 @@ public class ParkingPassMasterEntity {
         if (isRFID != null ? !isRFID.equals(that.isRFID) : that.isRFID != null) return false;
         if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
 
-        return !(parkingId != null ? !parkingId.equals(that.parkingId) : that.parkingId != null);
+        return !(parking != null ? !parking.equals(that.parking) : that.parking != null);
 
     }
 
@@ -197,8 +188,18 @@ public class ParkingPassMasterEntity {
         result = 31 * result + (isMobileNumber != null ? isMobileNumber.hashCode() : 0);
         result = 31 * result + (isRFID != null ? isRFID.hashCode() : 0);
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
-        result = 31 * result + (parkingId != null ? parkingId.hashCode() : 0);
+        result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "parking_id", referencedColumnName = "id", nullable = false)
+    public ParkingEntity getParking() {
+        return parking;
+    }
+
+    public void setParking(ParkingEntity parkingSubLotByParkingSubLotId) {
+        this.parking = parkingSubLotByParkingSubLotId;
     }
 
     @OneToMany(mappedBy = "parkingPassMaster", fetch = FetchType.EAGER)

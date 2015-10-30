@@ -8,13 +8,13 @@ case "$1" in
 		monit stop gmp-v3
 		/etc/init.d/gmp-v3-migration start
 		PID=`cat $PIDFILE`
-		wait PID
+		wait $PID
 		monit start gmp-v3
 	else
 		/etc/init.d/gmp-v3 stop
 		/etc/init.d/gmp-v3-migration start
 		PID=`cat $PIDFILE`
-        wait PID
+        wait $PID
 		/etc/init.d/gmp-v3 start
 	fi
     ;;
