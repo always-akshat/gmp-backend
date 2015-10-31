@@ -1,5 +1,6 @@
 package com.getMyParking.dao;
 
+import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.*;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -13,7 +14,14 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.BigDecimalType;
+import org.hibernate.type.CustomType;
+import org.hibernate.type.StringType;
+import org.hibernate.type.TimestampType;
+import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
@@ -246,7 +254,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         }
 
         if (eventType.isPresent()) {
-            criteria.add(Restrictions.eq("eventType",eventType));
+            criteria.add(Restrictions.eq("eventType", eventType));
         }
 
         criteria.setFirstResult((pageNum-1)*pageSize);
@@ -254,6 +262,44 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         criteria.addOrder(Order.desc("eventTime"));
 
         return list(criteria);
+
+    }
+
+    public List<ParkingEventDumpDTO> getParkingEventsDump(Integer parkingId, DateTime date) {
+
+        SQLQuery checkInEventsQuery = currentSession().createSQLQuery("select `pe`.`registration_number` as registrationNumber, " +
+                "`pe`.`mobile_number` as mobileNumber, `pe`.`valet_name` as valetName, `pe`.`sub_lot_type` as subLotType," +
+                "`pe`.`serial_number` as serialNumber, `pe`.`special` as special, `pe`.`operator_name` as operatorName," +
+                "`parking_pass`.`valid_time` as passValidTime, `pe`.`event_time` as checkInEventTime , `pe`.`cost` as checkInCost," +
+                "`jpe`.`event_time` as checkOutEventTime, `jpe`.`cost` as checkOutCost, `pe`.`event_time` as eventTime from `parking_event` pe " +
+                "inner join `parking_event` jpe on pe.`serial_number` = jpe.`serial_number` and pe.`event_type` != jpe.`event_type`" +
+                "left join `parking_pass` on pe.`parking_pass_id` = `parking_pass`.`id` " +
+                "where pe.`event_time` >= :startDate and pe.`event_time` <= :endDate " +
+                "and pe.`event_type` = 'CHECKED_IN' and pe.`parking_id`= :parkingId");
+
+        DateTime startDateTime = date.toLocalDate().toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30));
+        DateTime endDateTime = startDateTime.plusDays(1).minusSeconds(1);
+
+        checkInEventsQuery.setParameter("parkingId",parkingId);
+        checkInEventsQuery.setParameter("startDate",startDateTime);
+        checkInEventsQuery.setParameter("endDate",endDateTime);
+        checkInEventsQuery.addScalar("registrationNumber", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("mobileNumber", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("valetName", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("checkInEventTime", new CustomType(new PersistentDateTime()));
+        checkInEventsQuery.addScalar("checkInCost", BigDecimalType.INSTANCE);
+        checkInEventsQuery.addScalar("subLotType", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("checkOutEventTime", new CustomType(new PersistentDateTime()));
+        checkInEventsQuery.addScalar("checkOutCost", BigDecimalType.INSTANCE);
+        checkInEventsQuery.addScalar("serialNumber", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("special", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("operatorName", StringType.INSTANCE);
+        checkInEventsQuery.addScalar("passValidTime", new CustomType(new PersistentDateTime()));
+        checkInEventsQuery.addScalar("eventTime", new CustomType(new PersistentDateTime()));
+        checkInEventsQuery.setResultTransformer(Transformers.aliasToBean(ParkingEventDumpDTO.class));
+
+        return checkInEventsQuery.list();
+
 
     }
 }

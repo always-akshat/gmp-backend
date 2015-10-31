@@ -5,6 +5,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
+import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.GetParkingEventResponse;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingPassEntity;
@@ -258,7 +259,7 @@ public class ParkingEventResource {
     }
 
     @GET
-    @Path("/events/")
+    @Path("/")
     @Timed
     @ExceptionMetered
     @UnitOfWork
@@ -274,7 +275,7 @@ public class ParkingEventResource {
                                                          @QueryParam("registrationNumber") Optional<String> registrationNumber,
                                                          @QueryParam("fromDate") Optional<DateTimeParam> fromDate,
                                                          @QueryParam("toDate") Optional<DateTimeParam> toDate,
-                                                         @QueryParam("toDate") Optional<String> eventType,
+                                                         @QueryParam("eventType") Optional<String> eventType,
                                                          @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
                                                          @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
                                                          @Auth GMPUser gmpUser) {
@@ -299,6 +300,21 @@ public class ParkingEventResource {
 
         return parkingEventDAO.searchParkingEvents(companyId, parkingId, parkingLotId, parkingSubLotId, registrationNumber,
                 fromDate, toDate, eventType, pageNumberParam.get(), pageSize);
+    }
+
+    @GET
+    @Path("/dump/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking Events by last update time stamp", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "UnAuthorized"),
+    })
+    public List<ParkingEventDumpDTO> getParkingEventsById(@QueryParam("parkingId")Optional<IntParam> parkingId,
+                                                         @QueryParam("date") Optional<DateTimeParam> toDate) {
+        return parkingEventDAO.getParkingEventsDump(parkingId.get().get(),toDate.get().get());
     }
 
 }

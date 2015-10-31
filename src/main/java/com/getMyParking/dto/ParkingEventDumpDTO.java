@@ -21,6 +21,7 @@ public class ParkingEventDumpDTO {
     private String special;
     private String operatorName;
     private DateTime passValidTime;
+    private DateTime eventTime;
 
     public String getRegistrationNumber() {
         return registrationNumber;
@@ -116,5 +117,13 @@ public class ParkingEventDumpDTO {
 
     public void setPassValidTime(DateTime passValidTime) {
         this.passValidTime = passValidTime;
+    }
+
+    public DateTime getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(DateTime eventTime) {
+        this.eventTime = eventTime;
     }
 }
