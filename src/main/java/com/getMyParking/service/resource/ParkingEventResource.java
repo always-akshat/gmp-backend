@@ -274,6 +274,7 @@ public class ParkingEventResource {
                                                          @QueryParam("registrationNumber") Optional<String> registrationNumber,
                                                          @QueryParam("fromDate") Optional<DateTimeParam> fromDate,
                                                          @QueryParam("toDate") Optional<DateTimeParam> toDate,
+                                                         @QueryParam("toDate") Optional<String> eventType,
                                                          @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
                                                          @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
                                                          @Auth GMPUser gmpUser) {
@@ -296,8 +297,8 @@ public class ParkingEventResource {
 
         Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
 
-        return parkingEventDAO.searchParkingEvents(companyId,parkingId,parkingLotId,parkingSubLotId,registrationNumber,
-                fromDate,toDate,pageNumberParam.get(),pageSize);
+        return parkingEventDAO.searchParkingEvents(companyId, parkingId, parkingLotId, parkingSubLotId, registrationNumber,
+                fromDate, toDate, eventType, pageNumberParam.get(), pageSize);
     }
 
 }

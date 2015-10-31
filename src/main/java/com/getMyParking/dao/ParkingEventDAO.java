@@ -12,10 +12,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -219,7 +216,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public List<ParkingEventEntity> searchParkingEvents(Optional<IntParam> companyId, Optional<IntParam> parkingId,
                                                         Optional<IntParam> parkingLotId, Optional<IntParam> parkingSubLotId,
                                                         Optional<String> registrationNumber, Optional<DateTimeParam> fromDate,
-                                                        Optional<DateTimeParam> toDate, Integer integer, Integer pageSize) {
+                                                        Optional<DateTimeParam> toDate, Optional<String> eventType, Integer pageNum,
+                                                        Integer pageSize) {
 
         Criteria criteria = criteria();
 
@@ -247,8 +245,13 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             criteria.add(Restrictions.between("eventTime",fromDate.get().get(),toDate.get().get()));
         }
 
-        criteria.setFirstResult((integer-1)*pageSize);
+        if (eventType.isPresent()) {
+            criteria.add(Restrictions.eq("eventType",eventType));
+        }
+
+        criteria.setFirstResult((pageNum-1)*pageSize);
         criteria.setMaxResults(pageSize);
+        criteria.addOrder(Order.desc("eventTime"));
 
         return list(criteria);
 
