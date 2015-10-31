@@ -254,7 +254,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         }
 
         if (eventType.isPresent()) {
-            criteria.add(Restrictions.eq("eventType", eventType));
+            criteria.add(Restrictions.eq("eventType", eventType.get()));
         }
 
         criteria.setFirstResult((pageNum-1)*pageSize);
