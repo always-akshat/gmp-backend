@@ -4,15 +4,11 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.dao.ParkingEventDAO;
-import com.getMyParking.dao.ParkingReportGroupByUser;
+import com.getMyParking.entity.reports.ParkingReportGroupByUser;
 import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
 import com.getMyParking.entity.CompanyEntity;
-import com.getMyParking.entity.ParkingReport;
-import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
-import com.getMyParking.service.auth.GMPUser;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -23,7 +19,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.

@@ -1,4 +1,4 @@
-package com.getMyParking.entity;
+package com.getMyParking.entity.reports;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -12,7 +12,6 @@ import java.util.List;
 public class ParkingReport {
 
     private String type;
-    private Integer parkingSubLotId;
     private Integer checkInCount;
     private Integer checkOutCount;
     private BigDecimal checkInRevenue;
@@ -49,14 +48,6 @@ public class ParkingReport {
 
     public void setReportDetails(List<ReportDetails> reportDetails) {
         this.reportDetails = reportDetails;
-    }
-
-    public Integer getParkingSubLotId() {
-        return parkingSubLotId;
-    }
-
-    public void setParkingSubLotId(Integer parkingSubLotId) {
-        this.parkingSubLotId = parkingSubLotId;
     }
 
     public String getType() {

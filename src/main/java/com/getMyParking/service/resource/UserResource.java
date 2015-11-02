@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
+import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Strings;
 import com.google.common.cache.LoadingCache;

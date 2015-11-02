@@ -1,4 +1,4 @@
-package com.getMyParking.entity;
+package com.getMyParking.entity.reports;
 
 import java.math.BigDecimal;
 

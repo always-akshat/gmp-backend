@@ -1,7 +1,6 @@
-package com.getMyParking.dao;
+package com.getMyParking.entity.reports;
 
-import com.getMyParking.entity.ParkingReport;
-
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,7 +16,17 @@ public class ParkingReportGroupByUser {
 
     private Integer parkingLotId;
 
-    private List<ParkingReport> parkingReports;
+    private List<UserParkingReport> parkingReports;
+
+    private List<UserParkingReportDetails> reportDetails;
+
+    public List<UserParkingReportDetails> getReportDetails() {
+        return reportDetails;
+    }
+
+    public void setReportDetails(List<UserParkingReportDetails> reportDetails) {
+        this.reportDetails = reportDetails;
+    }
 
     public String getUsername() {
         return username;
@@ -51,11 +60,12 @@ public class ParkingReportGroupByUser {
         this.parkingLotId = parkingLotId;
     }
 
-    public List<ParkingReport> getParkingReports() {
+    public List<UserParkingReport> getParkingReports() {
         return parkingReports;
     }
 
-    public void setParkingReports(List<ParkingReport> parkingReports) {
+    public void setParkingReports(List<UserParkingReport> parkingReports) {
         this.parkingReports = parkingReports;
     }
+
 }

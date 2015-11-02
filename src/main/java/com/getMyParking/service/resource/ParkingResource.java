@@ -4,23 +4,21 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
-import com.google.common.base.Function;
+import com.getMyParking.entity.reports.ParkingReport;
+import com.getMyParking.entity.reports.ParkingReportGroup;
+import com.getMyParking.entity.reports.ParkingReportGroupByUser;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
-import org.joda.time.LocalDate;
 
-import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

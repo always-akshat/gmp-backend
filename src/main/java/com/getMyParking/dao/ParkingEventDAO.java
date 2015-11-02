@@ -2,9 +2,8 @@ package com.getMyParking.dao;
 
 import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.*;
-import com.google.common.base.Function;
+import com.getMyParking.entity.reports.*;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import io.dropwizard.jersey.params.DateTimeParam;
@@ -18,17 +17,15 @@ import org.hibernate.transform.Transformers;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.StringType;
-import org.hibernate.type.TimestampType;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.jvnet.hk2.internal.Collector;
 
-import javax.annotation.Nullable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -156,45 +153,44 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public List<ParkingReportGroupByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
                                                                List<ParkingSubLotUserAccessEntity> users) {
 
-        List<ParkingSubLotUserAccessEntity> filteredUsers = Lists.newArrayList();
-        for (ParkingSubLotUserAccessEntity user : users) {
-            List<String> userAccess = Lists.transform(Lists.newArrayList(user.getUserB2B().getUserAccesses()),
-                    new Function<AccessMasterEntity, String>() {
-                        @Nullable
-                        @Override
-                        public String apply(AccessMasterEntity input) {
-                            return input.getAccessTitle();
-                        }
-                    });
+        List<ParkingSubLotUserAccessEntity> filteredUsers = users.stream().filter(userAccessEntity ->
+                userAccessEntity.getUserB2B().getUserAccesses().stream().map(
+                    AccessMasterEntity::getAccessTitle
+                ).anyMatch(
+                        s -> s.equalsIgnoreCase("CHECKED_IN") || s.equalsIgnoreCase("CHECKED_OUT")
+                )).collect(Collectors.toList());
 
-            if (userAccess.contains("CHECKED_IN") || userAccess.contains("CHECKED_OUT")) {
-                filteredUsers.add(user);
-            }
-        }
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.rowCount(),"count");
+        projectionList.add(Projections.sum("cost"),"revenue");
+        projectionList.add(Projections.groupProperty("eventType"),"eventType");
+        projectionList.add(Projections.groupProperty("parkingSubLot.id"),"parkingSubLotId");
+        projectionList.add(Projections.groupProperty("operatorName"),"operatorName");
 
-        Map<String,ParkingReportGroupByUser> parkingReports = Maps.newHashMap();
+        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(Restrictions.between("eventTime", fromDateTime, toDateTime))
+                .add(Restrictions.in("operatorName",
+                        filteredUsers.stream().map(user -> user.getUserB2B().getUsername()).collect(Collectors.toList())))
+                .add(Restrictions.in("parkingSubLot.id",
+                        filteredUsers.stream().map(ParkingSubLotUserAccessEntity::getParkingSubLotId).collect(Collectors.toList())))
+                .setProjection(projectionList);
+        criteria.setResultTransformer(Transformers.aliasToBean(UserParkingReportDetails.class));
+        List<UserParkingReportDetails> detailsList = criteria.list();
+
+
+        List<ParkingReportGroupByUser> parkingReports = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity user : filteredUsers) {
             String username = user.getUserB2B().getUsername();
             ParkingReportGroupByUser userParkingReport;
-            if (parkingReports.containsKey(username)) {
-                userParkingReport =  parkingReports.get(username);
-            } else {
-                userParkingReport = new ParkingReportGroupByUser();
-                userParkingReport.setUsername(username);
-                userParkingReport.setCompanyId(user.getCompanyId());
-                userParkingReport.setParkingId(user.getParkingId());
-                userParkingReport.setParkingLotId(user.getParkingLotId());
-                userParkingReport.setParkingReports(new ArrayList<>());
-                parkingReports.put(username,userParkingReport);
-            }
-            ParkingReport parkingReport =
-                    createReport(Restrictions.and(Restrictions.eq("parkingSubLot.id", user.getParkingSubLotId()),
-                            Restrictions.eq("operatorName",username)),fromDateTime,toDateTime,null);
-            parkingReport.setParkingSubLotId(user.getParkingSubLotId());
-            userParkingReport.getParkingReports().add(parkingReport);
-        }
+            userParkingReport = new ParkingReportGroupByUser();
+            userParkingReport.setUsername(username);
+            userParkingReport.setCompanyId(user.getCompanyId());
+            userParkingReport.setParkingId(user.getParkingId());
+            userParkingReport.setParkingLotId(user.getParkingLotId());
+            userParkingReport.setParkingReports(new ArrayList<>());
 
-        return Lists.newArrayList(parkingReports.values());
+        }
+        return parkingReports;
     }
 
     public List<ParkingEventEntity> searchParkingEvents(Optional<IntParam> companyId, Optional<IntParam> parkingId,
