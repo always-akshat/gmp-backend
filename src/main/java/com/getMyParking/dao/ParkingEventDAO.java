@@ -28,10 +28,7 @@ import org.joda.time.LocalDate;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -119,42 +116,21 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
 
         ProjectionList projectionList = Projections.projectionList();
-        projectionList.add(Projections.rowCount());
-        projectionList.add(Projections.sum("cost"));
+        projectionList.add(Projections.rowCount(),"count");
+        projectionList.add(Projections.sum("cost"),"revenue");
+        projectionList.add(Projections.groupProperty("type"),"parkingType");
+        projectionList.add(Projections.groupProperty("eventType"),"eventType");
+        projectionList.add(Projections.groupProperty("subLotType"),"subLotType");
 
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType","CHECKED_IN"))
                 .setProjection(projectionList);
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        List<Object[]> list = criteria.list();
-        Object[] row = list.get(0);
 
-        Integer checkInCount = 0;
-        if (row != null) checkInCount = ((Long)row[0]).intValue();
+        criteria.setResultTransformer(Transformers.aliasToBean(ReportDetails.class));
 
-        BigDecimal checkInRevenue = null;
-        if (row != null) checkInRevenue = (BigDecimal) row[1];
-        if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .setProjection(Projections.rowCount());
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        list = criteria.list();
-        row = list.get(0);
-
-        Integer checkOutCount = 0;
-        if (row != null) checkOutCount = ((Long)row[0]).intValue();
-
-        BigDecimal checkOutRevenue = null;
-        if (row != null) checkOutRevenue = (BigDecimal) row[1];
-        if (checkOutRevenue == null) checkOutRevenue = new BigDecimal(0);
-
-        return new ParkingReport(checkInCount,checkOutCount,checkInRevenue,checkOutRevenue);
+        return new ParkingReport(criteria.list());
 
     }
 
@@ -257,7 +233,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             criteria.add(Restrictions.eq("eventType", eventType.get()));
         }
 
-        criteria.setFirstResult((pageNum-1)*pageSize);
+        criteria.setFirstResult((pageNum - 1) * pageSize);
         criteria.setMaxResults(pageSize);
         criteria.addOrder(Order.desc("eventTime"));
 
@@ -267,39 +243,73 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     public List<ParkingEventDumpDTO> getParkingEventsDump(Integer parkingId, DateTime date) {
 
+        DateTime startDateTime = date.toLocalDate().toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30));
+        DateTime endDateTime = startDateTime.plusDays(1).minusSeconds(1);
+
         SQLQuery checkInEventsQuery = currentSession().createSQLQuery("select `pe`.`registration_number` as registrationNumber, " +
                 "`pe`.`mobile_number` as mobileNumber, `pe`.`valet_name` as valetName, `pe`.`sub_lot_type` as subLotType," +
                 "`pe`.`serial_number` as serialNumber, `pe`.`special` as special, `pe`.`operator_name` as operatorName," +
                 "`parking_pass`.`valid_time` as passValidTime, `pe`.`event_time` as checkInEventTime , `pe`.`cost` as checkInCost," +
                 "`jpe`.`event_time` as checkOutEventTime, `jpe`.`cost` as checkOutCost, `pe`.`event_time` as eventTime from `parking_event` pe " +
-                "inner join `parking_event` jpe on pe.`serial_number` = jpe.`serial_number` and pe.`event_type` != jpe.`event_type`" +
+                "left join `parking_event` jpe on pe.`serial_number` = jpe.`serial_number` and pe.`event_type` != jpe.`event_type`" +
                 "left join `parking_pass` on pe.`parking_pass_id` = `parking_pass`.`id` " +
                 "where pe.`event_time` >= :startDate and pe.`event_time` <= :endDate " +
                 "and pe.`event_type` = 'CHECKED_IN' and pe.`parking_id`= :parkingId");
 
-        DateTime startDateTime = date.toLocalDate().toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30));
-        DateTime endDateTime = startDateTime.plusDays(1).minusSeconds(1);
 
         checkInEventsQuery.setParameter("parkingId",parkingId);
-        checkInEventsQuery.setParameter("startDate",startDateTime);
-        checkInEventsQuery.setParameter("endDate",endDateTime);
-        checkInEventsQuery.addScalar("registrationNumber", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("mobileNumber", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("valetName", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("checkInEventTime", new CustomType(new PersistentDateTime()));
-        checkInEventsQuery.addScalar("checkInCost", BigDecimalType.INSTANCE);
-        checkInEventsQuery.addScalar("subLotType", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("checkOutEventTime", new CustomType(new PersistentDateTime()));
-        checkInEventsQuery.addScalar("checkOutCost", BigDecimalType.INSTANCE);
-        checkInEventsQuery.addScalar("serialNumber", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("special", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("operatorName", StringType.INSTANCE);
-        checkInEventsQuery.addScalar("passValidTime", new CustomType(new PersistentDateTime()));
-        checkInEventsQuery.addScalar("eventTime", new CustomType(new PersistentDateTime()));
+        checkInEventsQuery.setParameter("startDate",startDateTime.toString());
+        checkInEventsQuery.setParameter("endDate",endDateTime.toString());
+        addDumpScalars(checkInEventsQuery);
         checkInEventsQuery.setResultTransformer(Transformers.aliasToBean(ParkingEventDumpDTO.class));
 
-        return checkInEventsQuery.list();
+        List<ParkingEventDumpDTO> checkInEvents = checkInEventsQuery.list();
+
+        SQLQuery checkOutEventsQuery = currentSession().createSQLQuery("select `pe`.`registration_number` as registrationNumber, " +
+                "`pe`.`mobile_number` as mobileNumber, `pe`.`valet_name` as valetName, `pe`.`sub_lot_type` as subLotType," +
+                "`pe`.`serial_number` as serialNumber, `pe`.`special` as special, `pe`.`operator_name` as operatorName," +
+                "`parking_pass`.`valid_time` as passValidTime, `pe`.`event_time` as checkInEventTime , `pe`.`cost` as checkInCost," +
+                "`jpe`.`event_time` as checkOutEventTime, `jpe`.`cost` as checkOutCost, `pe`.`event_time` as eventTime from `parking_event` pe " +
+                "left join `parking_event` jpe on pe.`serial_number` = jpe.`serial_number` and pe.`event_type` != jpe.`event_type`" +
+                "left join `parking_pass` on pe.`parking_pass_id` = `parking_pass`.`id` " +
+                "where pe.`event_time` >= :startDate and pe.`event_time` <= :endDate " +
+                "and pe.`event_type` = 'CHECKED_OUT' and pe.`parking_id`= :parkingId");
+
+        checkOutEventsQuery.setParameter("parkingId",parkingId);
+        checkOutEventsQuery.setParameter("startDate",startDateTime.toString());
+        checkOutEventsQuery.setParameter("endDate",endDateTime.toString());
+        addDumpScalars(checkOutEventsQuery);
+        checkOutEventsQuery.setResultTransformer(Transformers.aliasToBean(ParkingEventDumpDTO.class));
+
+        List<ParkingEventDumpDTO> checkOutEvents = checkOutEventsQuery.list();
+        for (ParkingEventDumpDTO parkingEvent : checkOutEvents) {
+            if (parkingEvent.getCheckInEventTime().isBefore(startDateTime)) {
+                parkingEvent.setCheckInCost(null);
+            }
+        }
+
+        checkInEvents.addAll(checkOutEvents);
+        Collections.sort(checkInEvents);
+
+        return checkInEvents;
 
 
+    }
+
+    private SQLQuery addDumpScalars(SQLQuery query) {
+        query.addScalar("registrationNumber", StringType.INSTANCE);
+        query.addScalar("mobileNumber", StringType.INSTANCE);
+        query.addScalar("valetName", StringType.INSTANCE);
+        query.addScalar("checkInEventTime", new CustomType(new PersistentDateTime()));
+        query.addScalar("checkInCost", BigDecimalType.INSTANCE);
+        query.addScalar("subLotType", StringType.INSTANCE);
+        query.addScalar("checkOutEventTime", new CustomType(new PersistentDateTime()));
+        query.addScalar("checkOutCost", BigDecimalType.INSTANCE);
+        query.addScalar("serialNumber", StringType.INSTANCE);
+        query.addScalar("special", StringType.INSTANCE);
+        query.addScalar("operatorName", StringType.INSTANCE);
+        query.addScalar("passValidTime", new CustomType(new PersistentDateTime()));
+        query.addScalar("eventTime", new CustomType(new PersistentDateTime()));
+        return query;
     }
 }

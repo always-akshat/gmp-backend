@@ -2,12 +2,13 @@ package com.getMyParking.dto;
 
 import org.joda.time.DateTime;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
 /**
  * Created by rahulgupta.s on 29/10/15.
  */
-public class ParkingEventDumpDTO {
+public class ParkingEventDumpDTO implements Comparable<ParkingEventDumpDTO>{
 
     private String registrationNumber;
     private String mobileNumber;
@@ -125,5 +126,11 @@ public class ParkingEventDumpDTO {
 
     public void setEventTime(DateTime eventTime) {
         this.eventTime = eventTime;
+    }
+
+    @Override
+    public int compareTo(@Nullable ParkingEventDumpDTO that) {
+        if (that == null) return -1;
+        else return this.getEventTime().compareTo(that.getEventTime());
     }
 }
