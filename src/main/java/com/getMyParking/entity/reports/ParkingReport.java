@@ -11,7 +11,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ParkingReport {
 
-    private String type;
     private Integer checkInCount;
     private Integer checkOutCount;
     private BigDecimal checkInRevenue;
@@ -35,27 +34,12 @@ public class ParkingReport {
         }
     }
 
-    public ParkingReport(Integer checkInCount, Integer checkOutCount, BigDecimal checkInRevenue, BigDecimal checkOutRevenue) {
-        this.checkInCount = checkInCount;
-        this.checkOutCount = checkOutCount;
-        this.checkInRevenue = checkInRevenue;
-        this.checkOutRevenue = checkOutRevenue;
-    }
-
     public List<ReportDetails> getReportDetails() {
         return reportDetails;
     }
 
     public void setReportDetails(List<ReportDetails> reportDetails) {
         this.reportDetails = reportDetails;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public Integer getCheckInCount() {

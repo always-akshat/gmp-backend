@@ -5,8 +5,8 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
 import com.getMyParking.entity.reports.ParkingReport;
-import com.getMyParking.entity.reports.ParkingReportGroup;
-import com.getMyParking.entity.reports.ParkingReportGroupByUser;
+import com.getMyParking.entity.reports.ParkingReportBySubLotType;
+import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -121,7 +121,7 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingReportGroup> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
+    public List<ParkingReportBySubLotType> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<String> typesList = Splitter.on(',').splitToList(types);
         return parkingEventDAO.createParkingReportByTypes(parkingId,fromDate.get(),toDate.get(),typesList);
@@ -136,7 +136,7 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingReportGroupByUser> userReport( @PathParam("parkingId") Integer parkingId,
+    public List<ParkingReportByUser> userReport( @PathParam("parkingId") Integer parkingId,
                                             @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParking(parkingId);
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);

@@ -5,7 +5,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
 import com.getMyParking.entity.reports.ParkingReport;
-import com.getMyParking.entity.reports.ParkingReportGroupByUser;
+import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
@@ -124,7 +124,7 @@ public class ParkingLotResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingReportGroupByUser> userReport( @PathParam("parkingLotId") Integer parkingLotId,
+    public List<ParkingReportByUser> userReport( @PathParam("parkingLotId") Integer parkingLotId,
                                                       @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingLot(parkingLotId);
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);

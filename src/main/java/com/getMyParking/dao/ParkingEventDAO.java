@@ -21,7 +21,6 @@ import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.jvnet.hk2.internal.Collector;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -131,26 +130,31 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     }
 
-    public List<ParkingReportGroup> createParkingReportByTypes(Integer parkingId, DateTime from, DateTime to,
+    public List<ParkingReportBySubLotType> createParkingReportByTypes(Integer parkingId, DateTime from, DateTime to,
                                             List<String> typesList) {
 
-        List<ParkingReportGroup> parkingReportGroup = Lists.newArrayList();
+        List<ParkingReportBySubLotType> parkingReportGroup = Lists.newArrayList();
 
         for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate().plusDays(1)); date = date.plusDays(1)) {
-            List<ParkingReport> parkingReports = Lists.newArrayList();
-            for (String type : typesList) {
-                ParkingReport parkingReport =
-                        createReport(Restrictions.eq("parkingId",parkingId),date.toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30)),
-                                date.plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5,30)),type);
-                parkingReport.setType(type);
-                parkingReports.add(parkingReport);
-            }
-            parkingReportGroup.add(new ParkingReportGroup(date,parkingReports));
+            ProjectionList projectionList = Projections.projectionList();
+            projectionList.add(Projections.rowCount(),"count");
+            projectionList.add(Projections.sum("cost"),"revenue");
+            projectionList.add(Projections.groupProperty("eventType"),"eventType");
+            projectionList.add(Projections.groupProperty("subLotType"),"subLotType");
+
+            Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                    .add(Restrictions.between("eventTime", date.toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30)),
+                            date.plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30))))
+                    .add(Restrictions.eq("parkingId", parkingId))
+                    .setProjection(projectionList);
+            criteria.setResultTransformer(Transformers.aliasToBean(SubLotReportDetails.class));
+            List<SubLotReportDetails> reportDetails = criteria.list();
+            parkingReportGroup.add(new ParkingReportBySubLotType(date,reportDetails));
         }
         return parkingReportGroup;
     }
 
-    public List<ParkingReportGroupByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
+    public List<ParkingReportByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
                                                                List<ParkingSubLotUserAccessEntity> users) {
 
         List<ParkingSubLotUserAccessEntity> filteredUsers = users.stream().filter(userAccessEntity ->
@@ -180,10 +184,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         Map<String,List<UserParkingReportDetails>> userDetailsMap =
                 detailsList.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getOperatorName));
 
-        List<ParkingReportGroupByUser> parkingReports = Lists.newArrayList();
+        List<ParkingReportByUser> parkingReports = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity user : filteredUsers) {
             String username = user.getUserB2B().getUsername();
-            ParkingReportGroupByUser userParkingReport = new ParkingReportGroupByUser();
+            ParkingReportByUser userParkingReport = new ParkingReportByUser();
             userParkingReport.setUsername(username);
             userParkingReport.setCompanyId(user.getCompanyId());
             userParkingReport.setParkingId(user.getParkingId());

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Created by rahulgupta.s on 02/10/15.
  */
-public class ParkingReportGroupByUser {
+public class ParkingReportByUser {
 
     private String username;
 
@@ -31,11 +31,10 @@ public class ParkingReportGroupByUser {
 
         Map<Integer,List<UserParkingReportDetails>> detailsBySubLotId =
         reportDetails.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getParkingSubLotId));
-        for (Map.Entry<Integer,List<UserParkingReportDetails>> entry : detailsBySubLotId.entrySet()) {
+        detailsBySubLotId.forEach((parkingSubLotId, userParkingReportDetailsList) -> {
             UserParkingReport parkingReport = new UserParkingReport();
-            parkingReport.setParkingSubLotId(entry.getKey());
-            List<UserParkingReportDetails> reportDetail = entry.getValue();
-            reportDetail.forEach(userReportDetails -> {
+            parkingReport.setParkingSubLotId(parkingSubLotId);
+            userParkingReportDetailsList.forEach(userReportDetails -> {
                 if (userReportDetails.getEventType().equalsIgnoreCase("checked_in")) {
                     parkingReport.setCheckInCount(parkingReport.getCheckInCount() + userReportDetails.getCount().intValue());
                     parkingReport.setCheckInRevenue(parkingReport.getCheckInRevenue().add(userReportDetails.getRevenue()));
@@ -45,7 +44,7 @@ public class ParkingReportGroupByUser {
                 }
             });
             parkingReports.add(parkingReport);
-        }
+        });
     }
 
     public String getUsername() {
