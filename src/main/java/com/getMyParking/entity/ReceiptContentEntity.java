@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "receipt_content", schema = "", catalog = "get_my_parking_v2")
 public class ReceiptContentEntity {
+
     private Integer id;
     private String content;
     private Integer sequence;
@@ -22,7 +23,8 @@ public class ReceiptContentEntity {
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    public Integer getId() {
         return id;
     }
 
@@ -42,7 +44,7 @@ public class ReceiptContentEntity {
 
     @Basic
     @Column(name = "sequence", nullable = false, insertable = true, updatable = true)
-    public int getSequence() {
+    public Integer getSequence() {
         return sequence;
     }
 

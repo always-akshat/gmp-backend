@@ -26,7 +26,10 @@ public class ReceiptContentDAO extends AbstractDAO<ReceiptContentEntity> {
     }
 
     public void saveOrUpdatePricingSlot(ReceiptContentEntity receiptContent) {
-        persist(receiptContent);
+        if(receiptContent.getId()==null)
+            persist(receiptContent);
+        else
+            currentSession().merge(receiptContent);
     }
 
     public void deleteById(Integer parkingId) {

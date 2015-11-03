@@ -25,7 +25,7 @@ public class ParkingPassMasterDAO extends AbstractDAO<ParkingPassMasterEntity>{
     }
 
     public void saveOrUpdateParking(ParkingPassMasterEntity parkingPass) {
-        if(parkingPass.getId()==null)
+        if(parkingPass.getId()==null || (parkingPass.getId()!=null && parkingPass.getId()==0))
             persist(parkingPass);
         else
             currentSession().merge(parkingPass);

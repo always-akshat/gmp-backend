@@ -26,11 +26,9 @@ public class ParkingDAO extends AbstractDAO<ParkingEntity> {
     }
 
     public void saveOrUpdateParking(ParkingEntity parking) {
-        if(parking.getId()==null)
+        if((parking.getId()!=null && parking.getId()==0) || parking.getId()==null)
             persist(parking);
-        else if(parking.getId()==0){
-            persist(parking);
-        }else
+        else
             currentSession().merge(parking);
     }
 

@@ -22,10 +22,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by rahulgupta.s on 04/06/15.
@@ -132,6 +129,41 @@ public class UserResource {
         parkingLotHasUserB2BDAO.saveUserAccess(parkingSubLotUserAccessEntities);
     }
 
+    @ApiOperation(value = "Create User Api")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "Username already exists"),
+    })
+    @POST
+    @Path("/edit")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void editUser(@ApiParam(value = "Create User Object", required = true) @Valid UserB2BEntity user) {
+        UserB2BEntity existingUser = userB2BDAO.findById(user.getUsername());
+        existingUser.setParkingSubLots(user.getParkingSubLots());
+        List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessEntities = new ArrayList<ParkingSubLotUserAccessEntity>();
+        for(ParkingSubLotUserAccessEntity parkingSubLotUserAccessEntity : user.getParkingSubLots()){
+            parkingSubLotUserAccessEntity.setUserB2B(existingUser);
+            parkingSubLotUserAccessEntities.add(parkingSubLotUserAccessEntity);
+        }
+        parkingLotHasUserB2BDAO.saveUserAccess(parkingSubLotUserAccessEntities);
+
+        if (user.getContactNumber()!=null && user.getContactNumber()!="") {
+            existingUser.setContactNumber(user.getContactNumber());
+        }
+        existingUser.setName(user.getName());
+
+        for(AccessMasterEntity accessMasterEntity : user.getUserAccesses()){
+            if(!existingUser.getUserAccesses().contains(accessMasterEntity)){
+                existingUser.getUserAccesses().add(accessMasterEntity);
+            }
+        }
+        userB2BDAO.editUser(existingUser);
+
+    }
+
     @ApiOperation(value = "Add parking sub lot to user Api")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
@@ -145,23 +177,25 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public void addParkingSubLot(@ApiParam(value = "List of Parking Lot Ids", required = true)
                               List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessList,
-                              @PathParam("username") String username,
-                              @Auth GMPUser gmpUser) {
+                              @PathParam("username") String username/*,
+                              @Auth GMPUser gmpUser*/) {
+        UserB2BEntity user = userB2BDAO.findById(username);
         List<Integer> companyIds = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity entity : parkingSubLotUserAccessList) {
+            entity.setUserB2B(user);
             if (!companyIds.contains(entity.getCompanyId())) entity.getCompanyId();
         }
 
-        if (gmpUser.getCompanyIds().containsAll(companyIds)) {
-            UserB2BEntity user = userB2BDAO.findById(username);
+//        if (gmpUser.getCompanyIds().containsAll(companyIds)) {
+
             if (user != null) {
                 parkingLotHasUserB2BDAO.saveUserAccess(parkingSubLotUserAccessList);
             } else {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
-        } else {
-            throw new WebApplicationException(Response.Status.FORBIDDEN);
-        }
+//        } else {
+//            throw new WebApplicationException(Response.Status.FORBIDDEN);
+//        }
     }
 
     @ApiOperation(value = "Get User Access Data",  response = List.class)
@@ -223,6 +257,40 @@ public class UserResource {
     public ParkingReport report( @PathParam("operatorName") String operatorName,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         return parkingEventDAO.createUserReport(operatorName,fromDate.get(),toDate.get());
+    }
+
+    @Path("/{username}")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Get user by user name", response = UserB2BEntity.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public UserB2BEntity getUser(@PathParam("username") String username){
+        UserB2BEntity user = userB2BDAO.findById(username);
+        if(user==null){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        return user;
+    }
+
+    @Path("/search")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Get user by user name", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public List<UserB2BEntity> findUsers(@QueryParam("name") String name){
+        List<UserB2BEntity> user = userB2BDAO.findByName(name);
+        if(user==null){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        return user;
     }
 
 }

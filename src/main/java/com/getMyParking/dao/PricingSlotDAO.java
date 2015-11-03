@@ -20,9 +20,9 @@ public class PricingSlotDAO extends AbstractDAO<PricingSlotEntity> {
     private PriceGridDAO priceGridDAO;
 
     @Inject
-    public PricingSlotDAO(SessionFactory sessionFactory) {
+    public PricingSlotDAO(SessionFactory sessionFactory,PriceGridDAO priceGridDAO) {
         super(sessionFactory);
-        this.priceGridDAO = new PriceGridDAO(sessionFactory);
+        this.priceGridDAO = priceGridDAO;
     }
 
     public PricingSlotEntity findById(Integer pricingSlotId) {

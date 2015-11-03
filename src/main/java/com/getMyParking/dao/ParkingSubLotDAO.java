@@ -3,6 +3,7 @@ package com.getMyParking.dao;
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
 import com.getMyParking.entity.PricingSlotEntity;
+import com.getMyParking.entity.ReceiptContentEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Query;
@@ -17,11 +18,13 @@ import java.util.List;
 public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
 
     private PricingSlotDAO pricingSlotDAO;
+    private ReceiptContentDAO receiptContentDAO;
 
     @Inject
-    public ParkingSubLotDAO(SessionFactory sessionFactory) {
+    public ParkingSubLotDAO(SessionFactory sessionFactory,PricingSlotDAO pricingSlotDAO,ReceiptContentDAO receiptContentDAO) {
         super(sessionFactory);
-        this.pricingSlotDAO = new PricingSlotDAO(sessionFactory);
+        this.pricingSlotDAO = pricingSlotDAO;
+        this.receiptContentDAO = receiptContentDAO;
     }
 
 
@@ -30,18 +33,22 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
     }
 
     public void saveOrUpdateParkingLot(ParkingSubLotEntity parkingSubLot) {
-//        if(parkingSubLot.getId()==null)
+        if(parkingSubLot.getId()==null)
             persist(parkingSubLot);
-//        else
-//            currentSession().merge(parkingSubLot);
-        System.out.println(parkingSubLot.getCapacity()+" "+parkingSubLot.getPricingSlots().size()+" ");
-        if(parkingSubLot.getPricingSlots()!=null)
-            for(PricingSlotEntity pricingSlotEntity : parkingSubLot.getPricingSlots()){
-                System.out.println("here");
+        else
+            currentSession().merge(parkingSubLot);
+        if(parkingSubLot.getPricingSlots()!=null) {
+            for (PricingSlotEntity pricingSlotEntity : parkingSubLot.getPricingSlots()) {
                 pricingSlotEntity.setParkingSubLot(parkingSubLot);
                 pricingSlotDAO.saveOrUpdatePricingSlot(pricingSlotEntity);
             }
-
+        }
+        if(parkingSubLot.getReceiptContents()!=null){
+            for(ReceiptContentEntity receiptContentEntity : parkingSubLot.getReceiptContents()){
+                receiptContentEntity.setParkingSubLot(parkingSubLot);
+                receiptContentDAO.saveOrUpdatePricingSlot(receiptContentEntity);
+            }
+        }
     }
 
     public void deleteParkingSublotById(Integer id){
