@@ -13,6 +13,13 @@ public class UserParkingReport {
     private BigDecimal checkInRevenue;
     private BigDecimal checkOutRevenue;
 
+    public UserParkingReport() {
+        checkInCount = 0;
+        checkOutCount = 0;
+        checkInRevenue = BigDecimal.ZERO;
+        checkOutRevenue = BigDecimal.ZERO;
+    }
+
     public Integer getParkingSubLotId() {
         return parkingSubLotId;
     }

@@ -177,18 +177,19 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         criteria.setResultTransformer(Transformers.aliasToBean(UserParkingReportDetails.class));
         List<UserParkingReportDetails> detailsList = criteria.list();
 
+        Map<String,List<UserParkingReportDetails>> userDetailsMap =
+                detailsList.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getOperatorName));
 
         List<ParkingReportGroupByUser> parkingReports = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity user : filteredUsers) {
             String username = user.getUserB2B().getUsername();
-            ParkingReportGroupByUser userParkingReport;
-            userParkingReport = new ParkingReportGroupByUser();
+            ParkingReportGroupByUser userParkingReport = new ParkingReportGroupByUser();
             userParkingReport.setUsername(username);
             userParkingReport.setCompanyId(user.getCompanyId());
             userParkingReport.setParkingId(user.getParkingId());
             userParkingReport.setParkingLotId(user.getParkingLotId());
-            userParkingReport.setParkingReports(new ArrayList<>());
-
+            userParkingReport.setReportDetails(userDetailsMap.get(username));
+            parkingReports.add(userParkingReport);
         }
         return parkingReports;
     }
@@ -253,9 +254,9 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 "and pe.`event_type` = 'CHECKED_IN' and pe.`parking_id`= :parkingId");
 
 
-        checkInEventsQuery.setParameter("parkingId",parkingId);
-        checkInEventsQuery.setParameter("startDate",startDateTime.toString());
-        checkInEventsQuery.setParameter("endDate",endDateTime.toString());
+        checkInEventsQuery.setParameter("parkingId", parkingId);
+        checkInEventsQuery.setParameter("startDate", startDateTime.toString());
+        checkInEventsQuery.setParameter("endDate", endDateTime.toString());
         addDumpScalars(checkInEventsQuery);
         checkInEventsQuery.setResultTransformer(Transformers.aliasToBean(ParkingEventDumpDTO.class));
 

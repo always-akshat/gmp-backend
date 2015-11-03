@@ -2,6 +2,8 @@ package com.getMyParking.entity.reports;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 02/10/15.
@@ -26,6 +28,24 @@ public class ParkingReportGroupByUser {
 
     public void setReportDetails(List<UserParkingReportDetails> reportDetails) {
         this.reportDetails = reportDetails;
+
+        Map<Integer,List<UserParkingReportDetails>> detailsBySubLotId =
+        reportDetails.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getParkingSubLotId));
+        for (Map.Entry<Integer,List<UserParkingReportDetails>> entry : detailsBySubLotId.entrySet()) {
+            UserParkingReport parkingReport = new UserParkingReport();
+            parkingReport.setParkingSubLotId(entry.getKey());
+            List<UserParkingReportDetails> reportDetail = entry.getValue();
+            reportDetail.forEach(userReportDetails -> {
+                if (userReportDetails.getEventType().equalsIgnoreCase("checked_in")) {
+                    parkingReport.setCheckInCount(parkingReport.getCheckInCount() + userReportDetails.getCount().intValue());
+                    parkingReport.setCheckInRevenue(parkingReport.getCheckInRevenue().add(userReportDetails.getRevenue()));
+                } else if (userReportDetails.getEventType().equalsIgnoreCase("checked_out")) {
+                    parkingReport.setCheckOutCount(parkingReport.getCheckOutCount() + userReportDetails.getCount().intValue());
+                    parkingReport.setCheckOutRevenue(parkingReport.getCheckOutRevenue().add(userReportDetails.getRevenue()));
+                }
+            });
+            parkingReports.add(parkingReport);
+        }
     }
 
     public String getUsername() {
