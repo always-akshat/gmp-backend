@@ -1,5 +1,6 @@
 package com.getMyParking.entity.reports;
 
+import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class ParkingReportBySubLotType {
         this.date = date;
         this.reportBySubLotType = reportDetails;
 
+        parkingReports = Lists.newArrayList();
         Map<String,List<SubLotReportDetails>> reportBySubLot =
                 reportDetails.stream().collect(Collectors.groupingBy(SubLotReportDetails::getSubLotType));
 

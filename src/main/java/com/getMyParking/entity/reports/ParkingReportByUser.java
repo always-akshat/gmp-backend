@@ -1,5 +1,7 @@
 package com.getMyParking.entity.reports;
 
+import com.google.common.collect.Lists;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ public class ParkingReportByUser {
     public void setReportDetails(List<UserParkingReportDetails> reportDetails) {
         this.reportDetails = reportDetails;
 
+        this.parkingReports = Lists.newArrayList();
         Map<Integer,List<UserParkingReportDetails>> detailsBySubLotId =
         reportDetails.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getParkingSubLotId));
         detailsBySubLotId.forEach((parkingSubLotId, userParkingReportDetailsList) -> {
