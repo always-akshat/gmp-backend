@@ -9,6 +9,7 @@ import com.getMyParking.entity.GetParkingEventResponse;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -40,12 +41,15 @@ public class ParkingEventResource {
     private ParkingEventDAO parkingEventDAO;
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingPassDAO parkingPassDAO;
+    private ParkingEventProcessor parkingEventProcessor;
 
     @Inject
-    public ParkingEventResource(ParkingEventDAO parkingEventDAO, ParkingSubLotDAO parkingSubLotDAO, ParkingPassDAO parkingPassDAO) {
+    public ParkingEventResource(ParkingEventDAO parkingEventDAO, ParkingSubLotDAO parkingSubLotDAO, ParkingPassDAO parkingPassDAO,
+                                ParkingEventProcessor parkingEventProcessor) {
         this.parkingEventDAO = parkingEventDAO;
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingPassDAO = parkingPassDAO;
+        this.parkingEventProcessor = parkingEventProcessor;
     }
 
     @GET
@@ -185,6 +189,7 @@ public class ParkingEventResource {
         if (parkingEvent.getParkingPassId() != null) {
             parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
         }
+        parkingEventProcessor.processEvent(parkingEvent);
         parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
         return parkingEvent.getId();
     }

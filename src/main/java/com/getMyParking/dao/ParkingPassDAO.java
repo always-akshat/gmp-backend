@@ -42,7 +42,8 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
             }
         });
         return list(criteria().add(Restrictions.in("parkingPassMaster.id",parkingPassIdInts))
-                              .add(Restrictions.gt("validTime", DateTime.now())));
+                              .add(Restrictions.gt("validTime", DateTime.now()))
+                              .add(Restrictions.ne("isDeleted",1)));
     }
 
     public List<ParkingPassEntity> findByPassIds(List<String> parkingPassIds) {
