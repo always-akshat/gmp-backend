@@ -148,13 +148,13 @@ public class ParkingPassEntity {
         return counter;
     }
 
-    public void setIsDeleted(int isDeleted) {
+    public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
     }
 
     @Basic
     @Column(name = "is_deleted", nullable = false, insertable = true, updatable = true)
-    public int getIsDeleted() {
+    public Integer getIsDeleted() {
         return isDeleted;
     }
 
