@@ -109,7 +109,7 @@ public class ParkingEntity {
         this.company = companyByCompanyId;
     }
 
-    @OneToMany(mappedBy = "parking", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parking", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     public Set<ParkingLotEntity> getParkingLots() {
         return parkingLots;
     }

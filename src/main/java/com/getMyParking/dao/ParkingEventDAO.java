@@ -304,7 +304,6 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             }
 
             boolean found=true;
-            System.out.println(row[0]+" "+row[1]);
             if (row1!=null) {
                 if((Integer)row[0] != (Integer)row1[0]) {
                     found=false;

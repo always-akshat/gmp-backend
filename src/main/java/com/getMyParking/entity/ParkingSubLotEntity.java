@@ -17,12 +17,12 @@ public class ParkingSubLotEntity {
     private String type;
     private Integer capacity;
     private String collectionModel;
-    private String taxiTime;
-    private String autoCheckoutTime;
+    private Time taxiTime;
+    private Time autoCheckoutTime;
     private String plateNumberType;
     private String mobileRequired;
     private String valetName;
-    private String lastCheckinUpdateTime;
+    private Time lastCheckinUpdateTime;
     private Set<PricingSlotEntity> pricingSlots;
     private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
@@ -73,21 +73,21 @@ public class ParkingSubLotEntity {
 
     @Basic
     @Column(name = "taxi_time", nullable = false, insertable = true, updatable = true)
-    public String getTaxiTime() {
+    public Time getTaxiTime() {
         return taxiTime;
     }
 
-    public void setTaxiTime(String taxiTime) {
+    public void setTaxiTime(Time taxiTime) {
         this.taxiTime = taxiTime;
     }
 
     @Basic
     @Column(name = "auto_checkout_time", nullable = false, insertable = true, updatable = true)
-    public String getAutoCheckoutTime() {
+    public Time getAutoCheckoutTime() {
         return autoCheckoutTime;
     }
 
-    public void setAutoCheckoutTime(String autoCheckoutTime) {
+    public void setAutoCheckoutTime(Time autoCheckoutTime) {
         this.autoCheckoutTime = autoCheckoutTime;
     }
 
@@ -123,11 +123,11 @@ public class ParkingSubLotEntity {
 
     @Basic
     @Column(name = "last_checkin_update_time", nullable = false, insertable = true, updatable = true)
-    public String getLastCheckinUpdateTime() {
+    public Time getLastCheckinUpdateTime() {
         return lastCheckinUpdateTime;
     }
 
-    public void setLastCheckinUpdateTime(String lastCheckinUpdateTime) {
+    public void setLastCheckinUpdateTime(Time lastCheckinUpdateTime) {
         this.lastCheckinUpdateTime = lastCheckinUpdateTime;
     }
 

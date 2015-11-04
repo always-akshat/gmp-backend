@@ -120,7 +120,6 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public void createUser(@ApiParam(value = "Create User Object", required = true) @Valid UserB2BEntity user) {
         userB2BDAO.saveUser(user);
-        System.out.println("saved user at" + user.getUsername());
         List<ParkingSubLotUserAccessEntity> parkingSubLotUserAccessEntities = new ArrayList<ParkingSubLotUserAccessEntity>();
         for(ParkingSubLotUserAccessEntity parkingSubLotUserAccessEntity : user.getParkingSubLots()){
             parkingSubLotUserAccessEntity.setUserB2B(user);

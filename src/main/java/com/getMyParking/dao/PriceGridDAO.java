@@ -25,7 +25,7 @@ public class PriceGridDAO extends AbstractDAO<PriceGridEntity> {
     }
 
     public void saveOrUpdatePricingSlot(PriceGridEntity priceGrid) {
-        if(priceGrid.getId()==null)
+        if(priceGrid.getId()==null || (priceGrid.getId()==null && priceGrid.getId()==0))
             persist(priceGrid);
         else
            currentSession().merge(priceGrid);

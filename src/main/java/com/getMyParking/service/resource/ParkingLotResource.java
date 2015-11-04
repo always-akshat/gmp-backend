@@ -8,7 +8,6 @@ import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
@@ -91,31 +90,6 @@ public class ParkingLotResource {
         return parkingLot.getId();
     }
 
-    @Path("/parking1/{parkingId}")
-    @POST
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    @ApiOperation(value = "Save or update the parking lot", response = Integer.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public int createParkingLot(@ApiParam("Parking Lot") @Valid String json, @PathParam("parkingId") int parkingId) {
-        ParkingEntity parking = parkingDAO.findById(parkingId);
-        if (parking == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } else {
-            System.out.println(json);
-            Gson gson = new Gson();
-            ParkingLotEntity parkingLotEntity = gson.fromJson(json, ParkingLotEntity.class);
-            System.out.println(parkingLotEntity.getName());
-            parkingLotEntity.setParking(parking);
-            parkingLotDAO.saveOrUpdateParkingLot(parkingLotEntity);
-            return parkingLotEntity.getId();
-        }
-
-    }
 
     @DELETE
     @Path("/{parkingLotId}")
@@ -127,7 +101,7 @@ public class ParkingLotResource {
             @ApiResponse(code = 200, message = "OK")
     })
     public void deleteParkingLot(@PathParam("parkingLotId")int parkingLotId) {
-        parkingLotDAO.deleteById(parkingLotId);
+        parkingSubLotUserAccessDAO.deleteByParkingLotId(parkingLotId);
     }
 
     @Path("/{parkingLotId}/report")
@@ -163,7 +137,7 @@ public class ParkingLotResource {
     @GET
     @Timed
     @UnitOfWork
-    @ApiOperation(value = "Report by parking lot for all operators ", response = List.class)
+    @ApiOperation(value = "get user sublot access for parking lots", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),

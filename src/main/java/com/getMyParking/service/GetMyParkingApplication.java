@@ -39,6 +39,7 @@ import org.quartz.Trigger;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
@@ -159,12 +160,10 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                     .usingJobData("parkingSubLotId", parkingSubLot.getId())
                     .withIdentity("autoCheckout", String.valueOf(parkingSubLot.getId()))
                     .build();
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(parkingSubLot.getAutoCheckoutTime());
-            String[] cronTime = parkingSubLot.getAutoCheckoutTime().split(":");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parkingSubLot.getAutoCheckoutTime());
 
-//            String cronExpression = calendar.get(Calendar.SECOND) + " " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
-            String cronExpression = cronTime[2] + " " + cronTime[1] + " " + cronTime[0] + " * * ?";
+            String cronExpression = calendar.get(Calendar.SECOND) + " " + calendar.get(Calendar.MINUTE) + " " + calendar.get(Calendar.HOUR_OF_DAY) + " * * ?";
             Trigger trigger = newTrigger()
                     .withIdentity("autoCheckoutTrigger", String.valueOf(parkingSubLot.getId()))
                     .forJob(jobDetail)

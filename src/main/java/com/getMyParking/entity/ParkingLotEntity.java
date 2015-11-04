@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Time;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -16,8 +15,8 @@ import java.util.Set;
 public class ParkingLotEntity {
     private Integer id;
     private String name;
-    private String openTime;
-    private String closeTime;
+    private Time openTime;
+    private Time closeTime;
     private BigDecimal longitude;
     private BigDecimal latitude;
     private Set<ParkingSubLotEntity> parkingSubLots;
@@ -47,21 +46,21 @@ public class ParkingLotEntity {
 
     @Basic
     @Column(name = "open_time", nullable = false, insertable = true, updatable = true)
-    public String getOpenTime() {
+    public Time getOpenTime() {
         return openTime;
     }
 
-    public void setOpenTime(String openTime) {
+    public void setOpenTime(Time openTime) {
         this.openTime = openTime;
     }
 
     @Basic
     @Column(name = "close_time", nullable = false, insertable = true, updatable = true)
-    public String getCloseTime() {
+    public Time getCloseTime() {
         return closeTime;
     }
 
-    public void setCloseTime(String closeTime) {
+    public void setCloseTime(Time closeTime) {
         this.closeTime = closeTime;
     }
 
@@ -123,7 +122,7 @@ public class ParkingLotEntity {
         this.parking = parkingByParkingId;
     }
 
-    @OneToMany(mappedBy = "parkingLot", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parkingLot", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     public Set<ParkingSubLotEntity> getParkingSubLots() {
         return parkingSubLots;
     }

@@ -51,4 +51,16 @@ public class ParkingSubLotUserAccessDAO extends AbstractDAO<ParkingSubLotUserAcc
         q.executeUpdate();
     }
 
+    public void deleteByParkingLotId(Integer parkingLotId){
+        Query q = currentSession().createQuery("delete from ParkingSubLotUserAccessEntity where parking_lot_id =:id");
+        q.setInteger("id", parkingLotId);
+        q.executeUpdate();
+    }
+
+    public void deleteByParkingSubLotId(Integer parkingSubLotId){
+        Query q = currentSession().createQuery("delete from ParkingSubLotUserAccessEntity where parking_sub_lot_id =:id");
+        q.setInteger("id", parkingSubLotId);
+        q.executeUpdate();
+    }
+
 }

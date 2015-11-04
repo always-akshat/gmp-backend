@@ -65,10 +65,8 @@ public class GMPAuthFactory extends AuthFactory<GMPCredentials, GMPUser> {
 
     @Override
     public GMPUser provide() {
-        System.out.println("here is coming");
         if (request != null) {
             final String header = request.getHeader(CUSTOM_HEADER);
-            System.out.println("here is "+ header);
             try {
                 if (header != null) {
                     final Optional<GMPUser> result = authenticator().authenticate(new GMPCredentials(header));

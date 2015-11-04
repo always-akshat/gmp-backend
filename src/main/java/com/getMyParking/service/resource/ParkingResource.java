@@ -36,14 +36,18 @@ public class ParkingResource {
     private CompanyDAO companyDAO;
     private ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO;
     private ParkingEventDAO parkingEventDAO;
+    private ParkingLotDAO parkingLotDAO;
+    private ParkingSubLotDAO parkingSubLotDAO;
 
     @Inject
     public ParkingResource(ParkingDAO parkingDAO, CompanyDAO companyDAO,
-                           ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO, ParkingEventDAO parkingEventDAO) {
+                           ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO, ParkingEventDAO parkingEventDAO,ParkingLotDAO parkingLotDAO,ParkingSubLotDAO parkingSubLotDAO) {
         this.parkingDAO = parkingDAO;
         this.companyDAO = companyDAO;
         this.parkingSubLotUserAccessDAO = parkingSubLotUserAccessDAO;
         this.parkingEventDAO = parkingEventDAO;
+        this.parkingLotDAO = parkingLotDAO;
+        this.parkingSubLotDAO = parkingSubLotDAO;
     }
 
     @ApiOperation(value = "Get Parking by Parking Id", response = ParkingEntity.class)
@@ -97,7 +101,7 @@ public class ParkingResource {
     @ExceptionMetered
     @UnitOfWork
     public void deleteParking(@PathParam("parkingId")int parkingId) {
-        parkingDAO.deleteById(parkingId);
+        parkingSubLotUserAccessDAO.deleteByParkingId(parkingId);
     }
 
     @Path("/{parkingId}/report")
@@ -182,7 +186,7 @@ public class ParkingResource {
     }
 
     @GET
-    @Path("/search/{name}")
+    @Path("/search")
     @Timed
     @ExceptionMetered
     @UnitOfWork
@@ -191,13 +195,68 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingEntity> searchByName(@ApiParam(value = "Parking name")@PathParam("name")String name) {
-        System.out.println(name);
+    public List<ParkingEntity> searchByName(@ApiParam(value = "Parking name")@QueryParam("name")String name) {
         List<ParkingEntity> parkingEntity = parkingDAO.findByName(name);
         if (parkingEntity == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
         return parkingEntity;
+    }
+
+    @Path("/report/{offset}")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "get admin report", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<AdminReport> parkingReport(@PathParam("offset") int pageNo,
+                                           @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate){
+        return parkingEventDAO.createParkingReportForAdmin(pageNo,fromDate.get(),toDate.get());
+    }
+
+    @ApiOperation(value = "Dubplicate a Parking Object", response = Integer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    @Path("duplicate/company/{companyId}")
+    @POST
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    public int duplicateParking(@ApiParam(value = "Valid Parking Object")@Valid ParkingEntity parking,
+                                   @ApiParam(value = "Company Id parking belongs to ")@PathParam("companyId") int companyId) {
+        CompanyEntity company = companyDAO.findById(companyId);
+        if (company == null) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } else {
+            Set<ParkingLotEntity> parkingLotEntity = parking.getParkingLots();
+            parking.setParkingLots(null);
+            parking.setCompany(company);
+            parkingDAO.saveOrUpdateParking(parking);
+            for(ParkingLotEntity temp : parkingLotEntity){
+                Set<ParkingSubLotEntity> parkingSubLotEntities = temp.getParkingSubLots();
+                temp.setId(null);
+                temp.setParking(parking);
+                temp.setParkingSubLots(null);
+                parkingLotDAO.saveOrUpdateParkingLot(temp);
+                for(ParkingSubLotEntity temp1 : parkingSubLotEntities){
+                    temp1.setParkingLot(temp);
+                    temp1.setId(null);
+                    for(PricingSlotEntity pricingSlotEntity : temp1.getPricingSlots()){
+                        pricingSlotEntity.setId(null);
+                        for(PriceGridEntity priceGridEntity : pricingSlotEntity.getPriceGrids()){
+                            priceGridEntity.setId(null);
+                        }
+                    }
+                    parkingSubLotDAO.saveOrUpdateParkingLot(temp1);
+                }
+            }
+        }
+        return parking.getId();
     }
 
 

@@ -5,11 +5,11 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
+import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
@@ -34,12 +34,15 @@ public class ParkingSubLotResource {
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingLotDAO parkingLotDAO;
     private ParkingEventDAO parkingEventDAO;
+    private ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO;
 
     @Inject
-    public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO,
+                                 ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingLotDAO = parkingLotDAO;
         this.parkingEventDAO = parkingEventDAO;
+        this.parkingSubLotUserAccessDAO = parkingSubLotUserAccessDAO;
     }
 
     @GET
@@ -91,33 +94,7 @@ public class ParkingSubLotResource {
             parkingSubLot.setParkingLot(parkingLot);
             parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);
         }
-        return parkingLot.getId();
-    }
-
-    @Path("/parking_lot1/{parkingLotId}")
-    @POST
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    @ApiOperation(value = "Save or Update parking sub lot entity, returns Id on successful completion", response = Integer.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public int createParkingSubLot(@ApiParam ("Parking Sub Lot")@Valid String json,
-                                         @PathParam("parkingLotId") int parkingLotId) {
-        ParkingLotEntity parkingLot = parkingLotDAO.findById(parkingLotId);
-        if (parkingLot == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } else {
-
-            Gson gson = new Gson();
-            ParkingSubLotEntity parkingSubLotEntity = gson.fromJson(json,ParkingSubLotEntity.class);
-            parkingSubLotEntity.setParkingLot(parkingLot);
-            System.out.println(parkingSubLotEntity.getCapacity()+" "+parkingSubLotEntity.getPricingSlots().size()+" ");
-            parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLotEntity);
-            return parkingSubLotEntity.getId();
-        }
+        return parkingSubLot.getId();
     }
 
     @Path("/{parkingSubLotId}/pricing_slot")
@@ -179,5 +156,18 @@ public class ParkingSubLotResource {
     public ParkingReport report( @PathParam("parkingSubLotId") Integer parkingSubLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         return parkingEventDAO.createParkingSubLotReport(parkingSubLotId,fromDate.get(),toDate.get());
+    }
+
+    @DELETE
+    @Path("/{parkingSubLotId}")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "delete the parking sub lot")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK")
+    })
+    public void deleteParkingSubLot(@PathParam("parkingSubLotId")int parkingSubLotId) {
+        parkingSubLotUserAccessDAO.deleteByParkingSubLotId(parkingSubLotId);
     }
 }
