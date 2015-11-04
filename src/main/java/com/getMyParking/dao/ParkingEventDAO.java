@@ -167,7 +167,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         ProjectionList projectionList = Projections.projectionList();
         projectionList.add(Projections.rowCount(),"count");
         projectionList.add(Projections.sum("cost"),"revenue");
-        projectionList.add(Projections.count("special"), "special");
+        projectionList.add(Projections.groupProperty("special"), "special");
         projectionList.add(Projections.groupProperty("eventType"),"eventType");
         projectionList.add(Projections.groupProperty("parkingSubLot.id"),"parkingSubLotId");
         projectionList.add(Projections.groupProperty("operatorName"),"operatorName");
