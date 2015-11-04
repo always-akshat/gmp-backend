@@ -10,11 +10,20 @@ import java.math.BigDecimal;
 public class UserParkingReportDetails {
 
     private Long count;
+    private String special;
     private BigDecimal revenue;
     private String eventType;
     private Integer parkingSubLotId;
     @JsonIgnore
     private String operatorName;
+
+    public String getSpecial() {
+        return special;
+    }
+
+    public void setSpecial(String special) {
+        this.special = special;
+    }
 
     public Long getCount() {
         return count;
