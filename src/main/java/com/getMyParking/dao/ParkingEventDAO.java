@@ -3,7 +3,7 @@ package com.getMyParking.dao;
 import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.ParkingReport;
+import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.reports.ParkingReportBySubLotType;
 import com.getMyParking.entity.reports.ParkingReportByUser;
