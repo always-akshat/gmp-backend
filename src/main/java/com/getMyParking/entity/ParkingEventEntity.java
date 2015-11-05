@@ -50,7 +50,7 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     private ParkingPassEntity parkingPass;
     @JsonProperty
     private Integer parkingSubLotId;
-    @JsonIgnore
+    @JsonProperty
     private Integer parkingPassId;
 
     @Id
