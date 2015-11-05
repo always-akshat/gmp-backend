@@ -14,14 +14,35 @@ public class ParkingReport {
     private Integer parkingSubLotId;
     private Integer checkInCount;
     private Integer checkOutCount;
+    private Integer focCount;
+    private Integer ttCount;
     private BigDecimal checkInRevenue;
     private BigDecimal checkOutRevenue;
 
-    public ParkingReport(Integer checkInCount, Integer checkOutCount, BigDecimal checkInRevenue, BigDecimal checkOutRevenue) {
+    public ParkingReport(Integer checkInCount, Integer checkOutCount, Integer focCount, Integer ttCount,
+                         BigDecimal checkInRevenue, BigDecimal checkOutRevenue) {
         this.checkInCount = checkInCount;
         this.checkOutCount = checkOutCount;
+        this.focCount = focCount;
+        this.ttCount = ttCount;
         this.checkInRevenue = checkInRevenue;
         this.checkOutRevenue = checkOutRevenue;
+    }
+
+    public Integer getFocCount() {
+        return focCount;
+    }
+
+    public void setFocCount(Integer focCount) {
+        this.focCount = focCount;
+    }
+
+    public Integer getTtCount() {
+        return ttCount;
+    }
+
+    public void setTtCount(Integer ttCount) {
+        this.ttCount = ttCount;
     }
 
     public Integer getParkingSubLotId() {
