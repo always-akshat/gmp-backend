@@ -185,17 +185,19 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         Map<String,List<UserParkingReportDetails>> userDetailsMap =
                 detailsList.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getOperatorName));
 
+        Map<String,List<ParkingSubLotUserAccessEntity>> userAccessEntityMap =
+                filteredUsers.stream().collect(Collectors.groupingBy(user -> user.getUserB2B().getUsername()));
         List<ParkingReportByUser> parkingReports = Lists.newArrayList();
-        for (ParkingSubLotUserAccessEntity user : filteredUsers) {
-            String username = user.getUserB2B().getUsername();
+        userDetailsMap.forEach((user, reportDetails) -> {
+            ParkingSubLotUserAccessEntity userAccess = userAccessEntityMap.get(user).get(0);
             ParkingReportByUser userParkingReport = new ParkingReportByUser();
-            userParkingReport.setUsername(username);
-            userParkingReport.setCompanyId(user.getCompanyId());
-            userParkingReport.setParkingId(user.getParkingId());
-            userParkingReport.setParkingLotId(user.getParkingLotId());
-            userParkingReport.setReportDetails(userDetailsMap.get(username));
+            userParkingReport.setUsername(user);
+            userParkingReport.setCompanyId(userAccess.getCompanyId());
+            userParkingReport.setParkingId(userAccess.getParkingId());
+            userParkingReport.setParkingLotId(userAccess.getParkingLotId());
+            userParkingReport.setReportDetails(reportDetails);
             parkingReports.add(userParkingReport);
-        }
+        });
         return parkingReports;
     }
 
@@ -279,7 +281,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
         checkOutEventsQuery.setParameter("parkingId",parkingId);
         checkOutEventsQuery.setParameter("startDate",startDateTime.toString());
-        checkOutEventsQuery.setParameter("endDate",endDateTime.toString());
+        checkOutEventsQuery.setParameter("endDate", endDateTime.toString());
         addDumpScalars(checkOutEventsQuery);
         checkOutEventsQuery.setResultTransformer(Transformers.aliasToBean(ParkingEventDumpDTO.class));
 
