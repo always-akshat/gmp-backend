@@ -1,5 +1,6 @@
 package com.getMyParking.entity.reports;
 
+import com.getMyParking.entity.ParkingReport;
 import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
@@ -20,35 +21,7 @@ public class ParkingReportByUser {
 
     private Integer parkingLotId;
 
-    private List<UserParkingReport> parkingReports;
-
-    private List<UserParkingReportDetails> reportDetails;
-
-    public List<UserParkingReportDetails> getReportDetails() {
-        return reportDetails;
-    }
-
-    public void setReportDetails(List<UserParkingReportDetails> reportDetails) {
-        this.reportDetails = reportDetails;
-
-        this.parkingReports = Lists.newArrayList();
-        Map<Integer,List<UserParkingReportDetails>> detailsBySubLotId =
-        reportDetails.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getParkingSubLotId));
-        detailsBySubLotId.forEach((parkingSubLotId, userParkingReportDetailsList) -> {
-            UserParkingReport parkingReport = new UserParkingReport();
-            parkingReport.setParkingSubLotId(parkingSubLotId);
-            userParkingReportDetailsList.forEach(userReportDetails -> {
-                if (userReportDetails.getEventType().equalsIgnoreCase("checked_in")) {
-                    parkingReport.setCheckInCount(parkingReport.getCheckInCount() + userReportDetails.getCount().intValue());
-                    parkingReport.setCheckInRevenue(parkingReport.getCheckInRevenue().add(userReportDetails.getRevenue()));
-                } else if (userReportDetails.getEventType().equalsIgnoreCase("checked_out")) {
-                    parkingReport.setCheckOutCount(parkingReport.getCheckOutCount() + userReportDetails.getCount().intValue());
-                    parkingReport.setCheckOutRevenue(parkingReport.getCheckOutRevenue().add(userReportDetails.getRevenue()));
-                }
-            });
-            parkingReports.add(parkingReport);
-        });
-    }
+    private List<ParkingReport> parkingReports;
 
     public String getUsername() {
         return username;
@@ -82,11 +55,11 @@ public class ParkingReportByUser {
         this.parkingLotId = parkingLotId;
     }
 
-    public List<UserParkingReport> getParkingReports() {
+    public List<ParkingReport> getParkingReports() {
         return parkingReports;
     }
 
-    public void setParkingReports(List<UserParkingReport> parkingReports) {
+    public void setParkingReports(List<ParkingReport> parkingReports) {
         this.parkingReports = parkingReports;
     }
 

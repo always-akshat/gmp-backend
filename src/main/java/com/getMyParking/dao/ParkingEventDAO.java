@@ -1,9 +1,15 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.dto.ParkingEventDumpDTO;
-import com.getMyParking.entity.*;
-import com.getMyParking.entity.reports.*;
+import com.getMyParking.entity.AccessMasterEntity;
+import com.getMyParking.entity.ParkingEventEntity;
+import com.getMyParking.entity.ParkingReport;
+import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
+import com.getMyParking.entity.reports.ParkingReportBySubLotType;
+import com.getMyParking.entity.reports.ParkingReportByUser;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import io.dropwizard.jersey.params.DateTimeParam;
@@ -22,6 +28,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import javax.annotation.Nullable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,6 +120,103 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
 
         ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.rowCount());
+        projectionList.add(Projections.sum("cost"));
+
+        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(fetchCriteria)
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType","CHECKED_IN"))
+                .setProjection(projectionList);
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        List<Object[]> list = criteria.list();
+        Object[] row = list.get(0);
+
+        Integer checkInCount = 0;
+        if (row != null) checkInCount = ((Long)row[0]).intValue();
+
+        BigDecimal checkInRevenue = null;
+        if (row != null) checkInRevenue = (BigDecimal) row[1];
+        if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
+
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(fetchCriteria)
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
+                .setProjection(Projections.rowCount());
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        list = criteria.list();
+        row = list.get(0);
+
+        Integer checkOutCount = 0;
+        if (row != null) checkOutCount = ((Long)row[0]).intValue();
+
+        BigDecimal checkOutRevenue = null;
+        if (row != null) checkOutRevenue = (BigDecimal) row[1];
+        if (checkOutRevenue == null) checkOutRevenue = new BigDecimal(0);
+
+        return new ParkingReport(checkInCount,checkOutCount,checkInRevenue,checkOutRevenue);
+
+    }
+
+    public List<ParkingReportBySubLotType> createParkingReportByTypes(Integer parkingId, DateTime from, DateTime to,
+                                                               List<String> typesList) {
+
+        List<ParkingReportBySubLotType> parkingReportGroup = Lists.newArrayList();
+
+        for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate().plusDays(1)); date = date.plusDays(1)) {
+            List<ParkingReport> parkingReports = Lists.newArrayList();
+            for (String type : typesList) {
+                ParkingReport parkingReport =
+                        createReport(Restrictions.eq("parkingId",parkingId),date.toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30)),
+                                date.plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5,30)),type);
+                parkingReport.setType(type);
+                parkingReports.add(parkingReport);
+            }
+            parkingReportGroup.add(new ParkingReportBySubLotType(date,parkingReports));
+        }
+        return parkingReportGroup;
+    }
+
+    public List<ParkingReportByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
+                                                                     List<ParkingSubLotUserAccessEntity> users) {
+
+        List<ParkingSubLotUserAccessEntity> filteredUsers = users.stream().filter(userAccessEntity ->
+                userAccessEntity.getUserB2B().getUserAccesses().stream().map(
+                        AccessMasterEntity::getAccessTitle
+                ).anyMatch(
+                        s -> s.equalsIgnoreCase("CHECKED_IN") || s.equalsIgnoreCase("CHECKED_OUT")
+                )).collect(Collectors.toList());
+
+        Map<String,ParkingReportByUser> parkingReports = Maps.newHashMap();
+        for (ParkingSubLotUserAccessEntity user : filteredUsers) {
+            String username = user.getUserB2B().getUsername();
+            ParkingReportByUser userParkingReport;
+            if (parkingReports.containsKey(username)) {
+                userParkingReport =  parkingReports.get(username);
+            } else {
+                userParkingReport = new ParkingReportByUser();
+                userParkingReport.setUsername(username);
+                userParkingReport.setCompanyId(user.getCompanyId());
+                userParkingReport.setParkingId(user.getParkingId());
+                userParkingReport.setParkingLotId(user.getParkingLotId());
+                userParkingReport.setParkingReports(new ArrayList<>());
+                parkingReports.put(username,userParkingReport);
+            }
+            ParkingReport parkingReport =
+                    createReport(Restrictions.and(Restrictions.eq("parkingSubLot.id", user.getParkingSubLotId()),
+                            Restrictions.eq("operatorName",username)),fromDateTime,toDateTime,null);
+            parkingReport.setParkingSubLotId(user.getParkingSubLotId());
+            userParkingReport.getParkingReports().add(parkingReport);
+        }
+
+        return Lists.newArrayList(parkingReports.values());
+    }
+
+    /*
+    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
+
+        ProjectionList projectionList = Projections.projectionList();
         projectionList.add(Projections.rowCount(),"count");
         projectionList.add(Projections.sum("cost"),"revenue");
         projectionList.add(Projections.groupProperty("type"),"parkingType");
@@ -199,7 +304,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
             parkingReports.add(userParkingReport);
         });
         return parkingReports;
-    }
+    } */
 
     public List<ParkingEventEntity> searchParkingEvents(Optional<IntParam> companyId, Optional<IntParam> parkingId,
                                                         Optional<IntParam> parkingLotId, Optional<IntParam> parkingSubLotId,

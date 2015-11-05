@@ -1,5 +1,6 @@
 package com.getMyParking.entity.reports;
 
+import com.getMyParking.entity.ParkingReport;
 import com.google.common.collect.Lists;
 import org.joda.time.LocalDate;
 
@@ -14,44 +15,14 @@ public class ParkingReportBySubLotType {
 
     private LocalDate date;
 
-    private List<SubLotReport> parkingReports;
-
-    private List<SubLotReportDetails> reportBySubLotType;
+    private List<ParkingReport> parkingReports;
 
     public ParkingReportBySubLotType() {
     }
 
-    public ParkingReportBySubLotType(LocalDate date, List<SubLotReportDetails> reportDetails) {
+    public ParkingReportBySubLotType(LocalDate date, List<ParkingReport> parkingReports) {
         this.date = date;
-        this.reportBySubLotType = reportDetails;
-
-        parkingReports = Lists.newArrayList();
-        Map<String,List<SubLotReportDetails>> reportBySubLot =
-                reportDetails.stream().collect(Collectors.groupingBy(SubLotReportDetails::getSubLotType));
-
-        reportBySubLot.forEach((subLotType, subLotReportDetailsList) -> {
-            SubLotReport subLotReport = new SubLotReport();
-            subLotReport.setType(subLotType);
-            subLotReportDetailsList.forEach(userReportDetails -> {
-                if (userReportDetails.getEventType().equalsIgnoreCase("checked_in")) {
-                    subLotReport.setCheckInCount(subLotReport.getCheckInCount() + userReportDetails.getCount().intValue());
-                    subLotReport.setCheckInRevenue(subLotReport.getCheckInRevenue().add(userReportDetails.getRevenue()));
-                } else if (userReportDetails.getEventType().equalsIgnoreCase("checked_out")) {
-                    subLotReport.setCheckOutCount(subLotReport.getCheckOutCount() + userReportDetails.getCount().intValue());
-                    subLotReport.setCheckOutRevenue(subLotReport.getCheckOutRevenue().add(userReportDetails.getRevenue()));
-                }
-            });
-            parkingReports.add(subLotReport);
-        });
-
-    }
-
-    public List<SubLotReportDetails> getReportBySubLotType() {
-        return reportBySubLotType;
-    }
-
-    public void setReportBySubLotType(List<SubLotReportDetails> reportBySubLotType) {
-        this.reportBySubLotType = reportBySubLotType;
+        this.parkingReports = parkingReports;
     }
 
     public LocalDate getDate() {
@@ -62,11 +33,11 @@ public class ParkingReportBySubLotType {
         this.date = date;
     }
 
-    public List<SubLotReport> getParkingReports() {
+    public List<ParkingReport> getParkingReports() {
         return parkingReports;
     }
 
-    public void setParkingReports(List<SubLotReport> parkingReports) {
+    public void setParkingReports(List<ParkingReport> parkingReports) {
         this.parkingReports = parkingReports;
     }
 }
