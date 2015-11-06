@@ -175,7 +175,30 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         Long ttCount = (Long) criteria.list().get(0);
         if (ttCount == null) ttCount = 0L;
 
-        return new ParkingReport(checkInCount,checkOutCount,focCount.intValue(),ttCount.intValue(),checkInRevenue,checkOutRevenue);
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(fetchCriteria)
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType", "CHECKED_IN"))
+                .add(Restrictions.eq("type","PASS"))
+                .setProjection(Projections.rowCount());
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        Long passCheckInCount = (Long) criteria.list().get(0);
+        if (focCount == null) focCount = 0L;
+
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(fetchCriteria)
+                .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
+                .add(Restrictions.eq("type","PASS"))
+                .setProjection(Projections.rowCount());
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        Long passCheckOutCount = (Long) criteria.list().get(0);
+        if (ttCount == null) ttCount = 0L;
+
+        return new ParkingReport(checkInCount,checkOutCount,
+                focCount.intValue(),ttCount.intValue(),
+                passCheckInCount.intValue(),passCheckOutCount.intValue(),
+                checkInRevenue,checkOutRevenue);
 
     }
 
