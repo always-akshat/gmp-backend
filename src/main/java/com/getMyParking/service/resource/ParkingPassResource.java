@@ -130,6 +130,7 @@ public class ParkingPassResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
+            if (parkingPassEntity.getIsDeleted() == null) parkingPassEntity.setIsDeleted(0);
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
         }
         return parkingPassEntity.getId();
