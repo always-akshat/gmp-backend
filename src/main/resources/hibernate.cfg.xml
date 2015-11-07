@@ -4,13 +4,12 @@
     "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="connection.url">jdbc:mysql://localhost:57709/get_my_parking_v2</property>
+    <property name="connection.url">jdbc:mysql://localhost:3306/get_my_parking_v2</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-      <mapping class="com.getMyParking.entity.CompanyEntity"/>
+    <mapping class="com.getMyParking.entity.CompanyEntity"/>
       <mapping class="com.getMyParking.entity.ParkingEntity"/>
       <mapping class="com.getMyParking.entity.ParkingEventEntity"/>
       <mapping class="com.getMyParking.entity.ParkingLotEntity"/>
-      <mapping class="com.getMyParking.entity.ParkingLotHasUserB2BEntity"/>
       <mapping class="com.getMyParking.entity.ParkingPassEntity"/>
       <mapping class="com.getMyParking.entity.ParkingPassMasterEntity"/>
       <mapping class="com.getMyParking.entity.ParkingSubLotEntity"/>
@@ -19,12 +18,12 @@
       <mapping class="com.getMyParking.entity.ReceiptContentEntity"/>
       <mapping class="com.getMyParking.entity.SessionEntity"/>
       <mapping class="com.getMyParking.entity.StyleMasterEntity"/>
-      <mapping class="com.getMyParking.entity.UserAccessEntity"/>
       <mapping class="com.getMyParking.entity.UserB2BEntity"/>
       <mapping class="com.getMyParking.entity.ParkingSubLotUserAccessEntity"/>
       <mapping class="com.getMyParking.entity.SubLotTypeEntity"/>
       <mapping class="com.getMyParking.entity.FocReasonsForParkingLotEntity"/>
-      <!-- DB schema will be updated if needed -->
+    <mapping class="com.getMyParking.entity.AccessMasterEntity"/>
+    <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>
 </hibernate-configuration>

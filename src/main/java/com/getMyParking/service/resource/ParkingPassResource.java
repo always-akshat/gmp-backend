@@ -14,12 +14,14 @@ import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.IntParam;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 01/06/15.
@@ -86,6 +88,31 @@ public class ParkingPassResource {
         return parkingPassList;
     }
 
+    @GET
+    @Path("/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Search Parking Pass", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+    })
+    public List<ParkingPassEntity> getParkingEventsById(@QueryParam("parkingId")Optional<IntParam> parkingId,
+                                                         @QueryParam("registrationNumber") Optional<String> registrationNumber,
+                                                         @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
+                                                         @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
+                                                         @Auth GMPUser gmpUser) {
+
+        if (parkingId.isPresent() && !gmpUser.getParkingIds().contains(parkingId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
+
+        return parkingPassDAO.searchParkingPass(parkingId, registrationNumber, pageNumberParam.get(), pageSize);
+    }
+
     @POST
     @Path("/parking_pass_master/{parkingPassMasterId}")
     @Timed
@@ -103,6 +130,7 @@ public class ParkingPassResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
+            if (parkingPassEntity.getIsDeleted() == null) parkingPassEntity.setIsDeleted(0);
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
         }
         return parkingPassEntity.getId();

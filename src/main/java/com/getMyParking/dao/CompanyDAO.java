@@ -8,6 +8,8 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.List;
+
 /**
  * Created by rahulgupta.s on 31/05/15.
  */
@@ -26,7 +28,6 @@ public class CompanyDAO extends AbstractDAO<CompanyEntity> {
         persist(company);
     }
 
-
     public CompanyEntity findById(Integer companyId) {
         return get(companyId);
     }
@@ -35,5 +36,12 @@ public class CompanyDAO extends AbstractDAO<CompanyEntity> {
         Query q = currentSession().createQuery("delete from CompanyEntity where id =:id");
         q.setInteger("id", companyId);
         q.executeUpdate();
+    }
+
+    public List<CompanyEntity> getAllCompaniesWithEmailID(){
+        return list(
+                criteria()
+                        .add(Restrictions.neOrIsNotNull("email",null))
+        );
     }
 }

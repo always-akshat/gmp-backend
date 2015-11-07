@@ -5,10 +5,12 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
+import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.GetParkingEventResponse;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -27,6 +29,7 @@ import javax.ws.rs.core.Response;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -40,12 +43,15 @@ public class ParkingEventResource {
     private ParkingEventDAO parkingEventDAO;
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingPassDAO parkingPassDAO;
+    private ParkingEventProcessor parkingEventProcessor;
 
     @Inject
-    public ParkingEventResource(ParkingEventDAO parkingEventDAO, ParkingSubLotDAO parkingSubLotDAO, ParkingPassDAO parkingPassDAO) {
+    public ParkingEventResource(ParkingEventDAO parkingEventDAO, ParkingSubLotDAO parkingSubLotDAO, ParkingPassDAO parkingPassDAO,
+                                ParkingEventProcessor parkingEventProcessor) {
         this.parkingEventDAO = parkingEventDAO;
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingPassDAO = parkingPassDAO;
+        this.parkingEventProcessor = parkingEventProcessor;
     }
 
     @GET
@@ -102,8 +108,12 @@ public class ParkingEventResource {
             parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
-                if (parkingEvent.getParkingPass() != null)
+                if (parkingEvent.getParkingPass() != null) {
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
+                    parkingEvent.getParkingPass().setParkingPassMasterId(
+                            parkingEvent.getParkingPass().getParkingPassMaster().getId()
+                    );
+                }
             }
             Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
@@ -162,7 +172,7 @@ public class ParkingEventResource {
                     try {
                         parkingEventIds.add(saveParkingEvent(parkingEvent, parkingSubLot));
                     } catch (WebApplicationException ex) {
-                        parkingEventIds.add(BigInteger.ZERO);
+                        parkingEventIds.add(BigInteger.valueOf(-409));
                     }
                 }
             }
@@ -185,6 +195,7 @@ public class ParkingEventResource {
         if (parkingEvent.getParkingPassId() != null) {
             parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
         }
+        parkingEventProcessor.processEvent(parkingEvent);
         parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
         return parkingEvent.getId();
     }
@@ -254,6 +265,65 @@ public class ParkingEventResource {
         } else {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
+    }
+
+    @GET
+    @Path("/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking Events by last update time stamp", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "UnAuthorized"),
+    })
+    public List<ParkingEventEntity> getParkingEventsById(@QueryParam("parkingSubLotId")Optional<IntParam> parkingSubLotId,
+                                                         @QueryParam("parkingLotId")Optional<IntParam> parkingLotId,
+                                                         @QueryParam("parkingId")Optional<IntParam> parkingId,
+                                                         @QueryParam("companyId")Optional<IntParam> companyId,
+                                                         @QueryParam("registrationNumber") Optional<String> registrationNumber,
+                                                         @QueryParam("fromDate") Optional<DateTimeParam> fromDate,
+                                                         @QueryParam("toDate") Optional<DateTimeParam> toDate,
+                                                         @QueryParam("eventType") Optional<String> eventType,
+                                                         @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
+                                                         @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
+                                                         @Auth GMPUser gmpUser) {
+
+        if (companyId.isPresent() && !gmpUser.getCompanyIds().contains(companyId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingId.isPresent() && !gmpUser.getParkingIds().contains(parkingId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingLotId.isPresent() && !gmpUser.getParkingLotIds().contains(parkingLotId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        if (parkingSubLotId.isPresent() && !gmpUser.getParkingSubLotIds().contains(parkingSubLotId.get().get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
+
+        return parkingEventDAO.searchParkingEvents(companyId, parkingId, parkingLotId, parkingSubLotId, registrationNumber,
+                fromDate, toDate, eventType, pageNumberParam.get(), pageSize);
+    }
+
+    @GET
+    @Path("/dump/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking Events by last update time stamp", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 401, message = "UnAuthorized"),
+    })
+    public List<ParkingEventDumpDTO> getParkingEventsById(@QueryParam("parkingId")Optional<IntParam> parkingId,
+                                                         @QueryParam("date") Optional<DateTimeParam> toDate) {
+        return parkingEventDAO.getParkingEventsDump(parkingId.get().get(),toDate.get().get());
     }
 
 }

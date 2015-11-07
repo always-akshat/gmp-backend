@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 13/08/15.
@@ -34,6 +33,9 @@ public class ParkingPassEntity {
     @JsonIgnore
     private ParkingPassMasterEntity parkingPassMaster;
     private Integer counter;
+    private Integer isDeleted;
+    @JsonProperty
+    private Integer balanceAmount;
 
     @Id
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
@@ -138,14 +140,24 @@ public class ParkingPassEntity {
         this.customerName = customerName;
     }
 
-    @Basic
-    @Column(name = "counter", nullable = false, insertable = true, updatable = true)
     public void setCounter(Integer counter) {
         this.counter = counter;
     }
 
+    @Basic
+    @Column(name = "counter", nullable = false, insertable = true, updatable = true)
     public Integer getCounter() {
         return counter;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    @Basic
+    @Column(name = "is_deleted", nullable = false, insertable = true, updatable = true)
+    public Integer getIsDeleted() {
+        return isDeleted;
     }
 
     @Transient
@@ -155,6 +167,15 @@ public class ParkingPassEntity {
 
     public void setParkingPassMasterId(Integer parkingPassMasterId) {
         this.parkingPassMasterId = parkingPassMasterId;
+    }
+
+    @Transient
+    public Integer getBalanceAmount() {
+        return balanceAmount;
+    }
+
+    public void setBalanceAmount(Integer balanceAmount) {
+        this.balanceAmount = balanceAmount;
     }
 
     @Override
@@ -171,6 +192,7 @@ public class ParkingPassEntity {
         if (operatorName != null ? !operatorName.equals(that.operatorName) : that.operatorName != null) return false;
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
+        if (isDeleted != null ? !isDeleted.equals(that.isDeleted) : that.isDeleted != null) return false;
         if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (cardId != null ? !cardId.equals(that.cardId) : that.cardId != null) return false;
@@ -189,6 +211,7 @@ public class ParkingPassEntity {
         result = 31 * result + (operatorName != null ? operatorName.hashCode() : 0);
         result = 31 * result + (mobileNumber != null ? mobileNumber.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
+        result = 31 * result + (isDeleted != null ? isDeleted.hashCode() : 0);
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (cardId != null ? cardId.hashCode() : 0);
@@ -204,7 +227,7 @@ public class ParkingPassEntity {
         return parkingPassMaster;
     }
 
-    public void setParkingPassMaster(ParkingPassMasterEntity parkingPassMasterByParkingPassMasterId) {
-        this.parkingPassMaster = parkingPassMasterByParkingPassMasterId;
+    public void setParkingPassMaster(ParkingPassMasterEntity parkingPassMaster) {
+        this.parkingPassMaster = parkingPassMaster;
     }
 }

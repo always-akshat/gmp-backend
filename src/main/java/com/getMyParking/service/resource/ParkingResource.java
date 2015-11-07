@@ -4,22 +4,22 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.*;
 import com.getMyParking.entity.*;
-import com.google.common.base.Function;
+import com.getMyParking.entity.reports.ParkingReport;
+import com.getMyParking.entity.reports.ParkingReportBySubLotType;
+import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
-import org.joda.time.LocalDate;
 
-import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -121,7 +121,7 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingReportGroup> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
+    public List<ParkingReportBySubLotType> report( @PathParam("parkingId") Integer parkingId, @QueryParam("types")String types,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<String> typesList = Splitter.on(',').splitToList(types);
         return parkingEventDAO.createParkingReportByTypes(parkingId,fromDate.get(),toDate.get(),typesList);
@@ -136,10 +136,24 @@ public class ParkingResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingReportGroupByUser> userReport( @PathParam("parkingId") Integer parkingId,
+    public List<ParkingReportByUser> userReport( @PathParam("parkingId") Integer parkingId,
                                             @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParking(parkingId);
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
+    }
+
+    @Path("/{parkingId}/events")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Get All Parking Events by Parking Id", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public Set<ParkingEventEntity> getAllParkingEvents( @PathParam("parkingId") Integer parkingId,
+                                                      @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        return Sets.newHashSet(parkingEventDAO.getAllParkingEventsByParking(parkingId, fromDate.get(), toDate.get()));
     }
 
     @Path("/{parkingId}/parking_pass")

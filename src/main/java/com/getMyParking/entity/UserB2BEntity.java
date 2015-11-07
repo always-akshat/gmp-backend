@@ -18,7 +18,7 @@ public class UserB2BEntity {
     private String contactNumber;
     private Set<ParkingSubLotUserAccessEntity> parkingSubLots;
     @NotNull
-    private Set<UserAccessEntity> userAccesses;
+    private Set<AccessMasterEntity> userAccesses;
 
     @Id
     @Column(name = "username", nullable = false, insertable = true, updatable = true, length = 255)
@@ -92,12 +92,16 @@ public class UserB2BEntity {
         this.parkingSubLots = parkingLotHasUserB2BsByUsername;
     }
 
-    @OneToMany(mappedBy = "userB2BEntity", fetch = FetchType.EAGER)
-    public Set<UserAccessEntity> getUserAccesses() {
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_access", catalog = "get_my_parking_v2", joinColumns = {
+            @JoinColumn(name = "username", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "access_title",
+                    nullable = false, updatable = false) })
+    public Set<AccessMasterEntity> getUserAccesses() {
         return userAccesses;
     }
 
-    public void setUserAccesses(Set<UserAccessEntity> userAccessesByUsername) {
+    public void setUserAccesses(Set<AccessMasterEntity> userAccessesByUsername) {
         this.userAccesses = userAccessesByUsername;
     }
 }

@@ -1,4 +1,4 @@
-package com.getMyParking.entity;
+package com.getMyParking.entity.reports;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -14,14 +14,55 @@ public class ParkingReport {
     private Integer parkingSubLotId;
     private Integer checkInCount;
     private Integer checkOutCount;
+    private Integer focCount;
+    private Integer ttCount;
+    private Integer passCheckInCount;
+    private Integer passCheckOutCount;
     private BigDecimal checkInRevenue;
     private BigDecimal checkOutRevenue;
 
-    public ParkingReport(Integer checkInCount, Integer checkOutCount, BigDecimal checkInRevenue, BigDecimal checkOutRevenue) {
+    public ParkingReport(Integer checkInCount, Integer checkOutCount, Integer focCount, Integer ttCount, Integer passCheckInCount,
+                         Integer passCheckOutCount, BigDecimal checkInRevenue, BigDecimal checkOutRevenue) {
         this.checkInCount = checkInCount;
         this.checkOutCount = checkOutCount;
+        this.focCount = focCount;
+        this.ttCount = ttCount;
         this.checkInRevenue = checkInRevenue;
         this.checkOutRevenue = checkOutRevenue;
+        this.passCheckInCount = passCheckInCount;
+        this.passCheckOutCount = passCheckOutCount;
+    }
+
+    public Integer getPassCheckInCount() {
+        return passCheckInCount;
+    }
+
+    public void setPassCheckInCount(Integer passCheckInCount) {
+        this.passCheckInCount = passCheckInCount;
+    }
+
+    public Integer getPassCheckOutCount() {
+        return passCheckOutCount;
+    }
+
+    public void setPassCheckOutCount(Integer passCheckOutCount) {
+        this.passCheckOutCount = passCheckOutCount;
+    }
+
+    public Integer getFocCount() {
+        return focCount;
+    }
+
+    public void setFocCount(Integer focCount) {
+        this.focCount = focCount;
+    }
+
+    public Integer getTtCount() {
+        return ttCount;
+    }
+
+    public void setTtCount(Integer ttCount) {
+        this.ttCount = ttCount;
     }
 
     public Integer getParkingSubLotId() {

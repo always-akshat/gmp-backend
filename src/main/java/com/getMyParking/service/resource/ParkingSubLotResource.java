@@ -6,6 +6,7 @@ import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.*;
+import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;

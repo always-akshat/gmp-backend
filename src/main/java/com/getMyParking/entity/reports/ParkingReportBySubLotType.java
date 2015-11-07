@@ -1,4 +1,4 @@
-package com.getMyParking.entity;
+package com.getMyParking.entity.reports;
 
 import org.joda.time.LocalDate;
 
@@ -7,18 +7,18 @@ import java.util.List;
 /**
  * Created by rahulgupta.s on 10/09/15.
  */
-public class ParkingReportGroup {
+public class ParkingReportBySubLotType {
 
     private LocalDate date;
 
     private List<ParkingReport> parkingReports;
 
-    public ParkingReportGroup(LocalDate date, List<ParkingReport> parkingReports) {
-        this.date = date;
-        this.parkingReports = parkingReports;
+    public ParkingReportBySubLotType() {
     }
 
-    public ParkingReportGroup() {
+    public ParkingReportBySubLotType(LocalDate date, List<ParkingReport> parkingReports) {
+        this.date = date;
+        this.parkingReports = parkingReports;
     }
 
     public LocalDate getDate() {

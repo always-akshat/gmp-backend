@@ -1,13 +1,11 @@
-package com.getMyParking.dao;
-
-import com.getMyParking.entity.ParkingReport;
+package com.getMyParking.entity.reports;
 
 import java.util.List;
 
 /**
  * Created by rahulgupta.s on 02/10/15.
  */
-public class ParkingReportGroupByUser {
+public class ParkingReportByUser {
 
     private String username;
 
@@ -58,4 +56,5 @@ public class ParkingReportGroupByUser {
     public void setParkingReports(List<ParkingReport> parkingReports) {
         this.parkingReports = parkingReports;
     }
+
 }

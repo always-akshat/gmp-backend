@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec java  -Xms512m -Xmx512m -Xloggc:/var/log/gc.out -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=9002 -Dcom.sun.management.jmxremote.authenticate=false -jar /usr/share/gmp-v3/getMyParking-0.0.1.jar server /usr/share/gmp-v3/config.yaml > /tmp/null &
+exec java  -Xms512m -Xmx512m -Xloggc:/var/log/gmp-v3/gc.out -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=9002 -Dcom.sun.management.jmxremote.authenticate=false -jar /usr/share/gmp-v3/getMyParking-0.0.1.jar server /usr/share/gmp-v3/config.yaml > /tmp/null &
 
 PID=$!
 echo $PID
