@@ -108,8 +108,12 @@ public class ParkingEventResource {
             parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);
-                if (parkingEvent.getParkingPass() != null)
+                if (parkingEvent.getParkingPass() != null) {
                     parkingEvent.setParkingPassId(parkingEvent.getParkingPass().getId());
+                    parkingEvent.getParkingPass().setParkingPassMasterId(
+                            parkingEvent.getParkingPass().getParkingPassMaster().getId()
+                    );
+                }
             }
             Collections.sort(parkingEvents);
             parkingEventResponse.setParkingEvents(parkingEvents);
