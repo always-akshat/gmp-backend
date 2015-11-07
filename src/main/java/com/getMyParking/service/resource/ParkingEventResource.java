@@ -168,7 +168,7 @@ public class ParkingEventResource {
                     try {
                         parkingEventIds.add(saveParkingEvent(parkingEvent, parkingSubLot));
                     } catch (WebApplicationException ex) {
-                        parkingEventIds.add(BigInteger.ZERO);
+                        parkingEventIds.add(BigInteger.valueOf(-409));
                     }
                 }
             }
