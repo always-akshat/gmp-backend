@@ -39,7 +39,6 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
         return uniqueResult(
                 criteria().add(Restrictions.in("id",parkingSubLotIds))
                 .add(Restrictions.eq("type",vehicleType))
-                .add(Restrictions.eq("parkingLot.parking.id",parkingId))
         );
     }
 }
