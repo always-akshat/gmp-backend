@@ -72,6 +72,7 @@ public class ParkingEventProcessor {
         if (parkingPass.getMobileNumber() != null) parkingEvent.setMobileNumber(parkingPass.getMobileNumber());
         parkingEvent.setCost(BigDecimal.ZERO);
         parkingEvent.setUpdatedTime(DateTime.now());
+        parkingEvent.setShiftNumber("");
 
         parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
     }
