@@ -183,7 +183,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long passCheckInCount = (Long) criteria.list().get(0);
-        if (focCount == null) focCount = 0L;
+        if (passCheckInCount == null) passCheckInCount = 0L;
 
         criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
@@ -193,7 +193,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long passCheckOutCount = (Long) criteria.list().get(0);
-        if (ttCount == null) ttCount = 0L;
+        if (passCheckOutCount == null) passCheckOutCount = 0L;
 
         return new ParkingReport(checkInCount,checkOutCount,
                 focCount.intValue(),ttCount.intValue(),
