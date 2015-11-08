@@ -3,11 +3,10 @@ package com.getMyParking.dao;
 import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
+import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.reports.ParkingReportBySubLotType;
 import com.getMyParking.entity.reports.ParkingReportByUser;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -28,7 +27,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -114,7 +112,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
     public ParkingReport createUserReport(String operatorName, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("operatorName", operatorName),fromDate,toDate,null);
+        return createReport(Restrictions.eq("operatorName", operatorName), fromDate, toDate, null);
     }
 
     public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
@@ -159,7 +157,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .add(Restrictions.eq("special","FOC"))
+                .add(Restrictions.eq("special", "FOC"))
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long focCount = (Long) criteria.list().get(0);
@@ -179,11 +177,11 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_IN"))
-                .add(Restrictions.eq("type","PASS"))
+                .add(Restrictions.eq("type", "PASS"))
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long passCheckInCount = (Long) criteria.list().get(0);
-        if (focCount == null) focCount = 0L;
+        if (passCheckInCount == null) passCheckInCount = 0L;
 
         criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
@@ -193,7 +191,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long passCheckOutCount = (Long) criteria.list().get(0);
-        if (ttCount == null) ttCount = 0L;
+        if (passCheckOutCount == null) passCheckOutCount = 0L;
 
         return new ParkingReport(checkInCount,checkOutCount,
                 focCount.intValue(),ttCount.intValue(),

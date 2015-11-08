@@ -34,4 +34,11 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
                 .add(Restrictions.neOrIsNotNull("autoCheckoutTime",null))
         );
     }
+
+    public ParkingSubLotEntity getSubLotBy(String vehicleType, List<Integer> parkingSubLotIds, Integer parkingId) {
+        return uniqueResult(
+                criteria().add(Restrictions.in("id",parkingSubLotIds))
+                .add(Restrictions.eq("type",vehicleType))
+        );
+    }
 }

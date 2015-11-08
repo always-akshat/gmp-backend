@@ -6,6 +6,7 @@ import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -34,11 +35,14 @@ public class ParkingPassResource {
 
     private ParkingPassDAO parkingPassDAO;
     private ParkingPassMasterDAO parkingPassMasterDAO;
+    private ParkingEventProcessor parkingEventProcessor;
 
     @Inject
-    public ParkingPassResource(ParkingPassDAO parkingPassDAO, ParkingPassMasterDAO parkingPassMasterDAO) {
+    public ParkingPassResource(ParkingPassDAO parkingPassDAO, ParkingPassMasterDAO parkingPassMasterDAO,
+                               ParkingEventProcessor parkingEventProcessor) {
         this.parkingPassDAO = parkingPassDAO;
         this.parkingPassMasterDAO = parkingPassMasterDAO;
+        this.parkingEventProcessor = parkingEventProcessor;
     }
 
     @GET
@@ -124,14 +128,21 @@ public class ParkingPassResource {
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     public int saveOrUpdateParkingPass(@ApiParam("Parking Pass Entity") @Valid ParkingPassEntity parkingPassEntity,
-                                       @PathParam("parkingPassMasterId") Integer parkingPassMasterId) {
+                                       @PathParam("parkingPassMasterId") Integer parkingPassMasterId, @Auth GMPUser gmpUser) {
         ParkingPassMasterEntity parkingPassMaster = parkingPassMasterDAO.findById(parkingPassMasterId);
         if (parkingPassMaster == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
             if (parkingPassEntity.getIsDeleted() == null) parkingPassEntity.setIsDeleted(0);
+
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
+            if (parkingPassEntity.getId() == null) {
+                parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser,"PASS_CREATE");
+            } else {
+                parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser,"PASS_UPDATE");
+            }
+
         }
         return parkingPassEntity.getId();
     }
