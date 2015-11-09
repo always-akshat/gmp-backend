@@ -20,9 +20,10 @@ public class ParkingReport {
     private Integer passCheckOutCount;
     private BigDecimal checkInRevenue;
     private BigDecimal checkOutRevenue;
+    private Integer acCount;
 
     public ParkingReport(Integer checkInCount, Integer checkOutCount, Integer focCount, Integer ttCount, Integer passCheckInCount,
-                         Integer passCheckOutCount, BigDecimal checkInRevenue, BigDecimal checkOutRevenue) {
+                         Integer passCheckOutCount, BigDecimal checkInRevenue, BigDecimal checkOutRevenue, int acCount) {
         this.checkInCount = checkInCount;
         this.checkOutCount = checkOutCount;
         this.focCount = focCount;
@@ -31,6 +32,15 @@ public class ParkingReport {
         this.checkOutRevenue = checkOutRevenue;
         this.passCheckInCount = passCheckInCount;
         this.passCheckOutCount = passCheckOutCount;
+        this.acCount = acCount;
+    }
+
+    public Integer getAcCount() {
+        return acCount;
+    }
+
+    public void setAcCount(Integer acCount) {
+        this.acCount = acCount;
     }
 
     public Integer getPassCheckInCount() {
@@ -59,10 +69,6 @@ public class ParkingReport {
 
     public Integer getTtCount() {
         return ttCount;
-    }
-
-    public void setTtCount(Integer ttCount) {
-        this.ttCount = ttCount;
     }
 
     public Integer getParkingSubLotId() {

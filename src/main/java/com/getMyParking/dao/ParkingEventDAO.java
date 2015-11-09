@@ -176,8 +176,18 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
+                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
+                .add(Restrictions.eq("special","AC"))
+                .setProjection(Projections.rowCount());
+        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
+        Long acCount = (Long) criteria.list().get(0);
+        if (acCount == null) acCount = 0L;
+
+        criteria = currentSession().createCriteria(ParkingEventEntity.class)
+                .add(fetchCriteria)
+                .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_IN"))
-                .add(Restrictions.eq("type", "PASS"))
+                .add(Restrictions.eq("type","PASS"))
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long passCheckInCount = (Long) criteria.list().get(0);
@@ -196,7 +206,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return new ParkingReport(checkInCount,checkOutCount,
                 focCount.intValue(),ttCount.intValue(),
                 passCheckInCount.intValue(),passCheckOutCount.intValue(),
-                checkInRevenue,checkOutRevenue);
+                checkInRevenue,checkOutRevenue, acCount.intValue());
 
     }
 
