@@ -165,7 +165,7 @@ public class ParkingEventResource {
     public List<BigInteger> saveOrUpdateParkingEvents(@ApiParam (value = "Parking Event") @Valid List<ParkingEventEntity> parkingEvents,
                                                @Auth GMPUser gmpUser) {
         List<Integer> parkingSubLotIds = parkingEvents.stream().map(ParkingEventEntity::getParkingSubLotId)
-                .collect(Collectors.toList());
+                .distinct().collect(Collectors.toList());
         if (gmpUser.getParkingSubLotIds().containsAll(parkingSubLotIds)) {
             Map<Integer,ParkingSubLotEntity> parkingSubLotMap = parkingSubLotDAO.findByIds(parkingSubLotIds).stream().collect(
                     Collectors.toMap(ParkingSubLotEntity::getId,Function.<ParkingSubLotEntity>identity()));
