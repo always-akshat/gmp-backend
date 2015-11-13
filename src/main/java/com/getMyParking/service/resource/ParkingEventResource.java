@@ -29,7 +29,10 @@ import javax.ws.rs.core.Response;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -149,7 +152,7 @@ public class ParkingEventResource {
     }
 
     @POST
-    @Path("/parking_sub_lot/{parkingSubLotId}/batch")
+    @Path("/batch")
     @Timed
     @ExceptionMetered
     @UnitOfWork
@@ -160,17 +163,19 @@ public class ParkingEventResource {
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     public List<BigInteger> saveOrUpdateParkingEvents(@ApiParam (value = "Parking Event") @Valid List<ParkingEventEntity> parkingEvents,
-                                               @PathParam("parkingSubLotId")int parkingSubLotId,
                                                @Auth GMPUser gmpUser) {
-        if (gmpUser.getParkingSubLotIds().contains(parkingSubLotId)) {
-            ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
+        List<Integer> parkingSubLotIds = parkingEvents.stream().map(ParkingEventEntity::getParkingSubLotId)
+                .collect(Collectors.toList());
+        if (gmpUser.getParkingSubLotIds().containsAll(parkingSubLotIds)) {
+            Map<Integer,ParkingSubLotEntity> parkingSubLotMap = parkingSubLotDAO.findByIds(parkingSubLotIds).stream().collect(
+                    Collectors.toMap(ParkingSubLotEntity::getId,Function.<ParkingSubLotEntity>identity()));
             List<BigInteger> parkingEventIds = Lists.newArrayList();
-            if (parkingSubLot == null) {
+            if (parkingSubLotMap.size() != parkingSubLotIds.size()) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
                 for (ParkingEventEntity parkingEvent : parkingEvents) {
                     try {
-                        parkingEventIds.add(saveParkingEvent(parkingEvent, parkingSubLot));
+                        parkingEventIds.add(saveParkingEvent(parkingEvent, parkingSubLotMap.get(parkingEvent.getParkingSubLotId())));
                     } catch (WebApplicationException ex) {
                         parkingEventIds.add(BigInteger.valueOf(-409));
                     }
