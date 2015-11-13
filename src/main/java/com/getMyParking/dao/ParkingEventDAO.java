@@ -396,6 +396,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         criteria.setFirstResult((pageNum - 1) * pageSize);
         criteria.setMaxResults(pageSize);
         criteria.addOrder(Order.desc("eventTime"));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         return list(criteria);
 
