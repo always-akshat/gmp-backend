@@ -305,6 +305,10 @@ public class ParkingEventResource {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
+        if (registrationNumber.isPresent() && !parkingLotId.isPresent()) {
+            throw new WebApplicationException("Invalid Combination of parameters", Response.Status.BAD_REQUEST);
+        }
+
         Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
 
         return parkingEventDAO.searchParkingEvents(companyId, parkingId, parkingLotId, parkingSubLotId, registrationNumber,
