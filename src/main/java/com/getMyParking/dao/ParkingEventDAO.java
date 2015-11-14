@@ -179,7 +179,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .add(fetchCriteria)
                 .add(Restrictions.between("eventTime", fromDate, toDate))
                 .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .add(Restrictions.eq("special","AC"))
+                .add(Restrictions.eq("special", "AC"))
                 .setProjection(Projections.rowCount());
         if (type != null) criteria.add(Restrictions.eq("subLotType",type));
         Long acCount = (Long) criteria.list().get(0);
@@ -445,11 +445,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         checkOutEventsQuery.setResultTransformer(Transformers.aliasToBean(ParkingEventDumpDTO.class));
 
         List<ParkingEventDumpDTO> checkOutEvents = checkOutEventsQuery.list();
-        for (ParkingEventDumpDTO parkingEvent : checkOutEvents) {
-            if (parkingEvent.getCheckInEventTime().isBefore(startDateTime)) {
-                parkingEvent.setCheckInCost(null);
-            }
-        }
+        checkOutEvents.stream().filter(parkingEvent -> parkingEvent.getCheckInEventTime().isBefore(startDateTime))
+                .forEach(parkingEvent -> parkingEvent.setCheckInCost(null));
 
         checkInEvents.addAll(checkOutEvents);
         Collections.sort(checkInEvents);
