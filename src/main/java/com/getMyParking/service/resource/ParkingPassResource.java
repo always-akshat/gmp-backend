@@ -137,7 +137,7 @@ public class ParkingPassResource {
             if (parkingPassEntity.getIsDeleted() == null) parkingPassEntity.setIsDeleted(0);
 
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
-            if (parkingPassEntity.getId() == null) {
+            if (parkingPassEntity.getId() == null || parkingPassEntity.getId().equals(0)) {
                 parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser,"PASS_CREATE");
             } else {
                 parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser,"PASS_UPDATE");
