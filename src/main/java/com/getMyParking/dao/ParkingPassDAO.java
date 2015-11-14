@@ -85,6 +85,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
     }
 
     public List<ParkingPassEntity> searchParkingPass(Optional<IntParam> parkingId, Optional<String> registrationNumber,
+                                                     Optional<IntParam> isDeleted,
                                                      Integer integer, Integer pageSize) {
         Criteria criteria = criteria();
 
@@ -96,8 +97,13 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
             criteria.add(Restrictions.eq("registrationNumber",registrationNumber.get()));
         }
 
+        if (isDeleted.isPresent()) {
+            criteria.add(Restrictions.eq("isDeleted",isDeleted.get()));
+        }
+
         criteria.setFirstResult((integer-1)*pageSize);
         criteria.setMaxResults(pageSize);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         return list(criteria);
     }
