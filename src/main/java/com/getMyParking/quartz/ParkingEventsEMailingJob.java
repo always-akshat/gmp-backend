@@ -153,7 +153,8 @@ public class ParkingEventsEMailingJob implements Job {
                     email.addSubstitution(":date", dates);
                     email.addCategory("parking_event_report");
 
-                    smtpClient.sendEmail(emailAddress,email.getSMTPAPI().rawJsonString(),workBookInputStream);
+                    String attachmentFileName = "report_"+parking.getName()+"_"+reportDate.toString("ddMMYY");
+                    smtpClient.sendEmail(emailAddress,email.getSMTPAPI().rawJsonString(),workBookInputStream, attachmentFileName);
 
                 } catch (Exception ex) {
                     logger.error("Email Exception ",ex);

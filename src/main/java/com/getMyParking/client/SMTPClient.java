@@ -36,7 +36,7 @@ public class SMTPClient {
         });
     }
 
-    public void sendEmail(List<String> emailAddress, String smtpApi, InputStream attachmentInputStream) throws MessagingException, IOException {
+    public void sendEmail(List<String> emailAddress, String smtpApi, InputStream attachmentInputStream, String attachmentFileName) throws MessagingException, IOException {
 
         MimeMessage message = new MimeMessage(mailSession);
         message.addRecipients(Message.RecipientType.TO, emailAddress.stream().map(s -> {
@@ -60,7 +60,7 @@ public class SMTPClient {
         message.setContent(multipart);
         message.addHeader("X-SMTPAPI", smtpApi);
         // Attachment part
-        MimeBodyPart attachmentPart = getMimeBodyPart("report.xlsx", attachmentInputStream, "application/octet-stream");
+        MimeBodyPart attachmentPart = getMimeBodyPart(attachmentFileName, attachmentInputStream, "application/octet-stream");
         multipart.addBodyPart(attachmentPart);
 
         Transport transport = mailSession.getTransport();
