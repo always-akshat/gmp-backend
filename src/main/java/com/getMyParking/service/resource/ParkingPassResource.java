@@ -104,6 +104,7 @@ public class ParkingPassResource {
     })
     public List<ParkingPassEntity> getParkingEventsById(@QueryParam("parkingId")Optional<IntParam> parkingId,
                                                          @QueryParam("registrationNumber") Optional<String> registrationNumber,
+                                                        @QueryParam("isDeleted") Optional<IntParam> isDeleted,
                                                          @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
                                                          @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
                                                          @Auth GMPUser gmpUser) {
@@ -114,7 +115,7 @@ public class ParkingPassResource {
 
         Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
 
-        return parkingPassDAO.searchParkingPass(parkingId, registrationNumber, pageNumberParam.get(), pageSize);
+        return parkingPassDAO.searchParkingPass(parkingId, registrationNumber, isDeleted, pageNumberParam.get(), pageSize);
     }
 
     @POST

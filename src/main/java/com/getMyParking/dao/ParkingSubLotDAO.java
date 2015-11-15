@@ -4,6 +4,7 @@ import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
@@ -39,6 +40,12 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
         return uniqueResult(
                 criteria().add(Restrictions.in("id",parkingSubLotIds))
                 .add(Restrictions.eq("type",vehicleType))
+        );
+    }
+
+    public List<ParkingSubLotEntity> findByIds(List<Integer> parkingSubLotIds) {
+        return list(
+                criteria().add(Restrictions.in("id", parkingSubLotIds)).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
         );
     }
 }

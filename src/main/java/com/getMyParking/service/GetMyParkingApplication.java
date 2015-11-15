@@ -3,6 +3,7 @@ package com.getMyParking.service;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.quartz.AutoCheckoutJob;
+import com.getMyParking.quartz.ParkingEventsEMailingJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
@@ -152,6 +153,14 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                     .build();
             scheduler.scheduleJob(jobDetail,trigger);
         }
+
+        JobDetail jobDetail = newJob(ParkingEventsEMailingJob.class).build();
+        String cronExpression = "0 0 0 * * ?";
+        Trigger trigger = newTrigger()
+                .forJob(jobDetail)
+                .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
+                .build();
+        scheduler.scheduleJob(jobDetail,trigger);
         session.close();
     }
 }
