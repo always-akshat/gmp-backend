@@ -3,7 +3,6 @@ package com.getMyParking.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 
 /**
@@ -34,7 +33,7 @@ public class ParkingEventDumpDTO {
     @JsonIgnore
     private DateTime joinedEventTime;
     @JsonIgnore
-    private DateTime joinedEventType;
+    private String joinedEventType;
     @JsonIgnore
     private BigDecimal joinedEventCost;
     @JsonIgnore
@@ -192,11 +191,11 @@ public class ParkingEventDumpDTO {
         this.joinedEventTime = joinedEventTime;
     }
 
-    public DateTime getJoinedEventType() {
+    public String getJoinedEventType() {
         return joinedEventType;
     }
 
-    public void setJoinedEventType(DateTime joinedEventType) {
+    public void setJoinedEventType(String joinedEventType) {
         this.joinedEventType = joinedEventType;
     }
 
