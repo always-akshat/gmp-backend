@@ -82,6 +82,9 @@ public class ParkingEventProcessor {
             passPaidEvent.setEventType("PASS_PAID");
             passPaidEvent.setSerialNumber("" + parkingPass.getId() + day + hour + "P_P");
             passPaidEvent.setCost(new BigDecimal(parkingPass.getCost()));
+            passPaidEvent.setParkingSubLot(parkingEvent.getParkingSubLot());
+            passPaidEvent.setParkingPass(parkingPass);
+            passPaidEvent.setUpdatedTime(DateTime.now());
             parkingEventDAO.saveOrUpdateParkingEvent(passPaidEvent);
         }
     }
