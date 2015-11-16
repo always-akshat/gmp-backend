@@ -347,6 +347,8 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
         if (parkingEvent.getCompanyId() != null) companyId = parkingEvent.getCompanyId();
         if (parkingEvent.getParkingLotId() != null) parkingLotId = parkingEvent.getParkingLotId();
         if (parkingEvent.getParkingId() != null) parkingId = parkingEvent.getParkingId();
+        if (parkingEvent.getFocReason() != null) focReason = parkingEvent.getFocReason();
+        if (parkingEvent.getSpecial() != null) special = parkingEvent.getSpecial();
     }
 
     @Override

@@ -75,6 +75,15 @@ public class ParkingEventProcessor {
         parkingEvent.setShiftNumber("");
 
         parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
+
+        if (parkingPass.getIsPaid() == 1) {
+            ParkingEventEntity passPaidEvent = new ParkingEventEntity();
+            passPaidEvent.copy(parkingEvent);
+            passPaidEvent.setEventType("PASS_PAID");
+            passPaidEvent.setSerialNumber("" + parkingPass.getId() + day + hour + "P_P");
+            passPaidEvent.setCost(new BigDecimal(parkingPass.getCost()));
+            parkingEventDAO.saveOrUpdateParkingEvent(passPaidEvent);
+        }
     }
 
     public int getDays() {
