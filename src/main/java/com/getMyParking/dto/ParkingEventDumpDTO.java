@@ -1,5 +1,6 @@
 package com.getMyParking.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
@@ -8,7 +9,7 @@ import java.math.BigDecimal;
 /**
  * Created by rahulgupta.s on 29/10/15.
  */
-public class ParkingEventDumpDTO implements Comparable<ParkingEventDumpDTO>{
+public class ParkingEventDumpDTO {
 
     private String registrationNumber;
     private String mobileNumber;
@@ -20,9 +21,24 @@ public class ParkingEventDumpDTO implements Comparable<ParkingEventDumpDTO>{
     private BigDecimal checkOutCost;
     private String serialNumber;
     private String special;
-    private String operatorName;
+    private String checkinOperatorName;
+    private String checkoutOperatorName;
     private DateTime passValidTime;
     private DateTime eventTime;
+    @JsonIgnore
+    private String eventType;
+    @JsonIgnore
+    private BigDecimal eventCost;
+    @JsonIgnore
+    private String eventOperatorName;
+    @JsonIgnore
+    private DateTime joinedEventTime;
+    @JsonIgnore
+    private DateTime joinedEventType;
+    @JsonIgnore
+    private BigDecimal joinedEventCost;
+    @JsonIgnore
+    private String joinedEventOperatorName;
 
     public String getRegistrationNumber() {
         return registrationNumber;
@@ -104,14 +120,6 @@ public class ParkingEventDumpDTO implements Comparable<ParkingEventDumpDTO>{
         this.special = special;
     }
 
-    public String getOperatorName() {
-        return operatorName;
-    }
-
-    public void setOperatorName(String operatorName) {
-        this.operatorName = operatorName;
-    }
-
     public DateTime getPassValidTime() {
         return passValidTime;
     }
@@ -128,9 +136,75 @@ public class ParkingEventDumpDTO implements Comparable<ParkingEventDumpDTO>{
         this.eventTime = eventTime;
     }
 
-    @Override
-    public int compareTo(@Nullable ParkingEventDumpDTO that) {
-        if (that == null) return -1;
-        else return this.getEventTime().compareTo(that.getEventTime());
+    public String getCheckinOperatorName() {
+        return checkinOperatorName;
+    }
+
+    public void setCheckinOperatorName(String checkinOperatorName) {
+        this.checkinOperatorName = checkinOperatorName;
+    }
+
+    public String getCheckoutOperatorName() {
+        return checkoutOperatorName;
+    }
+
+    public void setCheckoutOperatorName(String checkoutOperatorName) {
+        this.checkoutOperatorName = checkoutOperatorName;
+    }
+
+    public String getEventOperatorName() {
+        return eventOperatorName;
+    }
+
+    public void setEventOperatorName(String eventOperatorName) {
+        this.eventOperatorName = eventOperatorName;
+    }
+
+    public String getJoinedEventOperatorName() {
+        return joinedEventOperatorName;
+    }
+
+    public void setJoinedEventOperatorName(String joinedEventOperatorName) {
+        this.joinedEventOperatorName = joinedEventOperatorName;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public BigDecimal getEventCost() {
+        return eventCost;
+    }
+
+    public void setEventCost(BigDecimal eventCost) {
+        this.eventCost = eventCost;
+    }
+
+    public DateTime getJoinedEventTime() {
+        return joinedEventTime;
+    }
+
+    public void setJoinedEventTime(DateTime joinedEventTime) {
+        this.joinedEventTime = joinedEventTime;
+    }
+
+    public DateTime getJoinedEventType() {
+        return joinedEventType;
+    }
+
+    public void setJoinedEventType(DateTime joinedEventType) {
+        this.joinedEventType = joinedEventType;
+    }
+
+    public BigDecimal getJoinedEventCost() {
+        return joinedEventCost;
+    }
+
+    public void setJoinedEventCost(BigDecimal joinedEventCost) {
+        this.joinedEventCost = joinedEventCost;
     }
 }

@@ -137,12 +137,14 @@ public class ParkingPassResource {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
             if (parkingPassEntity.getIsDeleted() == null) parkingPassEntity.setIsDeleted(0);
 
-            parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
-            if (parkingPassEntity.getId() == null) {
-                parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser,"PASS_CREATE");
+            String eventType;
+            if (parkingPassEntity.getId() == null || parkingPassEntity.getId().equals(0)) {
+                eventType = "PASS_CREATE";
             } else {
-                parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser,"PASS_UPDATE");
+                eventType = "PASS_UPDATE";
             }
+            parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
+            parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser, eventType);
 
         }
         return parkingPassEntity.getId();

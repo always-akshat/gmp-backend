@@ -26,16 +26,12 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.mail.*;
-import javax.mail.internet.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 01/11/15.
@@ -49,8 +45,8 @@ public class ParkingEventsEMailingJob implements Job {
     private SMTPClient smtpClient;
 
     private String[] sheetRowHeaders = new String[] {"Registration Number", "Mobile Number", "Valet Name", "Checked In Time",
-            "Checked In Cost", "Checked Out Time", "Checked Out Cost", "Sub Lot Type", "Pass Validity Date", "Serial Number", "Operator Name",
-            "Special"};
+            "Checked In Cost", "Checked Out Time", "Checked Out Cost", "Sub Lot Type", "Pass Validity Date", "Serial Number", "Check In Operator Name",
+            "Check Out Operator Name", "Special"};
 
     public ParkingEventsEMailingJob() {
         Injector injector = GuiceHelper.getInjector();
@@ -71,7 +67,7 @@ public class ParkingEventsEMailingJob implements Job {
         List<CompanyEntity> companies = companyDAO.getAllCompaniesWithEmailID();
         for (CompanyEntity company : companies) {
             for (ParkingEntity parking : company.getParkings()) {
-                DateTime reportDate = DateTime.now().minusDays(1);
+                DateTime reportDate = DateTime.now().toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).minusDays(1);
                 List<ParkingEventDumpDTO> parkingEventDumpDTOs = parkingEventDAO.getParkingEventsDump(parking.getId(),reportDate);
 
                 SXSSFWorkbook workbook = new SXSSFWorkbook();
@@ -111,6 +107,8 @@ public class ParkingEventsEMailingJob implements Job {
                                 parkingEvent.getCheckOutEventTime().withZone(DateTimeZone.forOffsetHoursMinutes(5, 30)).toString("dd-MM-YY HH:mm:ss")
                         );
                         row.createCell(columnNumber++, Cell.CELL_TYPE_NUMERIC).setCellValue(parkingEvent.getCheckOutCost().doubleValue());
+                    } else {
+                        columnNumber += 2;
                     }
                     row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
                             Strings.nullToEmpty(parkingEvent.getSubLotType())
@@ -119,12 +117,17 @@ public class ParkingEventsEMailingJob implements Job {
                         row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(parkingEvent.getPassValidTime().withZone(
                                         DateTimeZone.forOffsetHoursMinutes(5, 30)).toString("dd-MM-YY HH:mm:ss")
                         );
+                    } else {
+                        columnNumber++;
                     }
                     row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
                             Strings.nullToEmpty(parkingEvent.getSerialNumber())
                     );
                     row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
-                            Strings.nullToEmpty(parkingEvent.getOperatorName())
+                            Strings.nullToEmpty(parkingEvent.getCheckinOperatorName())
+                    );
+                    row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
+                            Strings.nullToEmpty(parkingEvent.getCheckoutOperatorName())
                     );
                     row.createCell(columnNumber, Cell.CELL_TYPE_STRING).setCellValue(
                             Strings.nullToEmpty(parkingEvent.getSpecial())
@@ -157,7 +160,8 @@ public class ParkingEventsEMailingJob implements Job {
                     email.addSubstitution(":date", dates);
                     email.addCategory("parking_event_report");
 
-                    smtpClient.sendEmail(emailAddress,email.getSMTPAPI().rawJsonString(),workBookInputStream);
+                    String attachmentFileName = "report_"+parking.getName()+"_"+reportDate.toString("ddMMYY")+".xlsx";
+                    smtpClient.sendEmail(emailAddress,email.getSMTPAPI().rawJsonString(),workBookInputStream, attachmentFileName);
 
                 } catch (Exception ex) {
                     logger.error("Email Exception ",ex);

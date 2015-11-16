@@ -71,10 +71,6 @@ public class ParkingReport {
         return ttCount;
     }
 
-    public void setTtCount(Integer ttCount) {
-        this.ttCount = ttCount;
-    }
-
     public Integer getParkingSubLotId() {
         return parkingSubLotId;
     }
