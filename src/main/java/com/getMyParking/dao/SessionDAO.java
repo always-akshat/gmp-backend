@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -28,5 +29,10 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
 
     public SessionEntity findByAuthToken(String authToken) {
         return uniqueResult(criteria().add(Restrictions.eq("authToken",authToken)));
+    }
+
+    public SessionEntity findActiveSession(String userName) {
+        return uniqueResult(criteria().add(Restrictions.eq("userB2BEntity.username", userName))
+                .addOrder(Order.desc("validTime")));
     }
 }

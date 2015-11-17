@@ -26,6 +26,7 @@ public class ParkingPassEntity {
     private Integer isPaid;
     @NotNull
     private DateTime createdAt;
+    private DateTime validFrom;
     private String cardId;
     private String customerName;
     @JsonProperty
@@ -160,6 +161,16 @@ public class ParkingPassEntity {
         return isDeleted;
     }
 
+    @Basic
+    @Column(name = "valid_from", nullable = false, insertable = true, updatable = true)
+    public DateTime getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(DateTime validFrom) {
+        this.validFrom = validFrom;
+    }
+
     @Transient
     public Integer getParkingPassMasterId() {
         return parkingPassMasterId;
@@ -193,6 +204,7 @@ public class ParkingPassEntity {
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (isDeleted != null ? !isDeleted.equals(that.isDeleted) : that.isDeleted != null) return false;
+        if (validFrom != null ? !validFrom.equals(that.validFrom) : that.validFrom != null) return false;
         if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (cardId != null ? !cardId.equals(that.cardId) : that.cardId != null) return false;
@@ -212,6 +224,7 @@ public class ParkingPassEntity {
         result = 31 * result + (mobileNumber != null ? mobileNumber.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
         result = 31 * result + (isDeleted != null ? isDeleted.hashCode() : 0);
+        result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (cardId != null ? cardId.hashCode() : 0);

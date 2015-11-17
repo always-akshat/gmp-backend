@@ -17,6 +17,7 @@ public class CompanyEntity {
     private String email;
     private String contactNumber;
     private String website;
+    private String masterPassword;
     private Set<ParkingEntity> parkings;
 
     @Id
@@ -90,6 +91,16 @@ public class CompanyEntity {
         this.website = website;
     }
 
+    @Basic
+    @Column(name = "master_password", nullable = true, insertable = true, updatable = true, length = 500)
+    public String getMasterPassword() {
+        return masterPassword;
+    }
+
+    public void setMasterPassword(String masterPassword) {
+        this.masterPassword = masterPassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,6 +113,7 @@ public class CompanyEntity {
         if (address != null ? !address.equals(that.address) : that.address != null) return false;
         if (city != null ? !city.equals(that.city) : that.city != null) return false;
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
+        if (masterPassword != null ? !masterPassword.equals(that.masterPassword) : that.masterPassword != null) return false;
         if (contactNumber != null ? !contactNumber.equals(that.contactNumber) : that.contactNumber != null)
             return false;
         return !(website != null ? !website.equals(that.website) : that.website != null);
@@ -116,6 +128,7 @@ public class CompanyEntity {
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (contactNumber != null ? contactNumber.hashCode() : 0);
+        result = 31 * result + (masterPassword != null ? masterPassword.hashCode() : 0);
         result = 31 * result + (website != null ? website.hashCode() : 0);
         return result;
     }

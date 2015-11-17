@@ -16,6 +16,7 @@ public class UserB2BEntity {
     private String password;
     private String name;
     private String contactNumber;
+    private String appVersion;
     private Set<ParkingSubLotUserAccessEntity> parkingSubLots;
     @NotNull
     private Set<AccessMasterEntity> userAccesses;
@@ -60,6 +61,16 @@ public class UserB2BEntity {
         this.contactNumber = contactNumber;
     }
 
+    @Basic
+    @Column(name = "app_version", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,6 +81,7 @@ public class UserB2BEntity {
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (appVersion != null ? !appVersion.equals(that.appVersion) : that.appVersion != null) return false;
         return !(contactNumber != null ? !contactNumber.equals(that.contactNumber) : that.contactNumber != null);
 
     }
@@ -80,6 +92,7 @@ public class UserB2BEntity {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (contactNumber != null ? contactNumber.hashCode() : 0);
+        result = 31 * result + (appVersion != null ? appVersion.hashCode() : 0);
         return result;
     }
 

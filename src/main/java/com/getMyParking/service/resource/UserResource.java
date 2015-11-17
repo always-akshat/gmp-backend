@@ -64,7 +64,8 @@ public class UserResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password) throws AuthenticationException {
+    public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password,
+                         @HeaderParam("X-APP-VERSION") String appVersion) {
         if (!Strings.isNullOrEmpty(userName) && !Strings.isNullOrEmpty(password)) {
 
             UserB2BEntity userB2BEntity = userB2BDAO.loginUser(userName, password);
@@ -72,14 +73,24 @@ public class UserResource {
                 throw new WebApplicationException("Invalid Credentials",Response.Status.UNAUTHORIZED);
             }
 
-            long millis = DateTime.now().getMillis();
-            String authToken = millis + UUID.randomUUID().toString().substring(0,6);
-            DateTime validTillDate = DateTime.now().plusYears(3);
-            SessionEntity sessionEntity = new SessionEntity(authToken,validTillDate,userB2BEntity);
-            sessionDAO.saveSession(sessionEntity);
+            SessionEntity session = sessionDAO.findActiveSession(userName);
+            if (session == null) {
+                long millis = DateTime.now().getMillis();
+                String authToken = millis + UUID.randomUUID().toString().substring(0, 6);
+                DateTime validTillDate = DateTime.now().plusYears(3);
+                session = new SessionEntity(authToken, validTillDate, userB2BEntity);
+                sessionDAO.saveSession(session);
+            }
 
-            GMPUser user = new GMPUser(userB2BEntity,authToken,sessionEntity.getValidTime());
-            authTokenCache.put(authToken,user);
+            GMPUser user = new GMPUser(userB2BEntity,session.getAuthToken(),session.getValidTime());
+            authTokenCache.put(session.getAuthToken(),user);
+
+            if (appVersion != null &&
+                    (userB2BEntity.getAppVersion() == null || !userB2BEntity.getAppVersion().equalsIgnoreCase(appVersion))) {
+                userB2BEntity.setAppVersion(appVersion);
+                userB2BDAO.updateUser(userB2BEntity);
+            }
+
             return user;
         } else {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

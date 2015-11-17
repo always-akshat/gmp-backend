@@ -23,6 +23,7 @@ public class ParkingPassMasterEntity {
     private String isMobileNumber;
     private String isRFID;
     private String isPaid;
+    private Integer autoRenewal;
     private Set<ReceiptContentEntity> receiptContents;
     @JsonIgnore
     private ParkingEntity parking;
@@ -148,6 +149,16 @@ public class ParkingPassMasterEntity {
         this.isPaid = isPaid;
     }
 
+    @Basic
+    @Column(name = "auto_renewal", nullable = false, insertable = true, updatable = true, length = 50)
+    public Integer getAutoRenewal() {
+        return autoRenewal;
+    }
+
+    public void setAutoRenewal(Integer autoRenewal) {
+        this.autoRenewal = autoRenewal;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -169,6 +180,7 @@ public class ParkingPassMasterEntity {
             return false;
         if (isRFID != null ? !isRFID.equals(that.isRFID) : that.isRFID != null) return false;
         if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
+        if (autoRenewal != null ? !autoRenewal.equals(that.autoRenewal) : that.autoRenewal != null) return false;
 
         return !(parking != null ? !parking.equals(that.parking) : that.parking != null);
 
@@ -188,6 +200,7 @@ public class ParkingPassMasterEntity {
         result = 31 * result + (isMobileNumber != null ? isMobileNumber.hashCode() : 0);
         result = 31 * result + (isRFID != null ? isRFID.hashCode() : 0);
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
+        result = 31 * result + (autoRenewal != null ? autoRenewal.hashCode() : 0);
         result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }
