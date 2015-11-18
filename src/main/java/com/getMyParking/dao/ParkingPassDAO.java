@@ -60,6 +60,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                         .add(Restrictions.gt("registrationNumber", registrationNumber))
                         .add(Restrictions.ne("isDeleted", 1))
                         .addOrder(Order.desc("validTime"))
+                        .setMaxResults(1)
         );
     }
 
