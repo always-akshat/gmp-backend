@@ -140,6 +140,12 @@ public class ParkingPassResource {
             String eventType;
             if (parkingPassEntity.getId() == null || parkingPassEntity.getId().equals(0)) {
                 eventType = "PASS_CREATE";
+                Integer balanceAmount = parkingPassDAO.calculateBalanceAmount(parkingPassEntity.getRegistrationNumber(),
+                        parkingPassEntity.getParkingPassMasterId());
+                if (parkingPassEntity.getIsPaid() == 0) {
+                    balanceAmount += parkingPassEntity.getCost();
+                }
+                parkingPassEntity.setBalanceAmount(balanceAmount);
             } else {
                 eventType = "PASS_UPDATE";
             }

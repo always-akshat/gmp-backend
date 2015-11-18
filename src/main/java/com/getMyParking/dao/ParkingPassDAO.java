@@ -10,9 +10,10 @@ import io.dropwizard.jersey.params.IntParam;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.IntegerType;
+import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -47,30 +48,24 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 return Integer.parseInt(input);
             }
         });
+        return list(criteria().add(Restrictions.in("parkingPassMaster.id",parkingPassIdInts))
+                .add(Restrictions.gt("validTime", DateTime.now()))
+                .add(Restrictions.ne("isDeleted", 1)));
+    }
 
-        SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*, Count(*) as count,  SUM(`parking_pass`.`is_paid`) as isPaidCount " +
-                "from `parking_pass` inner join `parking_pass_master` on `parking_pass`.`parking_pass_master_id` = `parking_pass_master`.`id` " +
-                "where `parking_pass`.`valid_time` >= CURRENT_TIMESTAMP and `parking_pass`.`parking_pass_master_id` IN" +
-                " :parkingPassIds and `parking_pass`.`is_deleted` = 0 group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");
-        query.setParameterList("parkingPassIds",parkingPassIdInts);
-        query.addEntity("parking_pass",ParkingPassEntity.class);
-        query.addScalar("count", IntegerType.INSTANCE);
-        query.addScalar("isPaidCount", IntegerType.INSTANCE);
-        query.setResultTransformer(Transformers.aliasToBean(ActiveParkingPassDTO.class));
+    public Integer calculateBalanceAmount(String registrationNumber, Integer parkingPassMasterId) {
 
-        List<ActiveParkingPassDTO> list = query.list();
+        ParkingPassEntity passEntity = uniqueResult(
+                criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
+                          .add(Restrictions.gt("registrationNumber", registrationNumber))
+                          .addOrder(Order.desc("validTime"))
+        );
 
-        return Lists.transform(list, new Function<ActiveParkingPassDTO, ParkingPassEntity>() {
-            @Nullable
-            @Override
-            public ParkingPassEntity apply(ActiveParkingPassDTO activeParkingPassDTO) {
-                ParkingPassEntity entity = activeParkingPassDTO.getParkingPass();
-                entity.setBalanceAmount(
-                        entity.getParkingPassMaster().getPrice() * (activeParkingPassDTO.getCount() - activeParkingPassDTO.getIsPaidCount())
-                );
-                return entity;
-            }
-        });
+        if (passEntity == null) {
+            return 0;
+        } else {
+            return passEntity.getBalanceAmount();
+        }
     }
 
     public List<ParkingPassEntity> findByPassIds(List<String> parkingPassIds) {

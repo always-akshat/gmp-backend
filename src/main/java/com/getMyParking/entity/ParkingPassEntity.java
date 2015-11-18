@@ -34,7 +34,6 @@ public class ParkingPassEntity {
     private ParkingPassMasterEntity parkingPassMaster;
     private Integer counter;
     private Integer isDeleted;
-    @JsonProperty
     private Integer balanceAmount;
 
     @Id
@@ -169,7 +168,8 @@ public class ParkingPassEntity {
         this.parkingPassMasterId = parkingPassMasterId;
     }
 
-    @Transient
+    @Basic
+    @Column(name = "balance_amount", nullable = false, insertable = true, updatable = true)
     public Integer getBalanceAmount() {
         return balanceAmount;
     }
@@ -193,6 +193,7 @@ public class ParkingPassEntity {
         if (mobileNumber != null ? !mobileNumber.equals(that.mobileNumber) : that.mobileNumber != null) return false;
         if (cost != null ? !cost.equals(that.cost) : that.cost != null) return false;
         if (isDeleted != null ? !isDeleted.equals(that.isDeleted) : that.isDeleted != null) return false;
+        if (balanceAmount != null ? !balanceAmount.equals(that.balanceAmount) : that.balanceAmount != null) return false;
         if (isPaid != null ? !isPaid.equals(that.isPaid) : that.isPaid != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (cardId != null ? !cardId.equals(that.cardId) : that.cardId != null) return false;
@@ -212,6 +213,7 @@ public class ParkingPassEntity {
         result = 31 * result + (mobileNumber != null ? mobileNumber.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
         result = 31 * result + (isDeleted != null ? isDeleted.hashCode() : 0);
+        result = 31 * result + (balanceAmount != null ? balanceAmount.hashCode() : 0);
         result = 31 * result + (isPaid != null ? isPaid.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (cardId != null ? cardId.hashCode() : 0);
