@@ -22,11 +22,13 @@ public class ParkingEventProcessor {
     private static final String CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+%";
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingEventDAO parkingEventDAO;
+    private ParkingPassDAO parkingPassDAO;
 
     @Inject
-    public ParkingEventProcessor(ParkingSubLotDAO parkingSubLotDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingEventProcessor(ParkingSubLotDAO parkingSubLotDAO, ParkingEventDAO parkingEventDAO, ParkingPassDAO parkingPassDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingEventDAO = parkingEventDAO;
+        this.parkingPassDAO = parkingPassDAO;
     }
 
     public void processEvent(ParkingEventEntity parkingEvent) {
@@ -36,9 +38,13 @@ public class ParkingEventProcessor {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
             parkingEvent.getParkingPass().setIsPaid(1);
-            parkingEvent.getParkingPass().setBalanceAmount(
-                    parkingEvent.getParkingPass().getBalanceAmount() - parkingEvent.getCost().intValue()
-            );
+
+            ParkingPassEntity lastPass = parkingPassDAO.getLatestPass(parkingEvent.getParkingPass().getRegistrationNumber(),
+                    parkingEvent.getParkingPass().getParkingPassMaster().getId());
+            lastPass.setBalanceAmount(
+                            parkingEvent.getParkingPass().getBalanceAmount() - parkingEvent.getCost().intValue()
+                    );
+            parkingPassDAO.saveOrUpdateParkingPass(lastPass);
         } else if (parkingEvent.getEventType().equalsIgnoreCase("PASS_DELETED")) {
             if (parkingEvent.getParkingPass() == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);

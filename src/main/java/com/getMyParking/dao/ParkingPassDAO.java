@@ -53,19 +53,14 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 .add(Restrictions.ne("isDeleted", 1)));
     }
 
-    public Integer calculateBalanceAmount(String registrationNumber, Integer parkingPassMasterId) {
+    public ParkingPassEntity getLatestPass(String registrationNumber, Integer parkingPassMasterId) {
 
-        ParkingPassEntity passEntity = uniqueResult(
+        return uniqueResult(
                 criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
-                          .add(Restrictions.gt("registrationNumber", registrationNumber))
-                          .addOrder(Order.desc("validTime"))
+                        .add(Restrictions.gt("registrationNumber", registrationNumber))
+                        .add(Restrictions.ne("isDeleted", 1))
+                        .addOrder(Order.desc("validTime"))
         );
-
-        if (passEntity == null) {
-            return 0;
-        } else {
-            return passEntity.getBalanceAmount();
-        }
     }
 
     public List<ParkingPassEntity> findByPassIds(List<String> parkingPassIds) {

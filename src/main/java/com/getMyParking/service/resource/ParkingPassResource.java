@@ -140,8 +140,10 @@ public class ParkingPassResource {
             String eventType;
             if (parkingPassEntity.getId() == null || parkingPassEntity.getId().equals(0)) {
                 eventType = "PASS_CREATE";
-                Integer balanceAmount = parkingPassDAO.calculateBalanceAmount(parkingPassEntity.getRegistrationNumber(),
+                ParkingPassEntity lastPass = parkingPassDAO.getLatestPass(parkingPassEntity.getRegistrationNumber(),
                         parkingPassEntity.getParkingPassMasterId());
+                Integer balanceAmount = 0;
+                if (lastPass != null) balanceAmount = lastPass.getBalanceAmount() + parkingPassEntity.getCost();
                 if (parkingPassEntity.getIsPaid() == 0) {
                     balanceAmount += parkingPassEntity.getCost();
                 }
