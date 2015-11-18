@@ -57,7 +57,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         return uniqueResult(
                 criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
-                        .add(Restrictions.gt("registrationNumber", registrationNumber))
+                        .add(Restrictions.eq("registrationNumber", registrationNumber))
                         .add(Restrictions.ne("isDeleted", 1))
                         .addOrder(Order.desc("validTime"))
                         .setMaxResults(1)

@@ -143,7 +143,7 @@ public class ParkingPassResource {
                 ParkingPassEntity lastPass = parkingPassDAO.getLatestPass(parkingPassEntity.getRegistrationNumber(),
                         parkingPassEntity.getParkingPassMasterId());
                 Integer balanceAmount = 0;
-                if (lastPass != null) balanceAmount = lastPass.getBalanceAmount() + parkingPassEntity.getCost();
+                if (lastPass != null) balanceAmount = lastPass.getBalanceAmount();
                 if (parkingPassEntity.getIsPaid() == 0) {
                     balanceAmount += parkingPassEntity.getCost();
                 }
