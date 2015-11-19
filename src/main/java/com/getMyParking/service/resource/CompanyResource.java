@@ -67,12 +67,16 @@ public class CompanyResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
+
     })
     @POST
     @Timed
     @ExceptionMetered
     @UnitOfWork
     public int saveOrUpdateCompany(@ApiParam("Company Object to be created")@Valid CompanyEntity company) {
+        if(companyDAO.findByName(company.getName()).size()>0){
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         companyDAO.saveOrUpdateCompany(company);
         return company.getId();
     }

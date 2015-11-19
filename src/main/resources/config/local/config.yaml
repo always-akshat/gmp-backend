@@ -47,14 +47,13 @@ database:
   driverClass: com.mysql.jdbc.Driver
 
   # the username
-  user: root
+  user: karan
 
   # the password
-  password: letsintern12
+  password: gmp2015
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
-
+  url: jdbc:mysql://54.255.195.228:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
