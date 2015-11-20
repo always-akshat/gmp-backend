@@ -6,6 +6,7 @@ import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.getMyParking.entity.reports.PassReport;
 import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.base.Splitter;
@@ -102,7 +103,7 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 403, message = "Forbidden"),
     })
-    public List<ParkingPassEntity> getParkingEventsById(@QueryParam("parkingId")Optional<IntParam> parkingId,
+    public List<ParkingPassEntity> searchParkingPass(@QueryParam("parkingId")Optional<IntParam> parkingId,
                                                          @QueryParam("registrationNumber") Optional<String> registrationNumber,
                                                         @QueryParam("isDeleted") Optional<IntParam> isDeleted,
                                                          @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
@@ -116,6 +117,26 @@ public class ParkingPassResource {
         Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
 
         return parkingPassDAO.searchParkingPass(parkingId, registrationNumber, isDeleted, pageNumberParam.get(), pageSize);
+    }
+
+    @GET
+    @Path("/report")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Search Parking Pass", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+    })
+    public List<PassReport> parkingpassReport(@QueryParam("parkingId") IntParam parkingId,
+                                                        @Auth GMPUser gmpUser) {
+
+        if (!gmpUser.getParkingIds().contains(parkingId.get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        return parkingPassDAO.passReport(parkingId.get());
     }
 
     @POST

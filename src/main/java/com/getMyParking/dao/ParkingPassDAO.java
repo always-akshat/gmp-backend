@@ -2,21 +2,31 @@ package com.getMyParking.dao;
 
 import com.getMyParking.dto.ActiveParkingPassDTO;
 import com.getMyParking.entity.ParkingPassEntity;
+import com.getMyParking.entity.reports.PassReport;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import io.dropwizard.jersey.params.IntParam;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.IntegerType;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.annotation.Nullable;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 01/06/15.
@@ -75,6 +85,56 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 return entity;
             }
         });
+    }
+
+    public List<PassReport> passReport(Integer parkingId) {
+
+        Criteria criteria = criteria().add(Restrictions.gt("validTime", DateTime.now()))
+                                      .add(Restrictions.eq("isDeleted", 0))
+                                      .add(Restrictions.eq("parkingPassMaster.parkingId", parkingId))
+                                      .setProjection(Projections.rowCount())
+                                      .setProjection(Projections.groupProperty("parkingPassMaster.id"));
+
+        List<Object[]> result = criteria.list();
+        Map<Integer,PassReport> passReportMap = Maps.newHashMap();
+        result.stream().forEach(objects -> {
+            PassReport passReport = new PassReport();
+            passReport.setActivePassCount((Long) objects[0]);
+            passReport.setParkingPassMasterId((Integer) objects[1]);
+            passReportMap.put(passReport.getParkingPassMasterId(),passReport);
+        });
+
+        DateTime startTime = DateTime.now().toDateTime(DateTimeZone.forOffsetHoursMinutes(5, 30))
+                .dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
+        DateTime endTime = startTime.plusMonths(1).minusSeconds(1);
+
+        criteria().add(Restrictions.between("validFrom", startTime, endTime))
+                .add(Restrictions.eq("isPaid", 1))
+                .add(Restrictions.eq("parkingPassMaster.parkingId",parkingId))
+                .setProjection(Projections.rowCount())
+                .setProjection(Projections.groupProperty("parkingPassMaster.id"))
+                .setProjection(Projections.property("parkingPassMaster.price"));
+
+        result = criteria.list();
+        result.stream().forEach(objects -> {
+            PassReport passReport = passReportMap.get(objects[1]);
+            passReport.setPaidPassCount((Long) objects[0]);
+            passReport.setCollectedAmount(new BigDecimal((Long) objects[0] * (Integer)objects[2]));
+        });
+
+        criteria().add(Restrictions.eq("isPaid", 0))
+                .add(Restrictions.eq("parkingPassMaster.parkingId",parkingId))
+                .setProjection(Projections.rowCount())
+                .setProjection(Projections.groupProperty("parkingPassMaster.id"))
+                .setProjection(Projections.property("parkingPassMaster.price"));
+
+        result = criteria.list();
+        result.stream().forEach(objects -> {
+            PassReport passReport = passReportMap.get(objects[1]);
+            passReport.setBalanceAmount(new BigDecimal((Long) objects[0] * (Integer) objects[2]));
+        });
+
+        return passReportMap.values().stream().collect(Collectors.toList());
     }
 
     public List<ParkingPassEntity> findByPassIds(List<String> parkingPassIds) {

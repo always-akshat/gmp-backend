@@ -18,6 +18,7 @@ public class ParkingPassEntity {
     @NotNull
     private String registrationNumber;
     private DateTime validTime;
+    private DateTime validFrom;
     private String operatorName;
     private String mobileNumber;
     @NotNull
@@ -118,6 +119,17 @@ public class ParkingPassEntity {
 
     public void setValidTime(DateTime validTime) {
         this.validTime = validTime;
+    }
+
+    @Basic
+    @Column(name = "valid_from", nullable = false, insertable = true, updatable = true)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    public DateTime getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(DateTime validFrom) {
+        this.validFrom = validFrom;
     }
 
     @Basic
