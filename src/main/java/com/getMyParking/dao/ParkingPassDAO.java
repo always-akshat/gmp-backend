@@ -48,10 +48,14 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
             }
         });
 
+        /*SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*, Count(*) as count,  SUM(`parking_pass`.`is_paid`) as isPaidCount " +
+                "from `parking_pass` inner join `parking_pass_master` on `parking_pass`.`parking_pass_master_id` = `parking_pass_master`.`id` " +
+                "where `parking_pass`.`valid_time` >= CURRENT_TIMESTAMP and `parking_pass`.`parking_pass_master_id` IN" +
+                " :parkingPassIds and `parking_pass`.`is_deleted` = 0 group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");*/
         SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*, Count(*) as count,  SUM(`parking_pass`.`is_paid`) as isPaidCount " +
                 "from `parking_pass` inner join `parking_pass_master` on `parking_pass`.`parking_pass_master_id` = `parking_pass_master`.`id` " +
                 "where `parking_pass`.`valid_time` >= CURRENT_TIMESTAMP and `parking_pass`.`parking_pass_master_id` IN" +
-                " :parkingPassIds and `parking_pass`.`is_deleted` = 0 group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");
+                " :parkingPassIds group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
         query.addScalar("count", IntegerType.INSTANCE);
