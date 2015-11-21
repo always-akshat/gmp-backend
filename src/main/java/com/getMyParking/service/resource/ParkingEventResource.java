@@ -196,7 +196,7 @@ public class ParkingEventResource {
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
         }
-        parkingEvent.setParkingSubLot(parkingSubLot);
+        parkingEvent.setParkingSubLotId(parkingSubLot.getId());
         parkingEvent.setUpdatedTime(DateTime.now());
         if (parkingEvent.getParkingPassId() != null) {
             parkingEvent.setParkingPass(parkingPassDAO.findById(parkingEvent.getParkingPassId()));
@@ -224,10 +224,10 @@ public class ParkingEventResource {
             ParkingEventEntity pe = parkingEventDAO.findById(parkingEventId);
             pe.copy(parkingEvent);
             pe.setUpdatedTime(DateTime.now());
-            if (parkingEvent.getParkingSubLotId() != null && pe.getParkingSubLot() != null
-                && !pe.getParkingSubLot().getId().equals(parkingEvent.getParkingSubLotId())) {
+            if (parkingEvent.getParkingSubLotId() != null && pe.getParkingSubLotId() != null
+                && !pe.getParkingSubLotId().equals(parkingEvent.getParkingSubLotId())) {
                 ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingEvent.getParkingSubLotId());
-                pe.setParkingSubLot(parkingSubLot);
+                pe.setParkingSubLotId(parkingSubLot.getId());
             }
             if (parkingEvent.getParkingPassId() != null && pe.getParkingPass() != null
                 && !pe.getParkingPass().getId().equals(parkingEvent.getParkingPassId())) {
@@ -263,7 +263,7 @@ public class ParkingEventResource {
             if (parkingLot == null && parkingPass == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             } else {
-                parkingEvent.setParkingSubLot(parkingLot);
+                parkingEvent.setParkingSubLotId(parkingLotId);
                 parkingEvent.setParkingPass(parkingPass);
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
             }

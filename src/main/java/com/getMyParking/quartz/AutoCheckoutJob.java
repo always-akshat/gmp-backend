@@ -10,6 +10,7 @@ import com.getMyParking.service.guice.GuiceHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.context.internal.ManagedSessionContext;
@@ -53,6 +54,9 @@ public class AutoCheckoutJob implements Job {
         int count = 0;
 
         Map<Integer,List<PricingSlotEntity>> pricingSlotMap = Maps.newHashMap();
+
+        Hibernate.initialize(parkingSubLot.getPricingSlots());
+
         for (PricingSlotEntity pricingSlot : parkingSubLot.getPricingSlots()) {
             if (pricingSlotMap.containsKey(pricingSlot.getDay())) {
                 pricingSlotMap.get(pricingSlot.getDay()).add(pricingSlot);
@@ -67,7 +71,7 @@ public class AutoCheckoutJob implements Job {
                 ParkingEventEntity parkingEvent = new ParkingEventEntity();
                 parkingEvent.setEventTime(DateTime.now());
                 parkingEvent.setEventType("CHECKED_OUT");
-                parkingEvent.setParkingSubLot(parkingSubLot);
+                parkingEvent.setParkingSubLotId(parkingSubLot.getId());
                 parkingEvent.setRegistrationNumber(oldParkingEvent.getRegistrationNumber());
                 parkingEvent.setSerialNumber(oldParkingEvent.getSerialNumber());
                 parkingEvent.setType(oldParkingEvent.getType());

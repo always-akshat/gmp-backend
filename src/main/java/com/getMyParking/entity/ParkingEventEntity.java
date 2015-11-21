@@ -45,8 +45,6 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     private Integer companyId;
     private String special;
     private String focReason;
-    @JsonIgnore
-    private ParkingSubLotEntity parkingSubLot;
     private ParkingPassEntity parkingPass;
     @JsonProperty
     private Integer parkingSubLotId;
@@ -177,6 +175,16 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     }
 
     @Basic
+    @Column(name = "parking_sub_lot_id", nullable = false, insertable = true, updatable = true)
+    public Integer getParkingSubLotId() {
+        return parkingSubLotId;
+    }
+
+    public void setParkingSubLotId(Integer parkingSubLotId) {
+        this.parkingSubLotId = parkingSubLotId;
+    }
+
+    @Basic
     @Column(name = "operator_name", nullable = false, insertable = true, updatable = true, length = 255)
     public String getOperatorName() {
         return operatorName;
@@ -186,8 +194,6 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
         this.operatorName = operatorName;
     }
 
-    @Basic
-    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
     public Integer getParkingLotId() {
         return parkingLotId;
     }
@@ -294,16 +300,6 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     }
 
     @ManyToOne
-    @JoinColumn(name = "parking_sub_lot_id", referencedColumnName = "id", nullable = false)
-    public ParkingSubLotEntity getParkingSubLot() {
-        return parkingSubLot;
-    }
-
-    public void setParkingSubLot(ParkingSubLotEntity parkingSubLotByParkingSubLotId) {
-        this.parkingSubLot = parkingSubLotByParkingSubLotId;
-    }
-
-    @ManyToOne
     @JoinColumn(name = "parking_pass_id", referencedColumnName = "id")
     public ParkingPassEntity getParkingPass() {
         return parkingPass;
@@ -313,22 +309,13 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
         this.parkingPass = parkingPassByParkingPassId;
     }
 
-    public void setParkingSubLotId(Integer parkingSubLotId) {
-        this.parkingSubLotId = parkingSubLotId;
-    }
-
     @Transient
-    public Integer getParkingSubLotId() {
-        return parkingSubLotId;
+    public Integer getParkingPassId() {
+        return parkingPassId;
     }
 
     public void setParkingPassId(Integer parkingPassId) {
         this.parkingPassId = parkingPassId;
-    }
-
-    @Transient
-    public Integer getParkingPassId() {
-        return parkingPassId;
     }
 
     public void copy(ParkingEventEntity parkingEvent) {
