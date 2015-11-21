@@ -2,6 +2,7 @@ package com.getMyParking.dao;
 
 import com.getMyParking.dto.ActiveParkingPassDTO;
 import com.getMyParking.entity.ParkingPassEntity;
+import com.getMyParking.entity.ParkingPassMasterEntity;
 import com.getMyParking.entity.reports.PassReport;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -87,13 +88,20 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         });
     }
 
-    public List<PassReport> passReport(Integer parkingId) {
+    public List<PassReport> passReport(List<ParkingPassMasterEntity> parkingPassMasters) {
 
+        List<Integer> parkingPassMasterIds =
+                parkingPassMasters.stream().map(ParkingPassMasterEntity::getId).collect(Collectors.toList());
+        Map<Integer,Integer> masterPrice = parkingPassMasters.stream()
+                .collect(Collectors.toMap(ParkingPassMasterEntity::getId, ParkingPassMasterEntity::getPrice));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.rowCount());
+
+        projectionList.add(Projections.groupProperty("parkingPassMaster.id"));
         Criteria criteria = criteria().add(Restrictions.gt("validTime", DateTime.now()))
                                       .add(Restrictions.eq("isDeleted", 0))
-                                      .add(Restrictions.eq("parkingPassMaster.parkingId", parkingId))
-                                      .setProjection(Projections.rowCount())
-                                      .setProjection(Projections.groupProperty("parkingPassMaster.id"));
+                                      .add(Restrictions.in("parkingPassMaster.id", parkingPassMasterIds))
+                                      .setProjection(projectionList);
 
         List<Object[]> result = criteria.list();
         Map<Integer,PassReport> passReportMap = Maps.newHashMap();
@@ -108,30 +116,24 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 .dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
         DateTime endTime = startTime.plusMonths(1).minusSeconds(1);
 
-        criteria().add(Restrictions.between("validFrom", startTime, endTime))
+        result = criteria().add(Restrictions.between("validFrom", startTime, endTime))
                 .add(Restrictions.eq("isPaid", 1))
-                .add(Restrictions.eq("parkingPassMaster.parkingId",parkingId))
-                .setProjection(Projections.rowCount())
-                .setProjection(Projections.groupProperty("parkingPassMaster.id"))
-                .setProjection(Projections.property("parkingPassMaster.price"));
+                .add(Restrictions.in("parkingPassMaster.id", parkingPassMasterIds))
+                .setProjection(projectionList).list();
 
-        result = criteria.list();
         result.stream().forEach(objects -> {
             PassReport passReport = passReportMap.get(objects[1]);
             passReport.setPaidPassCount((Long) objects[0]);
-            passReport.setCollectedAmount(new BigDecimal((Long) objects[0] * (Integer)objects[2]));
+            passReport.setCollectedAmount(new BigDecimal((Long) objects[0] * masterPrice.get(objects[1])));
         });
 
-        criteria().add(Restrictions.eq("isPaid", 0))
-                .add(Restrictions.eq("parkingPassMaster.parkingId",parkingId))
-                .setProjection(Projections.rowCount())
-                .setProjection(Projections.groupProperty("parkingPassMaster.id"))
-                .setProjection(Projections.property("parkingPassMaster.price"));
+        result = criteria().add(Restrictions.eq("isPaid", 0))
+                .add(Restrictions.in("parkingPassMaster.id", parkingPassMasterIds))
+                .setProjection(projectionList).list();
 
-        result = criteria.list();
         result.stream().forEach(objects -> {
             PassReport passReport = passReportMap.get(objects[1]);
-            passReport.setBalanceAmount(new BigDecimal((Long) objects[0] * (Integer) objects[2]));
+            passReport.setBalanceAmount(new BigDecimal((Long) objects[0] * masterPrice.get(objects[1])));
         });
 
         return passReportMap.values().stream().collect(Collectors.toList());

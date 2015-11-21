@@ -124,19 +124,19 @@ public class ParkingPassResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    @ApiOperation(value = "Search Parking Pass", response = List.class)
+    @ApiOperation(value = "Pass Reports by parking id", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 403, message = "Forbidden"),
     })
-    public List<PassReport> parkingpassReport(@QueryParam("parkingId") IntParam parkingId,
+    public List<PassReport> parkingPassReport(@QueryParam("parkingId") IntParam parkingId,
                                                         @Auth GMPUser gmpUser) {
 
         if (!gmpUser.getParkingIds().contains(parkingId.get())) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
-        return parkingPassDAO.passReport(parkingId.get());
+        return parkingPassDAO.passReport(parkingPassMasterDAO.getPassMasters(parkingId.get()));
     }
 
     @POST
