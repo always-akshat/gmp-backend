@@ -183,7 +183,7 @@ public class ParkingSubLotEntity {
         this.parkingLot = parkingLotByParkingLotId;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public Set<PricingSlotEntity> getPricingSlots() {
         return pricingSlots;
     }
@@ -192,7 +192,7 @@ public class ParkingSubLotEntity {
         this.pricingSlots = pricingSlotsById;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public Set<ReceiptContentEntity> getReceiptContents() {
         return receiptContents;
     }
@@ -211,7 +211,7 @@ public class ParkingSubLotEntity {
         this.autoCheckoutCost = autoCheckoutCost;
     }
 
-    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parkingSubLot", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public Set<FocReasonsForParkingLotEntity> getFocReasons() {
         return focReasons;
     }

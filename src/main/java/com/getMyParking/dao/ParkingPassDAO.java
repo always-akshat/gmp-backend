@@ -12,6 +12,7 @@ import io.dropwizard.hibernate.AbstractDAO;
 import io.dropwizard.jersey.params.IntParam;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
@@ -173,4 +174,12 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         return list(criteria);
     }
+
+    public void deleteByMasterId(Integer id){
+        Query q = currentSession().createQuery("delete from ParkingPassEntity where parking_pass_master_id =:id");
+        q.setInteger("id", id);
+        q.executeUpdate();
+    }
+
+
 }

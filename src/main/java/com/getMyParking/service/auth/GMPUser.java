@@ -26,24 +26,24 @@ public class GMPUser {
     public GMPUser(UserB2BEntity userB2BEntity,String authToken, DateTime validTime) {
 
         this.parkingSubLotIds = Lists.newArrayList();
-        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLotAccess()) {
             parkingSubLotIds.add(entity.getParkingSubLotId());
         }
 
         this.parkingLotIds = Lists.newArrayList();
-        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLotAccess()) {
             if (!parkingLotIds.contains(entity.getParkingLotId()))
                 parkingLotIds.add(entity.getParkingLotId());
         }
 
         parkingIds = Lists.newArrayList();
-        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLotAccess()) {
             if (!parkingIds.contains(entity.getParkingId()))
                 parkingIds.add(entity.getParkingId());
         }
 
         companyIds = Lists.newArrayList();
-        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLots()) {
+        for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLotAccess()) {
             if (!companyIds.contains(entity.getCompanyId()))
                 companyIds.add(entity.getCompanyId());
         }

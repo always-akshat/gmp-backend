@@ -7,6 +7,7 @@ import com.getMyParking.quartz.ParkingEventsEMailingJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
+import com.getMyParking.service.filter.CorsFilter;
 import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
@@ -37,7 +38,10 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Logger;
@@ -94,16 +98,11 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         guiceBundle = GuiceBundle.<GetMyParkingConfiguration>newBuilder()
                                  .addModule(new GMPModule(hibernateBundle,bootstrap))
                                  .enableAutoConfig(getClass().getPackage().getName())
-                                 .setInjectorFactory(new InjectorFactory() {
-                                     @Override
-                                     public Injector create(Stage stage, List<Module> list) {
-                                         return LifecycleInjector.builder()
-                                                 .inStage(Stage.PRODUCTION)
-                                                 .withModules(list)
-                                                 .build()
-                                                 .createInjector();
-                                     }
-                                 })
+                                 .setInjectorFactory((stage, list) -> LifecycleInjector.builder()
+                                         .inStage(Stage.PRODUCTION)
+                                         .withModules(list)
+                                         .build()
+                                         .createInjector())
                                  .setConfigClass(GetMyParkingConfiguration.class)
                                  .build();
 
@@ -134,6 +133,19 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         ParkingSubLotDAO parkingSubLotDAO = guiceBundle.getInjector().getInstance(ParkingSubLotDAO.class);
         List<ParkingSubLotEntity> parkingSubLots =
                 Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllAutoCheckoutParkingLots()));
+
+        final FilterRegistration.Dynamic cors =
+                environment.servlets().addFilter("CORSFilter", CorsFilter.class);
+
+        // Configure CORS parameters
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+        cors.setInitParameter("allowedCredentials", "true");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
 
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
 

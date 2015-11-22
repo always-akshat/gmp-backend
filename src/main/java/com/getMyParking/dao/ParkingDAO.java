@@ -3,8 +3,14 @@ package com.getMyParking.dao;
 import com.getMyParking.entity.ParkingEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -21,7 +27,12 @@ public class ParkingDAO extends AbstractDAO<ParkingEntity> {
     }
 
     public void saveOrUpdateParking(ParkingEntity parking) {
-        persist(parking);
+        if(parking.getId()==null)
+            persist(parking);
+        else if(parking.getId()==0){
+            persist(parking);
+        }else
+            currentSession().merge(parking);
     }
 
 
@@ -33,5 +44,12 @@ public class ParkingDAO extends AbstractDAO<ParkingEntity> {
         Query q = currentSession().createQuery("delete from ParkingEntity where id =:id");
         q.setInteger("id", parkingId);
         q.executeUpdate();
+    }
+
+    public List<ParkingEntity> findByName(String name){
+        return list(
+                criteria().add(
+                        Restrictions.eq("name", name)
+                ).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
     }
 }

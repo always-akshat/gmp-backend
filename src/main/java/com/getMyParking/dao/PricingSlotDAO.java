@@ -1,5 +1,6 @@
 package com.getMyParking.dao;
 
+import com.getMyParking.entity.PriceGridEntity;
 import com.getMyParking.entity.PricingSlotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
@@ -15,9 +16,13 @@ public class PricingSlotDAO extends AbstractDAO<PricingSlotEntity> {
      *
      * @param sessionFactory a session provider
      */
+
+    private PriceGridDAO priceGridDAO;
+
     @Inject
     public PricingSlotDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
+        this.priceGridDAO = new PriceGridDAO(sessionFactory);
     }
 
     public PricingSlotEntity findById(Integer pricingSlotId) {
@@ -25,7 +30,10 @@ public class PricingSlotDAO extends AbstractDAO<PricingSlotEntity> {
     }
 
     public void saveOrUpdatePricingSlot(PricingSlotEntity priceSlot) {
-        persist(priceSlot);
+        if(priceSlot.getId()==null)
+            persist(priceSlot);
+        else
+            currentSession().merge(priceSlot);
     }
 
     public void deleteById(Integer parkingId) {

@@ -364,6 +364,13 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return parkingReports;
     } */
 
+
+    public void deleteSubLotByParkingId(Integer parkingId) {
+        Query q = currentSession().createQuery("delete from ParkingEventEntity where parking_id =:id");
+        q.setInteger("id", parkingId);
+        q.executeUpdate();
+    }
+
     public List<ParkingEventEntity> searchParkingEvents(Optional<IntParam> companyId, Optional<IntParam> parkingId,
                                                         Optional<IntParam> parkingLotId, Optional<IntParam> parkingSubLotId,
                                                         Optional<String> registrationNumber, Optional<DateTimeParam> fromDate,

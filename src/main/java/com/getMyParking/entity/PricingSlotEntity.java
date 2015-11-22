@@ -84,7 +84,7 @@ public class PricingSlotEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "pricingSlot", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "pricingSlot", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public Set<PriceGridEntity> getPriceGrids() {
         return priceGrids;
     }
