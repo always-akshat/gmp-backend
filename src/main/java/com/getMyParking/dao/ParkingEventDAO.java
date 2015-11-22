@@ -65,7 +65,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     public List<ParkingEventEntity> getParkingEvents(int parkingSubLotId, DateTime lastUpdateTime) {
 
-        Query q = currentSession().createQuery("from ParkingEventEntity where parkingSubLot.id =:id and updatedTime >= :updatedTime");
+        Query q = currentSession().createQuery("from ParkingEventEntity where parkingSubLotId =:id and updatedTime >= :updatedTime");
         q.setInteger("id", parkingSubLotId);
         q.setString("updatedTime",lastUpdateTime.toString());
         return list(q);
@@ -96,14 +96,14 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     public List<ParkingEventEntity> findBySerialNumberAndEventType(int parkingLotId, String eventType, String serialNumber) {
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class);
         criteria.add(Restrictions.eq("eventType",eventType))
-                .add(Restrictions.eq("parkingSubLot.id",parkingLotId))
+                .add(Restrictions.eq("parkingSubLotId",parkingLotId))
                 .add(Restrictions.eq("serialNumber", serialNumber));
 
         return list(criteria);
     }
 
     public ParkingReport createParkingSubLotReport(Integer parkingSubLotId, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingSubLot.id",parkingSubLotId),fromDate,toDate,null);
+        return createReport(Restrictions.eq("parkingSubLotId",parkingSubLotId),fromDate,toDate,null);
     }
 
     public ParkingReport createParkingLotReport(Integer parkingLotId, DateTime fromDate, DateTime toDate) {
@@ -262,7 +262,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 parkingReports.put(username,userParkingReport);
             }
             ParkingReport parkingReport =
-                    createReport(Restrictions.and(Restrictions.eq("parkingSubLot.id", user.getParkingSubLotId()),
+                    createReport(Restrictions.and(Restrictions.eq("parkingSubLotId", user.getParkingSubLotId()),
                             Restrictions.eq("operatorName",username)),fromDateTime,toDateTime,null);
             parkingReport.setParkingSubLotId(user.getParkingSubLotId());
             userParkingReport.getParkingReports().add(parkingReport);
@@ -332,14 +332,14 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         projectionList.add(Projections.sum("cost"),"revenue");
         projectionList.add(Projections.groupProperty("special"), "special");
         projectionList.add(Projections.groupProperty("eventType"),"eventType");
-        projectionList.add(Projections.groupProperty("parkingSubLot.id"),"parkingSubLotId");
+        projectionList.add(Projections.groupProperty("parkingSubLotId"),"parkingSubLotId");
         projectionList.add(Projections.groupProperty("operatorName"),"operatorName");
 
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
                 .add(Restrictions.between("eventTime", fromDateTime, toDateTime))
                 .add(Restrictions.in("operatorName",
                         filteredUsers.stream().map(user -> user.getUserB2B().getUsername()).collect(Collectors.toList())))
-                .add(Restrictions.in("parkingSubLot.id",
+                .add(Restrictions.in("parkingSubLotId",
                         filteredUsers.stream().map(ParkingSubLotUserAccessEntity::getParkingSubLotId).collect(Collectors.toList())))
                 .setProjection(projectionList);
         criteria.setResultTransformer(Transformers.aliasToBean(UserParkingReportDetails.class));
@@ -392,7 +392,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         }
 
         if (parkingSubLotId.isPresent()) {
-            criteria.add(Restrictions.eq("parkingSubLot.id",parkingSubLotId.get().get()));
+            criteria.add(Restrictions.eq("parkingSubLotId",parkingSubLotId.get().get()));
         }
 
         if (registrationNumber.isPresent()) {
