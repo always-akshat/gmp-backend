@@ -93,10 +93,10 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         return list(query);
     }
 
-    public List<ParkingEventEntity> findBySerialNumberAndEventType(int parkingLotId, String eventType, String serialNumber) {
+    public List<ParkingEventEntity> findBySerialNumberAndEventType(int parkingSubLotId, String eventType, String serialNumber) {
         Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class);
         criteria.add(Restrictions.eq("eventType",eventType))
-                .add(Restrictions.eq("parkingSubLotId",parkingLotId))
+                .add(Restrictions.eq("parkingSubLotId",parkingSubLotId))
                 .add(Restrictions.eq("serialNumber", serialNumber));
 
         return list(criteria);

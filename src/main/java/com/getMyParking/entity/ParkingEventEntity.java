@@ -194,6 +194,8 @@ public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
         this.operatorName = operatorName;
     }
 
+    @Basic
+    @Column(name = "parking_lot_id", nullable = false, insertable = true, updatable = true)
     public Integer getParkingLotId() {
         return parkingLotId;
     }
