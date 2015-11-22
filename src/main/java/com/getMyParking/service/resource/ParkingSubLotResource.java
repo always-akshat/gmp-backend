@@ -16,6 +16,7 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.hibernate.Hibernate;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -114,6 +115,7 @@ public class ParkingSubLotResource {
         if (parkingSubLot == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
+            Hibernate.initialize(parkingSubLot.getPricingSlots());
             pricingSlotEntity.setParkingSubLot(parkingSubLot);
             for (PriceGridEntity priceGridEntity : pricingSlotEntity.getPriceGrids()) {
                 priceGridEntity.setPricingSlot(pricingSlotEntity);
@@ -139,6 +141,7 @@ public class ParkingSubLotResource {
         if (parkingSubLot == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
+            Hibernate.initialize(parkingSubLot.getReceiptContents());
             receiptContentEntity.setParkingSubLot(parkingSubLot);
             parkingSubLot.getReceiptContents().add(receiptContentEntity);
             parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);

@@ -17,6 +17,7 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.hibernate.Hibernate;
 import org.joda.time.DateTime;
 
 import javax.validation.Valid;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 04/06/15.
@@ -186,12 +188,15 @@ public class UserResource {
                             parkingLotEntities.add(parkingLot);
                             Set<ParkingSubLotEntity> parkingSubLotEntities = Sets.newHashSet();
 
-                            for (ParkingSubLotEntity parkingSubLot : parkingLot.getParkingSubLots()) {
-
+                            parkingSubLotEntities.addAll(parkingLot.getParkingSubLots().stream().filter(parkingSubLot ->{
                                 if (gmpUser.getParkingSubLotIds().contains(parkingSubLot.getId())) {
-                                    parkingSubLotEntities.add(parkingSubLot);
+                                    Hibernate.initialize(parkingSubLot.getPricingSlots());
+                                    Hibernate.initialize(parkingSubLot.getFocReasons());
+                                    Hibernate.initialize(parkingSubLot.getReceiptContents());
+                                    return true;
                                 }
-                            }
+                                return false;
+                            }).collect(Collectors.toList()));
                             parkingLot.setParkingSubLots(parkingSubLotEntities);
                         }
                     }

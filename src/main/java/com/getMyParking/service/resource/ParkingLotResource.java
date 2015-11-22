@@ -18,6 +18,7 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.hibernate.Hibernate;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;

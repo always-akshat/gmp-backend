@@ -51,8 +51,8 @@ public class ParkingEventProcessor {
         parkingEvent.setCompanyId(user.getCompanyIds().get(0));
         parkingEvent.setParkingId(parkingId);
         parkingEvent.setParkingLotId(user.getParkingLotIds().get(0));
-        parkingEvent.setParkingSubLot(parkingSubLotDAO.getSubLotBy(
-                parkingPass.getParkingPassMaster().getVehicleType(),user.getParkingSubLotIds(), parkingId));
+        parkingEvent.setParkingSubLotId(parkingSubLotDAO.getSubLotBy(
+                parkingPass.getParkingPassMaster().getVehicleType(),user.getParkingSubLotIds(), parkingId).getId());
         parkingEvent.setParkingPass(parkingPass);
 
         int days = getDays();
@@ -82,7 +82,7 @@ public class ParkingEventProcessor {
             passPaidEvent.setEventType("PASS_PAID");
             passPaidEvent.setSerialNumber("" + parkingPass.getId() + day + hour + "P_P");
             passPaidEvent.setCost(new BigDecimal(parkingPass.getCost()));
-            passPaidEvent.setParkingSubLot(parkingEvent.getParkingSubLot());
+            passPaidEvent.setParkingSubLotId(parkingEvent.getParkingSubLotId());
             passPaidEvent.setParkingPass(parkingPass);
             passPaidEvent.setUpdatedTime(DateTime.now());
             parkingEventDAO.saveOrUpdateParkingEvent(passPaidEvent);
