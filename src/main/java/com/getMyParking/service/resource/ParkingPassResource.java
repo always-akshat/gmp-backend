@@ -103,20 +103,20 @@ public class ParkingPassResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 403, message = "Forbidden"),
     })
-    public List<ParkingPassEntity> searchParkingPass(@QueryParam("parkingId")Optional<IntParam> parkingId,
-                                                         @QueryParam("registrationNumber") Optional<String> registrationNumber,
+    public List<ParkingPassEntity> searchParkingPass(@QueryParam("parkingId")IntParam parkingId,
+                                                         @QueryParam("registrationNumber") String registrationNumber,
                                                         @QueryParam("isDeleted") Optional<IntParam> isDeleted,
                                                          @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
                                                          @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,
                                                          @Auth GMPUser gmpUser) {
 
-        if (parkingId.isPresent() && !gmpUser.getParkingIds().contains(parkingId.get().get())) {
+        if (parkingId.get() != null && !gmpUser.getParkingIds().contains(parkingId.get())) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
         Integer pageSize = pageSizeParam.get() > 30 ? 30 : pageSizeParam.get();
 
-        return parkingPassDAO.searchParkingPass(parkingId, registrationNumber, isDeleted, pageNumberParam.get(), pageSize);
+        return parkingPassDAO.searchParkingPass(parkingId.get(), registrationNumber, isDeleted, pageNumberParam.get(), pageSize);
     }
 
     @GET
