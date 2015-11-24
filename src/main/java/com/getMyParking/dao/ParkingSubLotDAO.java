@@ -2,8 +2,10 @@ package com.getMyParking.dao;
 
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.entity.PricingSlotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Query;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -26,7 +28,10 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
     }
 
     public void saveOrUpdateParkingLot(ParkingSubLotEntity parkingSubLot) {
-        persist(parkingSubLot);
+        if(parkingSubLot.getId()==null)
+            persist(parkingSubLot);
+        else
+            currentSession().merge(parkingSubLot);
     }
 
     public List<ParkingSubLotEntity> getAllAutoCheckoutParkingLots(){

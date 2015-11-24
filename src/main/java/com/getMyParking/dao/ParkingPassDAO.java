@@ -12,6 +12,7 @@ import io.dropwizard.hibernate.AbstractDAO;
 import io.dropwizard.jersey.params.IntParam;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
@@ -150,27 +151,42 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         return list(criteria().add(Restrictions.in("id",parkingPassIdInts)));
     }
 
-    public List<ParkingPassEntity> searchParkingPass(Optional<IntParam> parkingId, Optional<String> registrationNumber,
+    public List<ParkingPassEntity> searchParkingPass(Integer parkingId, String registrationNumber,
                                                      Optional<IntParam> isDeleted,
                                                      Integer integer, Integer pageSize) {
-        Criteria criteria = criteria();
 
-        if (parkingId.isPresent()) {
-            criteria.add(Restrictions.eq("parkingPassMaster.parkingId",parkingId.get().get()));
-        }
-
-        if (registrationNumber.isPresent()) {
-            criteria.add(Restrictions.eq("registrationNumber",registrationNumber.get()));
-        }
-
+        Query q;
         if (isDeleted.isPresent()) {
-            criteria.add(Restrictions.eq("isDeleted",isDeleted.get()));
+            q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
+                    "AND registrationNumber = :registrationNumber AND isDeleted = :isDeleted");
+            q.setInteger("isDeleted",isDeleted.get().get());
+        } else {
+            q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
+                    "AND registrationNumber = :registrationNumber");
         }
 
-        criteria.setFirstResult((integer-1)*pageSize);
-        criteria.setMaxResults(pageSize);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        q.setInteger("parkingId",parkingId);
+        q.setString("registrationNumber", registrationNumber);
 
-        return list(criteria);
+        q.setFirstResult((integer-1) * pageSize);
+        q.setMaxResults(pageSize);
+        q.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return q.list();
+    }
+
+    public void deleteByMasterId(Integer id){
+        Query q = currentSession().createQuery("delete from ParkingPassEntity where parkingPassMaster.id =:id");
+        q.setInteger("id", id);
+        q.executeUpdate();
+    }
+
+    public List<ParkingPassEntity> getAllPassesWithRegistrationNumberAndParkingId(String registrationNumber, Integer parkingId) {
+
+        Query q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
+                "AND registrationNumber = :registrationNumber");
+        q.setInteger("parkingId",parkingId);
+        q.setString("registrationNumber", registrationNumber);
+        q.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return q.list();
     }
 }

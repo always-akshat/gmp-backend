@@ -13,6 +13,7 @@ import org.joda.time.Days;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 03/11/15.
@@ -22,11 +23,14 @@ public class ParkingEventProcessor {
     private static final String CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+%";
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingEventDAO parkingEventDAO;
+    private ParkingPassDAO parkingPassDAO;
 
     @Inject
-    public ParkingEventProcessor(ParkingSubLotDAO parkingSubLotDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingEventProcessor(ParkingSubLotDAO parkingSubLotDAO, ParkingEventDAO parkingEventDAO,
+                                 ParkingPassDAO parkingPassDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingEventDAO = parkingEventDAO;
+        this.parkingPassDAO = parkingPassDAO;
     }
 
     public void processEvent(ParkingEventEntity parkingEvent) {
@@ -40,7 +44,13 @@ public class ParkingEventProcessor {
             if (parkingEvent.getParkingPass() == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
-            parkingEvent.getParkingPass().setIsDeleted(1);
+            List<ParkingPassEntity> passEntityList = parkingPassDAO.getAllPassesWithRegistrationNumberAndParkingId(
+                    parkingEvent.getParkingPass().getRegistrationNumber(), parkingEvent.getParkingId()
+            );
+            passEntityList.forEach( parkingPassEntity -> {
+                parkingPassEntity.setIsDeleted(1);
+                parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
+            });
         }
     }
 
@@ -51,8 +61,8 @@ public class ParkingEventProcessor {
         parkingEvent.setCompanyId(user.getCompanyIds().get(0));
         parkingEvent.setParkingId(parkingId);
         parkingEvent.setParkingLotId(user.getParkingLotIds().get(0));
-        parkingEvent.setParkingSubLot(parkingSubLotDAO.getSubLotBy(
-                parkingPass.getParkingPassMaster().getVehicleType(),user.getParkingSubLotIds(), parkingId));
+        parkingEvent.setParkingSubLotId(parkingSubLotDAO.getSubLotBy(
+                parkingPass.getParkingPassMaster().getVehicleType(), user.getParkingSubLotIds(), parkingId).getId());
         parkingEvent.setParkingPass(parkingPass);
 
         int days = getDays();
@@ -82,7 +92,7 @@ public class ParkingEventProcessor {
             passPaidEvent.setEventType("PASS_PAID");
             passPaidEvent.setSerialNumber("" + parkingPass.getId() + day + hour + "P_P");
             passPaidEvent.setCost(new BigDecimal(parkingPass.getCost()));
-            passPaidEvent.setParkingSubLot(parkingEvent.getParkingSubLot());
+            passPaidEvent.setParkingSubLotId(parkingEvent.getParkingSubLotId());
             passPaidEvent.setParkingPass(parkingPass);
             passPaidEvent.setUpdatedTime(DateTime.now());
             parkingEventDAO.saveOrUpdateParkingEvent(passPaidEvent);

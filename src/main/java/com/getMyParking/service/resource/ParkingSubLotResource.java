@@ -5,6 +5,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingLotDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
+import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.service.auth.GMPUser;
@@ -15,12 +16,14 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.hibernate.Hibernate;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 15/08/15.
@@ -34,12 +37,15 @@ public class ParkingSubLotResource {
     private ParkingSubLotDAO parkingSubLotDAO;
     private ParkingLotDAO parkingLotDAO;
     private ParkingEventDAO parkingEventDAO;
+    private ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO;
 
     @Inject
-    public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO, ParkingEventDAO parkingEventDAO) {
+    public ParkingSubLotResource(ParkingSubLotDAO parkingSubLotDAO, ParkingLotDAO parkingLotDAO,
+                                 ParkingEventDAO parkingEventDAO, ParkingSubLotUserAccessDAO parkingSubLotUserAccessDAO) {
         this.parkingSubLotDAO = parkingSubLotDAO;
         this.parkingLotDAO = parkingLotDAO;
         this.parkingEventDAO = parkingEventDAO;
+        this.parkingSubLotUserAccessDAO = parkingSubLotUserAccessDAO;
     }
 
     @GET
@@ -109,6 +115,7 @@ public class ParkingSubLotResource {
         if (parkingSubLot == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
+            Hibernate.initialize(parkingSubLot.getPricingSlots());
             pricingSlotEntity.setParkingSubLot(parkingSubLot);
             for (PriceGridEntity priceGridEntity : pricingSlotEntity.getPriceGrids()) {
                 priceGridEntity.setPricingSlot(pricingSlotEntity);
@@ -134,6 +141,7 @@ public class ParkingSubLotResource {
         if (parkingSubLot == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
+            Hibernate.initialize(parkingSubLot.getReceiptContents());
             receiptContentEntity.setParkingSubLot(parkingSubLot);
             parkingSubLot.getReceiptContents().add(receiptContentEntity);
             parkingSubLotDAO.saveOrUpdateParkingLot(parkingSubLot);
@@ -153,5 +161,21 @@ public class ParkingSubLotResource {
     public ParkingReport report( @PathParam("parkingSubLotId") Integer parkingSubLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         return parkingEventDAO.createParkingSubLotReport(parkingSubLotId,fromDate.get(),toDate.get());
+    }
+
+    @Path("/user")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by parking lot for all operators ", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingSubLotUserAccessEntity> subLotUsers( @QueryParam("parkingSubLotIds") String ids) {
+        List<String> parkingSubLotIds = Splitter.on(",").splitToList(ids);
+        List<Integer> parkingSubLotsIdInts = parkingSubLotIds.stream()
+                .map(Integer::parseInt).collect(Collectors.toList());
+        return parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingSubLots(parkingSubLotsIdInts);
     }
 }

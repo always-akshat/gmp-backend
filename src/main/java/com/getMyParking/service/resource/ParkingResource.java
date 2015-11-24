@@ -8,6 +8,7 @@ import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.reports.ParkingReportBySubLotType;
 import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
@@ -178,4 +179,25 @@ public class ParkingResource {
         }
         return parkingPassMasterEntity.getId();
     }
+
+    @GET
+    @Path("/")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Get Parking by Parking Id", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public List<ParkingEntity> searchByName(@ApiParam(value = "Parking name")@QueryParam("name")String name) {
+        System.out.println(name);
+        List<ParkingEntity> parkingEntity = parkingDAO.findByName(name);
+        if (parkingEntity == null) {
+            return Lists.newArrayList();
+        }
+        return parkingEntity;
+    }
+
+
 }

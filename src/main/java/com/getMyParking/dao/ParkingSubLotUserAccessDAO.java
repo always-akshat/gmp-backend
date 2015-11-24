@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
@@ -30,9 +31,24 @@ public class ParkingSubLotUserAccessDAO extends AbstractDAO<ParkingSubLotUserAcc
                 .add(Restrictions.eq("parkingLotId", parkingLotId)))));
     }
 
+    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToParkingSubLot(Integer parkingSubLotId) {
+        return Lists.newArrayList(Sets.newHashSet(list(currentSession().createCriteria(ParkingSubLotUserAccessEntity.class)
+                .add(Restrictions.eq("parkingSubLotId", parkingSubLotId)))));
+    }
+
+    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToParkingSubLots(List<Integer> parkingSublotIds) {
+        return list(criteria().add(Restrictions.in("parkingSubLotId", parkingSublotIds)));
+    }
+
     public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToCompany(Integer companyId) {
         return Lists.newArrayList(Sets.newHashSet(list(currentSession().createCriteria(ParkingSubLotUserAccessEntity.class)
                 .add(Restrictions.eq("companyId", companyId)))));
+    }
+
+    public void deleteByParkingId(Integer parkingId){
+        Query q = currentSession().createQuery("delete from ParkingSubLotUserAccessEntity where parking_id =:id");
+        q.setInteger("id", parkingId);
+        q.executeUpdate();
     }
 
 }

@@ -16,7 +16,7 @@ public class UserB2BEntity {
     private String password;
     private String name;
     private String contactNumber;
-    private Set<ParkingSubLotUserAccessEntity> parkingSubLots;
+    private Set<ParkingSubLotUserAccessEntity> parkingSubLotAccess;
     @NotNull
     private Set<AccessMasterEntity> userAccesses;
 
@@ -83,13 +83,13 @@ public class UserB2BEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "userB2B")
-    public Set<ParkingSubLotUserAccessEntity> getParkingSubLots() {
-        return parkingSubLots;
+    @OneToMany(mappedBy = "userB2B", cascade = CascadeType.ALL)
+    public Set<ParkingSubLotUserAccessEntity> getParkingSubLotAccess() {
+        return parkingSubLotAccess;
     }
 
-    public void setParkingSubLots(Set<ParkingSubLotUserAccessEntity> parkingLotHasUserB2BsByUsername) {
-        this.parkingSubLots = parkingLotHasUserB2BsByUsername;
+    public void setParkingSubLotAccess(Set<ParkingSubLotUserAccessEntity> parkingLotHasUserB2BsByUsername) {
+        this.parkingSubLotAccess = parkingLotHasUserB2BsByUsername;
     }
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

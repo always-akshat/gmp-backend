@@ -2,8 +2,14 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
-import com.getMyParking.dao.*;
-import com.getMyParking.entity.*;
+import com.getMyParking.dao.ParkingDAO;
+import com.getMyParking.dao.ParkingEventDAO;
+import com.getMyParking.dao.ParkingLotDAO;
+import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
+import com.getMyParking.entity.ParkingEntity;
+import com.getMyParking.entity.ParkingLotEntity;
+import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.getMyParking.service.auth.GMPUser;
@@ -12,6 +18,7 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.hibernate.Hibernate;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
