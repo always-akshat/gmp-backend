@@ -185,7 +185,8 @@ public class ParkingEventResource {
             }
 
             SessionEntity session = gmpUser.getSession();
-            if (session.getLastTransactionTime().toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).dayOfMonth() !=
+            if ( session.getLastTransactionTime() != null &&
+                    session.getLastTransactionTime().toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).dayOfMonth() !=
                     DateTime.now(DateTimeZone.forOffsetHoursMinutes(5,30)).dayOfMonth()) {
                 session.setTransactionCount(1);
             } else {
