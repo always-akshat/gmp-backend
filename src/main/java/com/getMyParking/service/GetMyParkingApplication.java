@@ -179,6 +179,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         session.close();
 
         ScheduledExecutorService executorService = environment.lifecycle().scheduledExecutorService("session-save").build();
-        executorService.scheduleAtFixedRate(guiceBundle.getInjector().getInstance(SessionSaveTask.class),2,2, TimeUnit.MINUTES);
+        executorService.scheduleAtFixedRate(guiceBundle.getInjector().getInstance(SessionSaveTask.class), 2, 2, TimeUnit.MINUTES);
     }
 }
