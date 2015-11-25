@@ -1,5 +1,7 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -10,6 +12,7 @@ import javax.persistence.*;
 public class ParkingSubLotUserAccessEntity {
     private int id;
     private int parkingSubLotId;
+    @JsonIgnore
     private UserB2BEntity userB2B;
     private int parkingLotId;
     private int parkingId;
