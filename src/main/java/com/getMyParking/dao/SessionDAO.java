@@ -10,6 +10,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.IntegerType;
@@ -63,6 +64,8 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
         sqlQuery.addScalar("lastAccessTime", new CustomType(new PersistentDateTime()));
         sqlQuery.addScalar("lastTransactionTime", new CustomType(new PersistentDateTime()));
         sqlQuery.addScalar("transactionCount", IntegerType.INSTANCE);
+
+        sqlQuery.setResultTransformer(Transformers.aliasToBean(ActiveSessions.class));
         return sqlQuery.list();
 
     }
