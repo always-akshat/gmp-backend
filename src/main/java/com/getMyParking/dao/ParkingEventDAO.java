@@ -396,7 +396,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         }
 
         if (registrationNumber.isPresent()) {
-            criteria.add(Restrictions.eq("registrationNumber",registrationNumber.get()));
+            criteria.add(Restrictions.ilike("registrationNumber",registrationNumber.get(), MatchMode.ANYWHERE));
         }
 
         if (fromDate.isPresent() && toDate.isPresent()) {
