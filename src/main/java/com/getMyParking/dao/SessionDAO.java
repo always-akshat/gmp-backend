@@ -47,7 +47,7 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
 
     public SessionEntity findActiveSession(String userName) {
         return uniqueResult(criteria().add(Restrictions.eq("userB2BEntity.username", userName))
-                .addOrder(Order.desc("validTime")));
+                .addOrder(Order.desc("validTime")).setMaxResults(1));
     }
 
     public List<ActiveSessions> getActiveSessions() {
