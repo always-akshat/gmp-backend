@@ -2,6 +2,7 @@ package com.getMyParking.service.auth;
 
 import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
+import com.getMyParking.entity.SessionEntity;
 import com.getMyParking.entity.UserB2BEntity;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
@@ -21,9 +22,9 @@ public class GMPUser {
     private List<Integer> companyIds;
     private List<AccessMasterEntity> userAccesses;
     private String authToken;
-    private DateTime validTime;
+    private SessionEntity session;
 
-    public GMPUser(UserB2BEntity userB2BEntity,String authToken, DateTime validTime) {
+    public GMPUser(UserB2BEntity userB2BEntity,String authToken, SessionEntity session) {
 
         this.parkingSubLotIds = Lists.newArrayList();
         for (ParkingSubLotUserAccessEntity entity : userB2BEntity.getParkingSubLotAccess()) {
@@ -52,18 +53,22 @@ public class GMPUser {
         this.name = userB2BEntity.getName();
         this.userAccesses = Lists.newArrayList(userB2BEntity.getUserAccesses());
         this.authToken = authToken;
-        this.validTime = validTime;
+        this.session = session;
     }
 
     public GMPUser() {
     }
 
     public DateTime getValidTime() {
-        return validTime;
+        return session.getValidTime();
     }
 
-    public void setValidTime(DateTime validTime) {
-        this.validTime = validTime;
+    public SessionEntity getSession() {
+        return session;
+    }
+
+    public void setSession(SessionEntity session) {
+        this.session = session;
     }
 
     public List<Integer> getParkingLotIds() {

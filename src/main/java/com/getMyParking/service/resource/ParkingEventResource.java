@@ -6,10 +6,7 @@ import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.dto.ParkingEventDumpDTO;
-import com.getMyParking.entity.GetParkingEventResponse;
-import com.getMyParking.entity.ParkingEventEntity;
-import com.getMyParking.entity.ParkingPassEntity;
-import com.getMyParking.entity.ParkingSubLotEntity;
+import com.getMyParking.entity.*;
 import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
 import com.google.common.collect.Lists;
@@ -21,6 +18,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
 import io.dropwizard.jersey.params.IntParam;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -102,7 +100,7 @@ public class ParkingEventResource {
             @ApiResponse(code = 401, message = "UnAuthorized"),
     })
     public List<GetParkingEventResponse> getParkingEventById(@QueryParam("lastUpdateTime")DateTimeParam lastUpdateTime,
-                                                        @Auth GMPUser gmpUser) {
+                                                        @Auth GMPUser gmpUser, @HeaderParam("DEVICE_ID") String deviceId) {
         List<Integer> parkingSubLotIds = gmpUser.getParkingSubLotIds();
         List<GetParkingEventResponse> parkingEventsResponseList = Lists.newArrayList();
         for (Integer parkingSubLotId : parkingSubLotIds) {
@@ -123,6 +121,9 @@ public class ParkingEventResource {
             parkingEventResponse.setParkingEvents(parkingEvents);
             parkingEventsResponseList.add(parkingEventResponse);
         }
+        SessionEntity session = gmpUser.getSession();
+        session.setLastAccessTime(DateTime.now());
+        session.setDeviceId(deviceId);
         return parkingEventsResponseList;
     }
 
@@ -164,7 +165,7 @@ public class ParkingEventResource {
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     public List<BigInteger> saveOrUpdateParkingEvents(@ApiParam (value = "Parking Event") @Valid List<ParkingEventEntity> parkingEvents,
-                                               @Auth GMPUser gmpUser) {
+                                               @Auth GMPUser gmpUser, @HeaderParam("DEVICE_ID") String deviceId) {
         List<Integer> parkingSubLotIds = parkingEvents.stream().map(ParkingEventEntity::getParkingSubLotId)
                 .distinct().collect(Collectors.toList());
         if (gmpUser.getParkingSubLotIds().containsAll(parkingSubLotIds)) {
@@ -182,6 +183,18 @@ public class ParkingEventResource {
                     }
                 }
             }
+
+            SessionEntity session = gmpUser.getSession();
+            if (session.getLastTransactionTime().toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).dayOfMonth() !=
+                    DateTime.now(DateTimeZone.forOffsetHoursMinutes(5,30)).dayOfMonth()) {
+                session.setTransactionCount(1);
+            } else {
+                session.setTransactionCount(session.getTransactionCount() + 1);
+            }
+
+            session.setLastAccessedParkingLotId(parkingEvents.get(0).getParkingLotId());
+            session.setLastTransactionTime(DateTime.now());
+            session.setDeviceId(deviceId);
             return parkingEventIds;
         } else {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -319,21 +332,6 @@ public class ParkingEventResource {
 
         return parkingEventDAO.searchParkingEvents(companyId, parkingId, parkingLotId, parkingSubLotId, registrationNumber,
                 fromDate, toDate, eventType, pageNumberParam.get(), pageSize);
-    }
-
-    @GET
-    @Path("/dump/")
-    @Timed
-    @ExceptionMetered
-    @UnitOfWork
-    @ApiOperation(value = "Get Parking Events by last update time stamp", response = List.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "UnAuthorized"),
-    })
-    public List<ParkingEventDumpDTO> getParkingEventsById(@QueryParam("parkingId")Optional<IntParam> parkingId,
-                                                         @QueryParam("date") Optional<DateTimeParam> toDate) {
-        return parkingEventDAO.getParkingEventsDump(parkingId.get().get(),toDate.get().get());
     }
 
 }

@@ -66,7 +66,8 @@ public class UserResource {
     @Timed
     @ExceptionMetered
     @UnitOfWork
-    public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password) throws AuthenticationException {
+    public GMPUser login(@FormParam("username") String userName, @FormParam("password") String password,
+                         @HeaderParam("DEVICE_ID") String deviceId) throws AuthenticationException {
         if (!Strings.isNullOrEmpty(userName) && !Strings.isNullOrEmpty(password)) {
 
             UserB2BEntity userB2BEntity = userB2BDAO.loginUser(userName, password);
@@ -74,14 +75,16 @@ public class UserResource {
                 throw new WebApplicationException("Invalid Credentials",Response.Status.UNAUTHORIZED);
             }
 
-            long millis = DateTime.now().getMillis();
-            String authToken = millis + UUID.randomUUID().toString().substring(0,6);
-            DateTime validTillDate = DateTime.now().plusYears(3);
-            SessionEntity sessionEntity = new SessionEntity(authToken,validTillDate,userB2BEntity);
-            sessionDAO.saveSession(sessionEntity);
-
-            GMPUser user = new GMPUser(userB2BEntity,authToken,sessionEntity.getValidTime());
-            authTokenCache.put(authToken,user);
+            SessionEntity session = sessionDAO.findActiveSession(userName);
+            if (session == null) {
+                long millis = DateTime.now().getMillis();
+                String authToken = millis + UUID.randomUUID().toString().substring(0, 6);
+                DateTime validTillDate = DateTime.now().plusYears(3);
+                session = new SessionEntity(authToken, validTillDate, userB2BEntity,deviceId);
+                sessionDAO.saveSession(session);
+            }
+            GMPUser user = new GMPUser(userB2BEntity,session.getAuthToken(),session);
+            authTokenCache.put(session.getAuthToken(),user);
             return user;
         } else {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

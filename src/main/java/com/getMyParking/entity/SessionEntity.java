@@ -1,5 +1,6 @@
 package com.getMyParking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -15,14 +16,22 @@ public class SessionEntity {
     private String authToken;
     private DateTime validTime;
     private UserB2BEntity userB2BEntity;
+    private DateTime lastTransactionTime;
+    private DateTime lastAccessTime;
+    private String deviceId;
+    private Integer lastAccessedParkingLotId;
+    private Integer transactionCount;
 
     public SessionEntity() {
     }
 
-    public SessionEntity(String authToken, DateTime validTillTimestamp, UserB2BEntity userB2BEntity) {
+    public SessionEntity(String authToken, DateTime validTillTimestamp, UserB2BEntity userB2BEntity, String deviceId) {
         this.authToken = authToken;
         this.validTime = validTillTimestamp;
         this.userB2BEntity = userB2BEntity;
+        this.lastAccessTime = DateTime.now();
+        this.deviceId = deviceId;
+        this.transactionCount = 0;
     }
 
     @Id
@@ -57,6 +66,58 @@ public class SessionEntity {
         this.validTime = validTime;
     }
 
+    @Basic
+    @Column(name = "last_transaction_time", nullable = false, insertable = true, updatable = true)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    public DateTime getLastTransactionTime() {
+        return lastTransactionTime;
+    }
+
+    public void setLastTransactionTime(DateTime lastTransactionTime) {
+        this.lastTransactionTime = lastTransactionTime;
+    }
+
+    @Basic
+    @Column(name = "last_access_time", nullable = false, insertable = true, updatable = true)
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    public DateTime getLastAccessTime() {
+        return lastAccessTime;
+    }
+
+    public void setLastAccessTime(DateTime lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
+    }
+
+    @Basic
+    @Column(name = "device_id", nullable = false, insertable = true, updatable = true, length = 255)
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @Basic
+    @Column(name = "last_accessed_parking_lot_id", nullable = false, insertable = true, updatable = true)
+    public Integer getLastAccessedParkingLotId() {
+        return lastAccessedParkingLotId;
+    }
+
+    public void setLastAccessedParkingLotId(Integer lastAccessedParkingLotId) {
+        this.lastAccessedParkingLotId = lastAccessedParkingLotId;
+    }
+
+    @Basic
+    @Column(name = "transaction_count", nullable = false, insertable = true, updatable = true)
+    public Integer getTransactionCount() {
+        return transactionCount;
+    }
+
+    public void setTransactionCount(Integer transactionCount) {
+        this.transactionCount = transactionCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,7 +127,15 @@ public class SessionEntity {
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (authToken != null ? !authToken.equals(that.authToken) : that.authToken != null) return false;
-        return !(validTime != null ? !validTime.equals(that.validTime) : that.validTime != null);
+        if (validTime != null ? !validTime.equals(that.validTime) : that.validTime != null) return false;
+        if (lastTransactionTime != null ? !lastTransactionTime.equals(that.lastTransactionTime) : that.lastTransactionTime != null)
+            return false;
+        if (lastAccessTime != null ? !lastAccessTime.equals(that.lastAccessTime) : that.lastAccessTime != null)
+            return false;
+        if (deviceId != null ? !deviceId.equals(that.deviceId) : that.deviceId != null) return false;
+        if (lastAccessedParkingLotId != null ? !lastAccessedParkingLotId.equals(that.lastAccessedParkingLotId) : that.lastAccessedParkingLotId != null)
+            return false;
+        return !(transactionCount != null ? !transactionCount.equals(that.transactionCount) : that.transactionCount != null);
 
     }
 
@@ -75,6 +144,11 @@ public class SessionEntity {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (authToken != null ? authToken.hashCode() : 0);
         result = 31 * result + (validTime != null ? validTime.hashCode() : 0);
+        result = 31 * result + (lastTransactionTime != null ? lastTransactionTime.hashCode() : 0);
+        result = 31 * result + (lastAccessTime != null ? lastAccessTime.hashCode() : 0);
+        result = 31 * result + (deviceId != null ? deviceId.hashCode() : 0);
+        result = 31 * result + (lastAccessedParkingLotId != null ? lastAccessedParkingLotId.hashCode() : 0);
+        result = 31 * result + (transactionCount != null ? transactionCount.hashCode() : 0);
         return result;
     }
 

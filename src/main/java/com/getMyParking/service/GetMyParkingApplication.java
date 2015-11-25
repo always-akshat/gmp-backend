@@ -11,6 +11,7 @@ import com.getMyParking.service.filter.CorsFilter;
 import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
+import com.getMyParking.task.SessionSaveTask;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
@@ -44,6 +45,8 @@ import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -174,5 +177,8 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 .build();
         scheduler.scheduleJob(jobDetail,trigger);
         session.close();
+
+        ScheduledExecutorService executorService = environment.lifecycle().scheduledExecutorService("session-save").build();
+        executorService.schedule(guiceBundle.getInjector().getInstance(SessionSaveTask.class),2, TimeUnit.MINUTES);
     }
 }
