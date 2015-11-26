@@ -8,6 +8,8 @@ import com.google.inject.name.Named;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.context.internal.ManagedSessionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -15,6 +17,8 @@ import java.util.concurrent.ConcurrentMap;
  * Created by rahulgupta.s on 25/11/15.
  */
 public class SessionSaveTask implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionSaveTask.class);
 
     private SessionFactory sessionFactory;
     private SessionDAO sessionDAO;
@@ -30,15 +34,20 @@ public class SessionSaveTask implements Runnable {
 
     @Override
     public void run() {
-        Session session = sessionFactory.openSession();
-        ManagedSessionContext.bind(session);
-        ConcurrentMap<String,GMPUser> contents = sessionCache.asMap();
-        contents.forEach((s, gmpUser) -> {
-            sessionDAO.updateSession(gmpUser.getSession());
-        });
-        session.flush();
-        session.clear();
-        session.close();
+        try {
+            Session session = sessionFactory.openSession();
+            ManagedSessionContext.bind(session);
+            ConcurrentMap<String,GMPUser> contents = sessionCache.asMap();
+            contents.forEach((s, gmpUser) -> {
+                sessionDAO.updateSession(gmpUser.getSession());
+            });
+            session.flush();
+            session.clear();
+            session.close();
+        } catch (Exception ex) {
+            logger.error("Session Save Task Exception ", ex);
+        }
+
     }
 
 }
