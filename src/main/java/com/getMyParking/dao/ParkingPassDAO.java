@@ -171,7 +171,9 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         q.setFirstResult((integer-1) * pageSize);
         q.setMaxResults(pageSize);
         q.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        return q.list();
+        List<ParkingPassEntity> passEntityList = q.list();
+        passEntityList.forEach(pass -> pass.setParkingPassMasterId(pass.getParkingPassMaster().getId()));
+        return passEntityList;
     }
 
     public void deleteByMasterId(Integer id){
@@ -184,7 +186,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         Query q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
                 "AND registrationNumber = :registrationNumber");
-        q.setInteger("parkingId",parkingId);
+        q.setInteger("parkingId", parkingId);
         q.setString("registrationNumber", registrationNumber);
         q.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return q.list();
