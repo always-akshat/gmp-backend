@@ -64,10 +64,12 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 "from `parking_pass` inner join `parking_pass_master` on `parking_pass`.`parking_pass_master_id` = `parking_pass_master`.`id` " +
                 "where `parking_pass`.`valid_time` >= CURRENT_TIMESTAMP and `parking_pass`.`parking_pass_master_id` IN" +
                 " :parkingPassIds and `parking_pass`.`is_deleted` = 0 group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");*/
-        SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*, Count(*) as count,  SUM(`parking_pass`.`is_paid`) as isPaidCount " +
-                "from `parking_pass` inner join `parking_pass_master` on `parking_pass`.`parking_pass_master_id` = `parking_pass_master`.`id` " +
-                "where `parking_pass`.`valid_time` >= CURRENT_TIMESTAMP and `parking_pass`.`parking_pass_master_id` IN" +
-                " :parkingPassIds group by `parking_pass`.`registration_number`,`parking_pass`.`parking_pass_master_id`");
+        SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*,r.count,r.isPaidCount " +
+                "from `parking_pass` inner join " +
+                "(select max(id) as id,count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
+                "where parking_pass_master_id in :parkingPassIds " +
+                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id " +
+                " order by valid_time desc");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
         query.addScalar("count", IntegerType.INSTANCE);
@@ -75,8 +77,22 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         query.setResultTransformer(Transformers.aliasToBean(ActiveParkingPassDTO.class));
 
         List<ActiveParkingPassDTO> list = query.list();
+        List<ParkingPassEntity> returnList = Lists.newArrayList();
 
-        return Lists.transform(list, new Function<ActiveParkingPassDTO, ParkingPassEntity>() {
+        for(ActiveParkingPassDTO activeParkingPassDTO : list){
+            ParkingPassEntity entity = activeParkingPassDTO.getParkingPass();
+            entity.setBalanceAmount(
+                    entity.getParkingPassMaster().getPrice() * (activeParkingPassDTO.getCount() - activeParkingPassDTO.getIsPaidCount())
+            );
+
+            if(entity.getValidTime().isAfterNow() || entity.getValidTime().isAfter(DateTime.now().minusMonths(1))){
+                returnList.add(entity);
+            }
+        }
+
+        return returnList;
+
+        /*return Lists.transform(list, new Function<ActiveParkingPassDTO, ParkingPassEntity>() {
             @Nullable
             @Override
             public ParkingPassEntity apply(ActiveParkingPassDTO activeParkingPassDTO) {
@@ -84,9 +100,12 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 entity.setBalanceAmount(
                         entity.getParkingPassMaster().getPrice() * (activeParkingPassDTO.getCount() - activeParkingPassDTO.getIsPaidCount())
                 );
-                return entity;
+                if(entity.getValidTime().isAfterNow())
+                    return entity;
+                else
+                    return null;
             }
-        });
+        });*/
     }
 
     public List<PassReport> passReport(List<ParkingPassMasterEntity> parkingPassMasters) {
