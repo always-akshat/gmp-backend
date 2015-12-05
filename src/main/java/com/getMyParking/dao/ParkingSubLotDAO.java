@@ -1,11 +1,8 @@
 package com.getMyParking.dao;
 
-import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.ParkingSubLotEntity;
-import com.getMyParking.entity.PricingSlotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.Query;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -37,7 +34,8 @@ public class ParkingSubLotDAO extends AbstractDAO<ParkingSubLotEntity> {
     public List<ParkingSubLotEntity> getAllAutoCheckoutParkingLots(){
         return list(
                 criteria()
-                .add(Restrictions.neOrIsNotNull("autoCheckoutTime",null))
+                .add(Restrictions.neOrIsNotNull("autoCheckoutTime", null))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
         );
     }
 

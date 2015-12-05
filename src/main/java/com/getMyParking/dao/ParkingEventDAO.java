@@ -89,6 +89,7 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         query.setParameter("fromDate", fromDate.toString());
         query.setParameter("toDate", toDate.toString());
         query.addEntity(ParkingEventEntity.class);
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         return list(query);
     }

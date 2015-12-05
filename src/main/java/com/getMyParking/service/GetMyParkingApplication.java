@@ -12,13 +12,8 @@ import com.getMyParking.service.guice.GMPModule;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.getMyParking.service.managed.ManagedQuartzScheduler;
 import com.getMyParking.task.SessionSaveTask;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Injector;
-import com.google.inject.Module;
 import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
-import com.hubspot.dropwizard.guice.InjectorFactory;
 import com.netflix.governator.guice.LifecycleInjector;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
@@ -38,6 +33,7 @@ import org.hibernate.context.internal.ManagedSessionContext;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -61,6 +57,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * To change this template use File | Settings | File Templates.
  */
 public class GetMyParkingApplication extends Application<GetMyParkingConfiguration> {
+
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(GetMyParkingApplication.class);
 
     public static void main(String[] args) throws Exception {
         new GetMyParkingApplication().run(args);
@@ -134,8 +132,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         Session session = guiceBundle.getInjector().getInstance(SessionFactory.class).openSession();
         ManagedSessionContext.bind(session);
         ParkingSubLotDAO parkingSubLotDAO = guiceBundle.getInjector().getInstance(ParkingSubLotDAO.class);
-        List<ParkingSubLotEntity> parkingSubLots =
-                Lists.newArrayList(Sets.newHashSet(parkingSubLotDAO.getAllAutoCheckoutParkingLots()));
 
         final FilterRegistration.Dynamic cors =
                 environment.servlets().addFilter("CORSFilter", CorsFilter.class);
@@ -145,15 +141,15 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
         cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
         cors.setInitParameter("allowedCredentials", "true");
-
         // Add URL mapping
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
-
+        List<ParkingSubLotEntity> parkingSubLots = parkingSubLotDAO.getAllAutoCheckoutParkingLots();
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
 
             if (parkingSubLot.getAutoCheckoutTime() == null) continue;
 
+            logger.info("Job Scheduled for Sub Lot Id {}", parkingSubLot.getId());
             JobDetail jobDetail = newJob(AutoCheckoutJob.class)
                     .usingJobData("parkingSubLotId", parkingSubLot.getId())
                     .withIdentity("autoCheckout", String.valueOf(parkingSubLot.getId()))
