@@ -4,6 +4,15 @@ set -e
 
 case "$1" in
     configure)
+
+	if [ ! -d "/var/log/gmp-v3" ]; then
+		sudo mkdir /var/log/gmp-v3
+		sudo touch /var/log/gmp-v3/requests.log
+		sudo touch /var/log/gmp-v3/service-info.log
+		sudo touch /var/log/gmp-v3/service-error.log
+		sudo chmod 777 /var/log/gmp-v3/*
+    fi
+
 	if [ -d "/etc/monit/" ]; then
 		monit stop gmp-v3
 		/etc/init.d/gmp-v3-migration start

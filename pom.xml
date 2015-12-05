@@ -305,15 +305,6 @@
                                         <filemode>755</filemode>
                                     </mapper>
                                 </data>
-                                <data>
-                                    <src>${basedir}/package/var</src>
-                                    <type>directory</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>/var</prefix>
-                                        <filemode>755</filemode>
-                                    </mapper>
-                                </data>
                             </dataSet>
                         </configuration>
                     </execution>
