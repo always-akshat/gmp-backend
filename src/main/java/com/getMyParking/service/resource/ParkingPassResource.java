@@ -156,6 +156,7 @@ public class ParkingPassResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } else {
             parkingPassEntity.setParkingPassMaster(parkingPassMaster);
+            parkingPassEntity.setParkingPassMasterId(parkingPassMasterId);
             if (parkingPassEntity.getIsDeleted() == null) parkingPassEntity.setIsDeleted(0);
 
             String eventType;
@@ -163,6 +164,18 @@ public class ParkingPassResource {
                 eventType = "PASS_CREATE";
             } else {
                 eventType = "PASS_UPDATE";
+                ParkingPassEntity parkingPass = parkingPassDAO.findById(parkingPassEntity.getId());
+                if (!parkingPass.getCustomerName().equalsIgnoreCase(parkingPassEntity.getCustomerName()) ||
+                    !parkingPass.getMobileNumber().equalsIgnoreCase(parkingPassEntity.getMobileNumber()) ||
+                    !parkingPass.getRegistrationNumber().equalsIgnoreCase(parkingPassEntity.getRegistrationNumber())) {
+                    List<ParkingPassEntity> passEntityList = parkingPassDAO.findRelativePasses(parkingPass);
+                    passEntityList.forEach( pass -> {
+                        pass.setCustomerName(parkingPassEntity.getCustomerName());
+                        pass.setMobileNumber(parkingPassEntity.getMobileNumber());
+                        pass.setRegistrationNumber(parkingPassEntity.getRegistrationNumber());
+                        parkingPassDAO.saveOrUpdateParkingPass(pass);
+                    });
+                }
             }
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
             parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser, eventType);
