@@ -65,7 +65,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 "from `parking_pass` inner join " +
                 "(select id as id, max(valid_time),count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
                 "where parking_pass_master_id in :parkingPassIds " +
-                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id");
+                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id order by valid_time DESC");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
         query.addScalar("count", IntegerType.INSTANCE);
@@ -83,7 +83,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         List<ParkingPassEntity> returnList = Lists.newArrayList();
         passGroupMap.forEach((s, passList) -> {
-            passList.sort((o1, o2) -> o1.getValidTime().compareTo(o2.getValidTime()));
+            passList.sort((o1, o2) -> o2.getValidTime().compareTo(o1.getValidTime()));
             Integer balanceAmount = passList.stream().collect(Collectors.summingInt(ParkingPassEntity::getBalanceAmount));
             ParkingPassEntity pass = passList.get(0);
             pass.setBalanceAmount(balanceAmount);
