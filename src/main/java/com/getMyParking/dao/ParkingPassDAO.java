@@ -65,7 +65,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 "from `parking_pass` inner join " +
                 "(select id as id, max(valid_time),count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
                 "where parking_pass_master_id in :parkingPassIds " +
-                "group by registration_number) r on parking_pass.id = r.id");
+                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
         query.addScalar("count", IntegerType.INSTANCE);
@@ -73,19 +73,22 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         query.setResultTransformer(Transformers.aliasToBean(ActiveParkingPassDTO.class));
 
         List<ActiveParkingPassDTO> list = query.list();
-        List<ParkingPassEntity> returnList = Lists.newArrayList();
-
-        for(ActiveParkingPassDTO activeParkingPassDTO : list){
+        Map<String,List<ParkingPassEntity>> passGroupMap = list.stream().map(activeParkingPassDTO -> {
             ParkingPassEntity entity = activeParkingPassDTO.getParkingPass();
             entity.setBalanceAmount(
                     entity.getParkingPassMaster().getPrice() * (activeParkingPassDTO.getCount() - activeParkingPassDTO.getIsPaidCount())
             );
+            return entity;
+        }).collect(Collectors.groupingBy(ParkingPassEntity::getRegistrationNumber));
 
-            if(entity.getValidTime().isAfterNow() || entity.getValidTime().isAfter(DateTime.now().minusMonths(1))){
-                returnList.add(entity);
-            }
-        }
-
+        List<ParkingPassEntity> returnList = Lists.newArrayList();
+        passGroupMap.forEach((s, passList) -> {
+            passList.sort((o1, o2) -> o2.getValidTime().compareTo(o1.getValidTime()));
+            Integer balanceAmount = passList.stream().collect(Collectors.summingInt(ParkingPassEntity::getBalanceAmount));
+            ParkingPassEntity pass = passList.get(0);
+            pass.setBalanceAmount(balanceAmount);
+            returnList.add(pass);
+        });
         return returnList;
     }
 
