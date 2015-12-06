@@ -52,7 +52,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         return get(passId);
     }
 
-    public List<ParkingPassEntity> findByIds(List<String> parkingPassIds) {
+    public List<ParkingPassEntity> findByMasterIds(List<String> parkingPassIds) {
         List<Integer> parkingPassIdInts = Lists.transform(parkingPassIds, new Function<String, Integer>() {
             @Nullable
             @Override
@@ -63,10 +63,9 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*,r.count,r.isPaidCount " +
                 "from `parking_pass` inner join " +
-                "(select max(id) as id,count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
-                "where parking_pass_master_id in :parkingPassIds " +
-                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id " +
-                " order by valid_time desc");
+                "(select id as id, max(valid_time),count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
+                "where parking_pass_master_id in :parkingPassIds AND valid_time > CURRENT_TIMESTAMP " +
+                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
         query.addScalar("count", IntegerType.INSTANCE);
