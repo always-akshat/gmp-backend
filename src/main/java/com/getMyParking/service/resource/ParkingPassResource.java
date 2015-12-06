@@ -80,8 +80,8 @@ public class ParkingPassResource {
             @ApiResponse(code = 400, message = "Bad Request"),
     })
     public List<ParkingPassEntity> getActiveParkingPass(@QueryParam("parkingPassIds")String id, @Auth GMPUser  gmpUser) {
-        List<String> parkingPassIds = Splitter.on(",").splitToList(id);
-        List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByIds(parkingPassIds);
+        List<String> parkingPassMasterIds = Splitter.on(",").splitToList(id);
+        List<ParkingPassEntity> parkingPassList = parkingPassDAO.findByMasterIds(parkingPassMasterIds);
         if (parkingPassList == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } else {

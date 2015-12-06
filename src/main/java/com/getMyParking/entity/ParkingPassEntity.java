@@ -233,6 +233,16 @@ public class ParkingPassEntity {
         return result;
     }
 
+    public void copy(ParkingPassEntity passEntity) {
+        if (passEntity.getRegistrationNumber() != null) this.registrationNumber = passEntity.getRegistrationNumber();
+        if (passEntity.getOperatorName() != null) this.operatorName = passEntity.getOperatorName();
+        if (passEntity.getMobileNumber() != null) this.mobileNumber = passEntity.getMobileNumber();
+        if (passEntity.getCost() != null) this.cost = passEntity.getCost();
+        if (passEntity.getCardId() != null) this.cardId = passEntity.getCardId();
+        if (passEntity.getCustomerName() != null) this.customerName = passEntity.getCustomerName();
+        if (passEntity.getParkingPassMaster() != null) this.parkingPassMaster = passEntity.getParkingPassMaster();
+    }
+
     @ManyToOne
     @JoinColumn(name = "parking_pass_master_id", referencedColumnName = "id", nullable = false)
     public ParkingPassMasterEntity getParkingPassMaster() {

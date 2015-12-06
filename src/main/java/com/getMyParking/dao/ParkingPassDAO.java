@@ -14,10 +14,7 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.IntegerType;
 import org.joda.time.DateTime;
@@ -55,7 +52,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         return get(passId);
     }
 
-    public List<ParkingPassEntity> findByIds(List<String> parkingPassIds) {
+    public List<ParkingPassEntity> findByMasterIds(List<String> parkingPassIds) {
         List<Integer> parkingPassIdInts = Lists.transform(parkingPassIds, new Function<String, Integer>() {
             @Nullable
             @Override
@@ -68,8 +65,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 "from `parking_pass` inner join " +
                 "(select max(id) as id,count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
                 "where parking_pass_master_id in :parkingPassIds " +
-                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id " +
-                " order by valid_time desc");
+                "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id order by valid_time DESC");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
         query.addScalar("count", IntegerType.INSTANCE);
@@ -77,19 +73,22 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         query.setResultTransformer(Transformers.aliasToBean(ActiveParkingPassDTO.class));
 
         List<ActiveParkingPassDTO> list = query.list();
-        List<ParkingPassEntity> returnList = Lists.newArrayList();
-
-        for(ActiveParkingPassDTO activeParkingPassDTO : list){
+        Map<String,List<ParkingPassEntity>> passGroupMap = list.stream().map(activeParkingPassDTO -> {
             ParkingPassEntity entity = activeParkingPassDTO.getParkingPass();
             entity.setBalanceAmount(
                     entity.getParkingPassMaster().getPrice() * (activeParkingPassDTO.getCount() - activeParkingPassDTO.getIsPaidCount())
             );
+            return entity;
+        }).collect(Collectors.groupingBy(ParkingPassEntity::getRegistrationNumber));
 
-            if(entity.getValidTime().isAfterNow() || entity.getValidTime().isAfter(DateTime.now().minusMonths(1))){
-                returnList.add(entity);
-            }
-        }
-
+        List<ParkingPassEntity> returnList = Lists.newArrayList();
+        passGroupMap.forEach((s, passList) -> {
+            passList.sort((o1, o2) -> o2.getValidTime().compareTo(o1.getValidTime()));
+            Integer balanceAmount = passList.stream().collect(Collectors.summingInt(ParkingPassEntity::getBalanceAmount));
+            ParkingPassEntity pass = passList.get(0);
+            pass.setBalanceAmount(balanceAmount);
+            returnList.add(pass);
+        });
         return returnList;
     }
 
@@ -203,5 +202,23 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         q.setString("registrationNumber", parkingPass.getRegistrationNumber());
         q.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return q.list();
+    }
+
+    public List<ParkingPassEntity> getToBeExpiredPassesByPassMasterId(Integer parkingPassMasterId) {
+        return list(
+                criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
+                .add(Restrictions.between("validTime", DateTime.now(), DateTime.now().plusDays(1)))
+                .add(Restrictions.eq("isDeleted",0))
+        );
+    }
+
+    public ParkingPassEntity getLastPassByRegistrationNumberAndMasterId(String registrationNumber, Integer parkingPassMasterId) {
+        return uniqueResult(
+                criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
+                        .add(Restrictions.eq("registrationNumber", registrationNumber))
+                        .addOrder(Order.desc("validFrom"))
+                        .setMaxResults(1)
+                        .setFirstResult(0)
+        );
     }
 }
