@@ -48,7 +48,7 @@ public class AutoPassRenewalJob implements Job {
                 activePasses.forEach( pass -> {
                     ParkingPassEntity parkingPass = parkingPassDAO.getLastPassByRegistrationNumberAndMasterId(
                             pass.getRegistrationNumber(),pass.getParkingPassMaster().getId());
-                    if (!pass.getId().equals(parkingPass.getId())) {
+                    if (pass.getId().equals(parkingPass.getId())) {
                         ParkingPassEntity renewedPass = new ParkingPassEntity();
                         renewedPass.copy(pass);
                         renewedPass.setIsPaid(0);
@@ -56,13 +56,13 @@ public class AutoPassRenewalJob implements Job {
                         renewedPass.setCreatedAt(DateTime.now());
                         renewedPass.setValidFrom(pass.getValidTime().plusSeconds(1));
                         if (passMaster.getPassType().equalsIgnoreCase(PassType.DAY.name())) {
-                            renewedPass.setValidTime(renewedPass.getValidFrom().plusDays(passMaster.getNumbers()));
+                            renewedPass.setValidTime(renewedPass.getValidFrom().plusDays(passMaster.getNumbers()).minusSeconds(1));
                         } else if (passMaster.getPassType().equalsIgnoreCase(PassType.WEEK.name())) {
-                            renewedPass.setValidTime(renewedPass.getValidFrom().plusWeeks(passMaster.getNumbers()));
+                            renewedPass.setValidTime(renewedPass.getValidFrom().plusWeeks(passMaster.getNumbers()).minusSeconds(1));
                         } else if (passMaster.getPassType().equalsIgnoreCase(PassType.MONTH.name())) {
-                            renewedPass.setValidTime(renewedPass.getValidFrom().plusMonths(passMaster.getNumbers()));
+                            renewedPass.setValidTime(renewedPass.getValidFrom().plusMonths(passMaster.getNumbers()).minusSeconds(1));
                         } else if (passMaster.getPassType().equalsIgnoreCase(PassType.HOUR.name())) {
-                            renewedPass.setValidTime(renewedPass.getValidFrom().plusHours(passMaster.getNumbers()));
+                            renewedPass.setValidTime(renewedPass.getValidFrom().plusHours(passMaster.getNumbers()).minusSeconds(1));
                         }
                         parkingPassDAO.saveOrUpdateParkingPass(renewedPass);
                     }

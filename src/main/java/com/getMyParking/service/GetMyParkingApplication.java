@@ -3,6 +3,7 @@ package com.getMyParking.service;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.*;
 import com.getMyParking.quartz.AutoCheckoutJob;
+import com.getMyParking.quartz.AutoPassRenewalJob;
 import com.getMyParking.quartz.ParkingEventsEMailingJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
@@ -173,7 +174,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 .build();
         scheduler.scheduleJob(jobDetail,trigger);
 
-        JobDetail passRenewalJobDetail = newJob(ParkingEventsEMailingJob.class).build();
+        JobDetail passRenewalJobDetail = newJob(AutoPassRenewalJob.class).build();
         String passRenewalCronExpression = "0 30 23 * * ?";
         Trigger passRenewalTrigger = newTrigger()
                 .forJob(passRenewalJobDetail)
