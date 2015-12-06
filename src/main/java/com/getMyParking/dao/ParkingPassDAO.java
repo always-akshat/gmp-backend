@@ -83,7 +83,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         List<ParkingPassEntity> returnList = Lists.newArrayList();
         passGroupMap.forEach((s, passList) -> {
-            passList.sort((o1, o2) -> o2.getValidTime().compareTo(o1.getValidTime()));
+            passList.sort((o1, o2) -> o1.getValidTime().compareTo(o2.getValidTime()));
             Integer balanceAmount = passList.stream().collect(Collectors.summingInt(ParkingPassEntity::getBalanceAmount));
             ParkingPassEntity pass = passList.get(0);
             pass.setBalanceAmount(balanceAmount);
