@@ -56,9 +56,10 @@ public class ParkingPassMasterDAO extends AbstractDAO<ParkingPassMasterEntity>{
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
     }
-    public void deleteParkingPassMasterByParkingId(Integer id){
-        Query q = currentSession().createQuery("delete from ParkingPassMasterEntity where parking_id =:id");
-        q.setInteger("id", id);
-        q.executeUpdate();
+
+    public List<ParkingPassMasterEntity> getAutoRenewalPassMasters() {
+        return list(
+                criteria().add(Restrictions.eq("autoRenewal",1)).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+        );
     }
 }

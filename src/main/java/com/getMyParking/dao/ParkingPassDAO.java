@@ -14,10 +14,7 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.IntegerType;
 import org.joda.time.DateTime;
@@ -203,5 +200,23 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         q.setString("registrationNumber", parkingPass.getRegistrationNumber());
         q.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return q.list();
+    }
+
+    public List<ParkingPassEntity> getToBeExpiredPassesByPassMasterId(Integer parkingPassMasterId) {
+        return list(
+                criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
+                .add(Restrictions.between("validTime", DateTime.now(), DateTime.now().plusDays(1)))
+                .add(Restrictions.eq("isDeleted",0))
+        );
+    }
+
+    public ParkingPassEntity getLastPassByRegistrationNumberAndMasterId(String registrationNumber, Integer parkingPassMasterId) {
+        return uniqueResult(
+                criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
+                        .add(Restrictions.eq("registrationNumber", registrationNumber))
+                        .addOrder(Order.desc("validFrom"))
+                        .setMaxResults(1)
+                        .setFirstResult(0)
+        );
     }
 }

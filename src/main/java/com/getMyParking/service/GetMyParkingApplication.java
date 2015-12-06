@@ -172,6 +172,14 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                 .build();
         scheduler.scheduleJob(jobDetail,trigger);
+
+        JobDetail passRenewalJobDetail = newJob(ParkingEventsEMailingJob.class).build();
+        String passRenewalCronExpression = "0 30 23 * * ?";
+        Trigger passRenewalTrigger = newTrigger()
+                .forJob(passRenewalJobDetail)
+                .withSchedule(cronSchedule(passRenewalCronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
+                .build();
+        scheduler.scheduleJob(passRenewalJobDetail,passRenewalTrigger);
         session.close();
 
         ScheduledExecutorService executorService = environment.lifecycle().scheduledExecutorService("session-save").build();
