@@ -64,7 +64,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         SQLQuery query = currentSession().createSQLQuery("SELECT `parking_pass`.*,r.count,r.isPaidCount " +
                 "from `parking_pass` inner join " +
                 "(select max(id) as id,count(*) as count,sum(is_paid) as isPaidCount from parking_pass " +
-                "where parking_pass_master_id in :parkingPassIds " +
+                "where parking_pass_master_id in :parkingPassIds and is_deleted=0 " +
                 "group by registration_number,parking_pass_master_id) r on parking_pass.id = r.id order by valid_time DESC");
         query.setParameterList("parkingPassIds",parkingPassIdInts);
         query.addEntity("parking_pass",ParkingPassEntity.class);
