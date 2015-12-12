@@ -91,7 +91,7 @@ public class PricingFunction {
         PriceGridEntity currentPriceGrid = Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0);
         int priceGridIndex = 0;
 
-        if (currentPricingSlot.getType().equalsIgnoreCase("SPECIAL")) {
+        if (!currentPricingSlot.getType().equalsIgnoreCase("NORMAL")) {
             if (currentPricingSlot.getStartMinutesOfDay() > minutesOfDay || currentPricingSlot.getEndMinutesOfDay() < minutesOfDay) {
                 for (index = 0; index < pricingSlots.size();index++) {
                     PricingSlotEntity pricingSlot = pricingSlots.get(index);
@@ -129,7 +129,7 @@ public class PricingFunction {
                 currentPriceGrid = Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0);
                 priceGridIndex = 0;
                 currentTime = currentTime.plusMinutes(endMinutesOfCurrentSlot - currentTime.getMinuteOfDay());
-                if (currentPricingSlot.getType().equalsIgnoreCase("SPECIAL")) {
+                if (!currentPricingSlot.getType().equalsIgnoreCase("NORMAL")) {
                     currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - currentTime.getMinuteOfDay());
                 }
             } else {
@@ -145,7 +145,7 @@ public class PricingFunction {
                 currentPriceGrid = Lists.newArrayList(currentPricingSlot.getPriceGrids()).get(0);
                 priceGridIndex = 0;
                 currentTime = currentTime.plusMinutes(endMinutesOfCurrentSlot - currentTime.getMinuteOfDay());
-                if (currentPricingSlot.getType().equalsIgnoreCase("SPECIAL")) {
+                if (!currentPricingSlot.getType().equalsIgnoreCase("NORMAL")) {
                     currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - currentTime.getMinuteOfDay());
                 }
             }
