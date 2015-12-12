@@ -106,7 +106,10 @@ public class PricingFunction {
                         break;
                     }
                 }
-                currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - minutesOfDay);
+                if (currentPricingSlot.getStartMinutesOfDay() > minutesOfDay)
+                    currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - minutesOfDay);
+                else
+                    currentTime = currentTime.plusMinutes(DateTimeConstants.MINUTES_PER_DAY - minutesOfDay);
             }
         }
 
@@ -136,7 +139,10 @@ public class PricingFunction {
                 priceGridIndex = 0;
                 currentTime = currentTime.plusMinutes(endMinutesOfCurrentSlot - currentTime.getMinuteOfDay());
                 if (!currentPricingSlot.getType().equalsIgnoreCase("NORMAL")) {
-                    currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - currentTime.getMinuteOfDay());
+                    if (currentPricingSlot.getStartMinutesOfDay() > currentTime.getMinuteOfDay())
+                        currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - currentTime.getMinuteOfDay());
+                    else
+                        currentTime = currentTime.plusMinutes(DateTimeConstants.MINUTES_PER_DAY - currentTime.getMinuteOfDay());
                 }
             } else {
                 int endMinutesOfCurrentSlot = currentPricingSlot.getEndMinutesOfDay();
@@ -153,7 +159,10 @@ public class PricingFunction {
                 priceGridIndex = 0;
                 currentTime = currentTime.plusMinutes(endMinutesOfCurrentSlot - currentTime.getMinuteOfDay());
                 if (!currentPricingSlot.getType().equalsIgnoreCase("NORMAL")) {
-                    currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - currentTime.getMinuteOfDay());
+                    if (currentPricingSlot.getStartMinutesOfDay() > currentTime.getMinuteOfDay())
+                        currentTime = currentTime.plusMinutes(currentPricingSlot.getStartMinutesOfDay() - currentTime.getMinuteOfDay());
+                    else
+                        currentTime = currentTime.plusMinutes(DateTimeConstants.MINUTES_PER_DAY - currentTime.getMinuteOfDay());
                 }
             }
         }
