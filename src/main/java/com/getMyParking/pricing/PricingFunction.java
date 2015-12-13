@@ -81,13 +81,15 @@ public class PricingFunction {
         Collections.sort(pricingSlots,priceSlotComparator);
 
         PricingSlotEntity currentPricingSlot = pricingSlots.get(0);
+        index = 0;
         int minutesOfDay = checkInTime.getMinuteOfDay();
 
-        for (index = 0; index < pricingSlots.size();index++) {
-            PricingSlotEntity pricingSlot = pricingSlots.get(index);
+        for (int i = 0; i < pricingSlots.size();i++) {
+            PricingSlotEntity pricingSlot = pricingSlots.get(i);
             if (pricingSlot.getStartMinutesOfDay() <= minutesOfDay
                     && pricingSlot.getEndMinutesOfDay() > minutesOfDay) {
                 currentPricingSlot = pricingSlot;
+                index = i;
                 break;
             }
         }
@@ -99,10 +101,11 @@ public class PricingFunction {
 
         if (!currentPricingSlot.getType().equalsIgnoreCase("NORMAL")) {
             if (currentPricingSlot.getStartMinutesOfDay() > minutesOfDay || currentPricingSlot.getEndMinutesOfDay() < minutesOfDay) {
-                for (index = 0; index < pricingSlots.size();index++) {
-                    PricingSlotEntity pricingSlot = pricingSlots.get(index);
+                for (int i = 0; i < pricingSlots.size();i++) {
+                    PricingSlotEntity pricingSlot = pricingSlots.get(i);
                     if (pricingSlot.getStartMinutesOfDay() > minutesOfDay) {
                         currentPricingSlot = pricingSlot;
+                        index = i;
                         break;
                     }
                 }

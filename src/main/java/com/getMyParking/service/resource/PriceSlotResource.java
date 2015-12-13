@@ -11,6 +11,9 @@ import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -108,10 +111,10 @@ public class PriceSlotResource {
     @Path("/cost")
     @UnitOfWork
     public double calculateCost() {
-        List<PricingSlotEntity> pricingSlotEntityList = pricingSlotDAO.findBySubLotId(4);
+        List<PricingSlotEntity> pricingSlotEntityList = pricingSlotDAO.findBySubLotId(22);
         Map<Integer,List<PricingSlotEntity>> slotMap =
                 pricingSlotEntityList.stream().collect(Collectors.groupingBy(PricingSlotEntity::getDay));
-        return PricingFunction.calculateTotalCost(slotMap, DateTime.now().minusHours(10), DateTime.now());
+        return PricingFunction.calculateTotalCost(slotMap, DateTime.parse("01/12/2015 02:04", DateTimeFormat.forPattern("dd/MM/YYYY HH:mm")), DateTime.now());
     }
 
 

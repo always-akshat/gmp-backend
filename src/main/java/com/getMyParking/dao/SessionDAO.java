@@ -18,6 +18,9 @@ import org.hibernate.type.StringType;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 03/06/15.
@@ -55,7 +58,7 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
         SQLQuery sqlQuery = currentSession().createSQLQuery("select s.username as username, user.name as name , s.last_transaction_time as lastTransactionTime, s.last_access_time as lastAccessTime," +
                 " s.device_id as deviceId, p.name as parkingLotName , s.transaction_count as transactionCount " +
                 "from session as s inner join parking_lot p on p.id = s.last_accessed_parking_lot_id inner join" +
-                " user_b2b as user on user.username = s.username group by s.username order by s.last_access_time;");
+                " user_b2b as user on user.username = s.username order by s.last_access_time;");
 
         sqlQuery.addScalar("username",StringType.INSTANCE);
         sqlQuery.addScalar("name",StringType.INSTANCE);
@@ -66,7 +69,10 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
         sqlQuery.addScalar("transactionCount", IntegerType.INSTANCE);
 
         sqlQuery.setResultTransformer(Transformers.aliasToBean(ActiveSessions.class));
-        return sqlQuery.list();
+        List<ActiveSessions> activeSessions = sqlQuery.list();
+        Map<String,List<ActiveSessions>> sessionMap =
+                activeSessions.stream().collect(Collectors.groupingBy(ActiveSessions::getUsername));
 
+        return activeSessions;
     }
 }
