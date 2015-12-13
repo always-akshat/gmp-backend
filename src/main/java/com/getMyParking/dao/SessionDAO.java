@@ -2,6 +2,7 @@ package com.getMyParking.dao;
 
 import com.getMyParking.dto.ActiveSessions;
 import com.getMyParking.entity.SessionEntity;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
@@ -17,8 +18,11 @@ import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -73,6 +77,12 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
         Map<String,List<ActiveSessions>> sessionMap =
                 activeSessions.stream().collect(Collectors.groupingBy(ActiveSessions::getUsername));
 
-        return activeSessions;
+        return Lists.newArrayList(sessionMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                (Function<Map.Entry<String, List<ActiveSessions>>, ActiveSessions>) entry -> {
+                    List<ActiveSessions> sessions = entry.getValue();
+                    sessions.sort((o1, o2) -> o2.getLastAccessTime().compareTo(o1.getLastAccessTime()));
+                    return sessions.get(0);
+            })).values());
+
     }
 }
