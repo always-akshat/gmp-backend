@@ -107,15 +107,4 @@ public class PriceSlotResource {
         pricingSlotDAO.deleteById(pricingSlotId);
     }
 
-    @GET
-    @Path("/cost")
-    @UnitOfWork
-    public double calculateCost() {
-        List<PricingSlotEntity> pricingSlotEntityList = pricingSlotDAO.findBySubLotId(22);
-        Map<Integer,List<PricingSlotEntity>> slotMap =
-                pricingSlotEntityList.stream().collect(Collectors.groupingBy(PricingSlotEntity::getDay));
-        return PricingFunction.calculateTotalCost(slotMap, DateTime.parse("01/12/2015 02:04", DateTimeFormat.forPattern("dd/MM/YYYY HH:mm")), DateTime.now());
-    }
-
-
 }

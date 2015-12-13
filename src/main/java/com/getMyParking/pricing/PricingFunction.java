@@ -81,7 +81,7 @@ public class PricingFunction {
         Collections.sort(pricingSlots,priceSlotComparator);
 
         PricingSlotEntity currentPricingSlot = pricingSlots.get(0);
-        index = 0;
+        index = 1;
         int minutesOfDay = checkInTime.getMinuteOfDay();
 
         for (int i = 0; i < pricingSlots.size();i++) {
@@ -89,7 +89,7 @@ public class PricingFunction {
             if (pricingSlot.getStartMinutesOfDay() <= minutesOfDay
                     && pricingSlot.getEndMinutesOfDay() > minutesOfDay) {
                 currentPricingSlot = pricingSlot;
-                index = i;
+                index = i + 1;
                 break;
             }
         }
@@ -105,7 +105,7 @@ public class PricingFunction {
                     PricingSlotEntity pricingSlot = pricingSlots.get(i);
                     if (pricingSlot.getStartMinutesOfDay() > minutesOfDay) {
                         currentPricingSlot = pricingSlot;
-                        index = i;
+                        index = i + 1;
                         break;
                     }
                 }
@@ -155,7 +155,7 @@ public class PricingFunction {
                 }
                 Collections.sort(pricingSlots,priceSlotComparator);
                 currentPricingSlot = pricingSlots.get(0);
-                index = 0;
+                index = 1;
                 currentPriceGrids = Lists.newArrayList(currentPricingSlot.getPriceGrids());
                 Collections.sort(currentPriceGrids, priceGridComparator);
                 currentPriceGrid = currentPriceGrids.get(0);

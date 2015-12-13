@@ -2,13 +2,21 @@ package com.getMyParking.dao;
 
 import com.getMyParking.entity.PriceGridEntity;
 import com.getMyParking.entity.PricingSlotEntity;
+import com.getMyParking.pricing.PricingFunction;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
+import io.dropwizard.hibernate.UnitOfWork;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -45,10 +53,4 @@ public class PricingSlotDAO extends AbstractDAO<PricingSlotEntity> {
         q.executeUpdate();
     }
 
-    public List<PricingSlotEntity> findBySubLotId(int id) {
-        SQLQuery q = currentSession().createSQLQuery("SELECT * from pricing_slot where pricing_slot.parking_sub_lot_id =:id");
-        q.setInteger("id", id);
-        q.addEntity(PricingSlotEntity.class);
-        return q.list();
-    }
 }
