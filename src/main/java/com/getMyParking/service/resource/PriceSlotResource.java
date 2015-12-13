@@ -6,14 +6,19 @@ import com.getMyParking.dao.PricingSlotDAO;
 import com.getMyParking.entity.ParkingLotEntity;
 import com.getMyParking.entity.PriceGridEntity;
 import com.getMyParking.entity.PricingSlotEntity;
+import com.getMyParking.pricing.PricingFunction;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.joda.time.DateTime;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -97,6 +102,16 @@ public class PriceSlotResource {
     })
     public void deletePricingLot(@PathParam("pricingSlotId")int pricingSlotId) {
         pricingSlotDAO.deleteById(pricingSlotId);
+    }
+
+    @GET
+    @Path("/cost")
+    @UnitOfWork
+    public double calculateCost() {
+        List<PricingSlotEntity> pricingSlotEntityList = pricingSlotDAO.findBySubLotId(4);
+        Map<Integer,List<PricingSlotEntity>> slotMap =
+                pricingSlotEntityList.stream().collect(Collectors.groupingBy(PricingSlotEntity::getDay));
+        return PricingFunction.calculateTotalCost(slotMap, DateTime.now().minusHours(10), DateTime.now());
     }
 
 

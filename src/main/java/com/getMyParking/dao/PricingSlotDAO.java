@@ -5,7 +5,10 @@ import com.getMyParking.entity.PricingSlotEntity;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+
+import java.util.List;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -42,4 +45,10 @@ public class PricingSlotDAO extends AbstractDAO<PricingSlotEntity> {
         q.executeUpdate();
     }
 
+    public List<PricingSlotEntity> findBySubLotId(int id) {
+        SQLQuery q = currentSession().createSQLQuery("SELECT * from pricing_slot where pricing_slot.parking_sub_lot_id =:id");
+        q.setInteger("id", id);
+        q.addEntity(PricingSlotEntity.class);
+        return q.list();
+    }
 }

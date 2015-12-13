@@ -53,8 +53,8 @@ public class PricingFunction {
                 else
                     specialSlots.add(pricingSlot);
             }
-            normalSlotMap.put(entry.getKey(),normalSlots);
-            specialSlotMap.put(entry.getKey(),specialSlots);
+            if (normalSlots.size() > 0) normalSlotMap.put(entry.getKey(),normalSlots);
+            if (specialSlots.size() > 0) specialSlotMap.put(entry.getKey(),specialSlots);
         }
         cost = calculateCost(normalSlotMap,checkInTime,checkoutTime);
         if (specialSlotMap.size() > 0) cost += calculateCost(specialSlotMap,checkInTime,checkoutTime);
@@ -85,7 +85,7 @@ public class PricingFunction {
 
         for (index = 0; index < pricingSlots.size();index++) {
             PricingSlotEntity pricingSlot = pricingSlots.get(index);
-            if (pricingSlot.getDay() == day && pricingSlot.getStartMinutesOfDay() <= minutesOfDay
+            if (pricingSlot.getStartMinutesOfDay() <= minutesOfDay
                     && pricingSlot.getEndMinutesOfDay() > minutesOfDay) {
                 currentPricingSlot = pricingSlot;
                 break;
@@ -118,7 +118,7 @@ public class PricingFunction {
             cost += currentPriceGrid.getCost();
             DateTime newCurrentTime = currentTime.plusMinutes(currentPriceGrid.getDuration());
 
-            minutesOfDay = currentTime.getMinuteOfDay();
+            minutesOfDay = newCurrentTime.getMinuteOfDay();
 
             if (newCurrentTime.getDayOfWeek() == currentTime.getDayOfWeek() &&
                     currentPricingSlot.getStartMinutesOfDay() <= minutesOfDay &&
