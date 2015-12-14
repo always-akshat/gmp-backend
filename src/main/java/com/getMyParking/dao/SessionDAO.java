@@ -2,6 +2,7 @@ package com.getMyParking.dao;
 
 import com.getMyParking.dto.ActiveSessions;
 import com.getMyParking.entity.SessionEntity;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
@@ -17,7 +18,13 @@ import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 03/06/15.
@@ -55,7 +62,7 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
         SQLQuery sqlQuery = currentSession().createSQLQuery("select s.username as username, user.name as name , s.last_transaction_time as lastTransactionTime, s.last_access_time as lastAccessTime," +
                 " s.device_id as deviceId, p.name as parkingLotName , s.transaction_count as transactionCount " +
                 "from session as s inner join parking_lot p on p.id = s.last_accessed_parking_lot_id inner join" +
-                " user_b2b as user on user.username = s.username group by s.username order by s.last_access_time;");
+                " user_b2b as user on user.username = s.username order by s.last_access_time;");
 
         sqlQuery.addScalar("username",StringType.INSTANCE);
         sqlQuery.addScalar("name",StringType.INSTANCE);
@@ -66,7 +73,16 @@ public class SessionDAO extends AbstractDAO<SessionEntity>{
         sqlQuery.addScalar("transactionCount", IntegerType.INSTANCE);
 
         sqlQuery.setResultTransformer(Transformers.aliasToBean(ActiveSessions.class));
-        return sqlQuery.list();
+        List<ActiveSessions> activeSessions = sqlQuery.list();
+        Map<String,List<ActiveSessions>> sessionMap =
+                activeSessions.stream().collect(Collectors.groupingBy(ActiveSessions::getUsername));
+
+        return Lists.newArrayList(sessionMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                (Function<Map.Entry<String, List<ActiveSessions>>, ActiveSessions>) entry -> {
+                    List<ActiveSessions> sessions = entry.getValue();
+                    sessions.sort((o1, o2) -> o2.getLastAccessTime().compareTo(o1.getLastAccessTime()));
+                    return sessions.get(0);
+            })).values());
 
     }
 }
