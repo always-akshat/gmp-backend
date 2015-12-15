@@ -5,6 +5,7 @@ import com.getMyParking.entity.PricingSlotEntity;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 
 import java.util.*;
 
@@ -15,6 +16,7 @@ public class PricingFunction {
 
     //pricingSlots will be sorted by day. Day is Integer with 1 as Monday and 7 as Sunday
     public static double calculateInitialCost(Map<Integer,List<PricingSlotEntity>> pricingSlotsMap, DateTime checkInTime) {
+        checkInTime = checkInTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5, 30));
 
         int day = checkInTime.dayOfWeek().get();
         List<PricingSlotEntity> pricingSlots = pricingSlotsMap.get(day);
@@ -40,6 +42,8 @@ public class PricingFunction {
     }
 
     public static double calculateTotalCost(Map<Integer,List<PricingSlotEntity>> pricingSlotsMap, DateTime checkInTime, DateTime checkoutTime) {
+        checkInTime = checkInTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30));
+        checkoutTime = checkoutTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30));
         double cost = 0;
 
         Map<Integer,List<PricingSlotEntity>> normalSlotMap = new HashMap<>();
