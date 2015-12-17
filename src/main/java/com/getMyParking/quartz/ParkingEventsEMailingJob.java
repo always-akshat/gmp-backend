@@ -92,9 +92,12 @@ public class ParkingEventsEMailingJob implements Job {
                     row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
                             Strings.nullToEmpty(parkingEvent.getValetName())
                     );
-                    row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
-                            parkingEvent.getCheckInEventTime().withZone(DateTimeZone.forOffsetHoursMinutes(5,30)).toString("dd-MM-YY HH:mm:ss")
-                    );
+
+                    if (parkingEvent.getCheckInEventTime() != null) {
+                        row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
+                                parkingEvent.getCheckInEventTime().withZone(DateTimeZone.forOffsetHoursMinutes(5, 30)).toString("dd-MM-YY HH:mm:ss")
+                        );
+                    }
 
                     if (parkingEvent.getCheckInCost() != null) {
                         row.createCell(columnNumber++, Cell.CELL_TYPE_NUMERIC).setCellValue(parkingEvent.getCheckInCost().doubleValue());

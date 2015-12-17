@@ -190,6 +190,9 @@ public class ParkingEventResource {
                     DateTime.now(DateTimeZone.forOffsetHoursMinutes(5,30)).dayOfMonth().get()) {
                 session.setTransactionCount(1);
             } else {
+
+                if (session.getTransactionCount() == null) session.setTransactionCount(0);
+
                 session.setTransactionCount(session.getTransactionCount() + 1);
             }
 
