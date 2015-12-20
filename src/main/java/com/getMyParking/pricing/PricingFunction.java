@@ -42,8 +42,8 @@ public class PricingFunction {
     }
 
     public static double calculateTotalCost(Map<Integer,List<PricingSlotEntity>> pricingSlotsMap, DateTime checkInTime, DateTime checkoutTime) {
-        checkInTime = checkInTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30));
-        checkoutTime = checkoutTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30));
+        checkInTime = checkInTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).withSecondOfMinute(0);
+        checkoutTime = checkoutTime.toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).withSecondOfMinute(0);
         double cost = 0;
 
         Map<Integer,List<PricingSlotEntity>> normalSlotMap = new HashMap<>();
