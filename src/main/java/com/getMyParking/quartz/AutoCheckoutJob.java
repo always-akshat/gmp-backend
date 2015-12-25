@@ -23,6 +23,7 @@ import org.quartz.JobExecutionException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by rahulgupta.s on 19/07/15.
@@ -53,17 +54,10 @@ public class AutoCheckoutJob implements Job {
         ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
         int count = 0;
 
-        Map<Integer,List<PricingSlotEntity>> pricingSlotMap = Maps.newHashMap();
 
         Hibernate.initialize(parkingSubLot.getPricingSlots());
-
-        for (PricingSlotEntity pricingSlot : parkingSubLot.getPricingSlots()) {
-            if (pricingSlotMap.containsKey(pricingSlot.getDay())) {
-                pricingSlotMap.get(pricingSlot.getDay()).add(pricingSlot);
-            } else {
-                pricingSlotMap.put(pricingSlot.getDay(),Lists.newArrayList(pricingSlot));
-            }
-        }
+        Map<Integer,List<PricingSlotEntity>> pricingSlotMap = parkingSubLot.getPricingSlots().stream()
+                .collect(Collectors.groupingBy(PricingSlotEntity::getDay));
 
         if (parkingEvents != null && parkingEvents.size() > 0) {
 
@@ -87,7 +81,11 @@ public class AutoCheckoutJob implements Job {
                 if (oldParkingEvent.getParkingPassId() != null) {
                     parkingEvent.setParkingPassId(oldParkingEvent.getParkingPassId());
                 }
-                parkingEvent.setCost(parkingSubLot.getAutoCheckoutCost());
+                parkingEvent.setCost(
+                        BigDecimal.valueOf(
+                                PricingFunction.calculateTotalCost(pricingSlotMap,oldParkingEvent.getEventTime(),parkingEvent.getEventTime())
+                        )
+                );
                 parkingEvent.setUpdatedTime(DateTime.now());
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
                 count ++;
