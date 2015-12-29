@@ -22,6 +22,7 @@ public class ParkingPassEntity {
     private String operatorName;
     private String mobileNumber;
     private String status;
+    private String offlinePaymentId;
     @NotNull
     private Integer cost;
     @NotNull
@@ -72,13 +73,24 @@ public class ParkingPassEntity {
 
 
     @Basic
-    @Column(name = "status", nullable = false, insertable = true, updatable = true)
+    @Column(name = "status", nullable = true, insertable = true, updatable = true)
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+
+    @Basic
+    @Column(name = "offline_payment_id", nullable = true, insertable = true, updatable = true)
+    public String getOfflinePaymentId() {
+        return offlinePaymentId;
+    }
+
+    public void setOfflinePaymentId(String offlinePaymentId) {
+        this.offlinePaymentId = offlinePaymentId;
     }
 
 
