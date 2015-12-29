@@ -21,6 +21,8 @@ public class ParkingPassEntity {
     private DateTime validFrom;
     private String operatorName;
     private String mobileNumber;
+    private String status;
+    private String offlinePaymentId;
     @NotNull
     private Integer cost;
     @NotNull
@@ -58,6 +60,28 @@ public class ParkingPassEntity {
     public void setRegistrationNumber(String registrationNumber) {
         this.registrationNumber = registrationNumber;
     }
+
+
+    @Basic
+    @Column(name = "status", nullable = true, insertable = true, updatable = true, length =500)
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Basic
+    @Column(name = "offline_payment_id", nullable = true, insertable = true, updatable = true, length = 500)
+    public String getOfflinePaymentId() {
+        return offlinePaymentId;
+    }
+
+    public void setOfflinePaymentId(String offlinePaymentId) {
+        this.offlinePaymentId = offlinePaymentId;
+    }
+
 
     @Basic
     @Column(name = "operator_name", nullable = false, insertable = true, updatable = true)
