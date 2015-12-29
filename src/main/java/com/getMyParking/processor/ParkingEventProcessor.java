@@ -40,6 +40,7 @@ public class ParkingEventProcessor {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
             parkingEvent.getParkingPass().setIsPaid(1);
+	    parkingEvent.getParkingPass().setOfflinePaymentId(parkingEvent.getSpecial());
         } else if (parkingEvent.getEventType().equalsIgnoreCase("PASS_DELETED")) {
             if (parkingEvent.getParkingPass() == null) {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
