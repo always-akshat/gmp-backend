@@ -479,4 +479,14 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
         return events;
     }
+
+    public ParkingEventEntity findByParkingPassId(Integer parkingPassId) {
+        return uniqueResult(
+                criteria()
+                .add(Restrictions.eq("parkingPass.id", parkingPassId))
+                .addOrder(Order.desc("eventTime"))
+                .setMaxResults(1)
+                .setFirstResult(0)
+        );
+    }
 }

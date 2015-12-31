@@ -55,15 +55,15 @@ public class ParkingEventProcessor {
         }
     }
 
-    public void createParkingPassEvents(ParkingPassEntity parkingPass, GMPUser user, String eventType) {
+    public void createParkingPassEvents(ParkingPassEntity parkingPass, Integer companyId,
+                                        Integer parkingLotId, Integer parkingSubLotId, String eventType) {
 
         ParkingEventEntity parkingEvent = new ParkingEventEntity();
         Integer parkingId = parkingPass.getParkingPassMaster().getParking().getId();
-        parkingEvent.setCompanyId(user.getCompanyIds().get(0));
+        parkingEvent.setCompanyId(companyId);
         parkingEvent.setParkingId(parkingId);
-        parkingEvent.setParkingLotId(user.getParkingLotIds().get(0));
-        parkingEvent.setParkingSubLotId(parkingSubLotDAO.getSubLotBy(
-                parkingPass.getParkingPassMaster().getVehicleType(), user.getParkingSubLotIds(), parkingId).getId());
+        parkingEvent.setParkingLotId(parkingLotId);
+        parkingEvent.setParkingSubLotId(parkingSubLotId);
         parkingEvent.setParkingPass(parkingPass);
 
         int days = getDays();

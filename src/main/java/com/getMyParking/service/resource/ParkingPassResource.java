@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
+import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
 import com.getMyParking.entity.reports.PassReport;
@@ -37,13 +38,15 @@ public class ParkingPassResource {
     private ParkingPassDAO parkingPassDAO;
     private ParkingPassMasterDAO parkingPassMasterDAO;
     private ParkingEventProcessor parkingEventProcessor;
+    private ParkingSubLotDAO parkingSubLotDAO;
 
     @Inject
     public ParkingPassResource(ParkingPassDAO parkingPassDAO, ParkingPassMasterDAO parkingPassMasterDAO,
-                               ParkingEventProcessor parkingEventProcessor) {
+                               ParkingEventProcessor parkingEventProcessor, ParkingSubLotDAO parkingSubLotDAO) {
         this.parkingPassDAO = parkingPassDAO;
         this.parkingPassMasterDAO = parkingPassMasterDAO;
         this.parkingEventProcessor = parkingEventProcessor;
+        this.parkingSubLotDAO = parkingSubLotDAO;
     }
 
     @GET
@@ -178,7 +181,10 @@ public class ParkingPassResource {
                 }
             }
             parkingPassDAO.saveOrUpdateParkingPass(parkingPassEntity);
-            parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser, eventType);
+            Integer parkingSubLotId = parkingSubLotDAO.getSubLotBy(parkingPassEntity.getParkingPassMaster().getVehicleType(), gmpUser.getParkingSubLotIds())
+                    .getId();
+            parkingEventProcessor.createParkingPassEvents(parkingPassEntity, gmpUser.getCompanyIds().get(0),
+                    gmpUser.getParkingLotIds().get(0), parkingSubLotId, eventType);
 
         }
         return parkingPassEntity.getId();

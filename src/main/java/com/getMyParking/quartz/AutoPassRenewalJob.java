@@ -1,10 +1,13 @@
 package com.getMyParking.quartz;
 
 import com.getMyParking.constants.PassType;
+import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
+import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.guice.GuiceHelper;
 import com.google.inject.Injector;
 import org.hibernate.Session;
@@ -25,6 +28,8 @@ public class AutoPassRenewalJob implements Job {
 
     private ParkingPassDAO parkingPassDAO;
     private ParkingPassMasterDAO parkingPassMasterDAO;
+    private ParkingEventDAO parkingEventDAO;
+    private ParkingEventProcessor parkingEventProcessor;
     private SessionFactory sessionFactory;
 
     public AutoPassRenewalJob() {
@@ -32,6 +37,8 @@ public class AutoPassRenewalJob implements Job {
         this.parkingPassDAO = injector.getInstance(ParkingPassDAO.class);
         this.parkingPassMasterDAO = injector.getInstance(ParkingPassMasterDAO.class);
         this.sessionFactory = injector.getInstance(SessionFactory.class);
+        this.parkingEventDAO = injector.getInstance(ParkingEventDAO.class);
+        this.parkingEventProcessor = injector.getInstance(ParkingEventProcessor.class);
     }
 
     @Override
@@ -65,6 +72,9 @@ public class AutoPassRenewalJob implements Job {
                             renewedPass.setValidTime(renewedPass.getValidFrom().plusHours(passMaster.getNumbers()).minusSeconds(1));
                         }
                         parkingPassDAO.saveOrUpdateParkingPass(renewedPass);
+                        ParkingEventEntity parkingEventEntity = parkingEventDAO.findByParkingPassId(pass.getId());
+                        parkingEventProcessor.createParkingPassEvents(renewedPass,parkingEventEntity.getCompanyId(),
+                                parkingEventEntity.getParkingLotId(),parkingEventEntity.getParkingSubLotId(),"PASS_CREATE");
                     }
                 });
             });
