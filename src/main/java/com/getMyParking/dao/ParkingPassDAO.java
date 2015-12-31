@@ -209,7 +209,6 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
                 criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
                 .add(Restrictions.between("validTime", DateTime.now(), DateTime.now().plusDays(1)))
                 .add(Restrictions.eq("isDeleted",0))
-		.add(Restrictions.ne("status","discontinued"))
         );
     }
 
