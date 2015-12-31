@@ -62,6 +62,7 @@ public class AutoPassRenewalJob implements Job {
                         renewedPass.setIsDeleted(0);
                         renewedPass.setCreatedAt(DateTime.now());
                         renewedPass.setValidFrom(pass.getValidTime().plusSeconds(1));
+                        renewedPass.setStatus("active");
                         if (passMaster.getPassType().equalsIgnoreCase(PassType.DAY.name())) {
                             renewedPass.setValidTime(renewedPass.getValidFrom().plusDays(passMaster.getNumbers()).minusSeconds(1));
                         } else if (passMaster.getPassType().equalsIgnoreCase(PassType.WEEK.name())) {
