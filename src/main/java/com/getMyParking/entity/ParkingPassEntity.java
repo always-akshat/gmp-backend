@@ -21,7 +21,6 @@ public class ParkingPassEntity {
     private DateTime validFrom;
     private String operatorName;
     private String mobileNumber;
-    private String status;
     @NotNull
     private Integer cost;
     @NotNull
@@ -69,19 +68,6 @@ public class ParkingPassEntity {
     public void setOperatorName(String operatorName) {
         this.operatorName = operatorName;
     }
-
-
-    @Basic
-    @Column(name = "status", nullable = false, insertable = true, updatable = true)
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-
 
     @Basic
     @Column(name = "mobile_number", nullable = false, insertable = true, updatable = true)
