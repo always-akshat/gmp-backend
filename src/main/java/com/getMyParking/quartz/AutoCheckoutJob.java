@@ -81,11 +81,15 @@ public class AutoCheckoutJob implements Job {
                 if (oldParkingEvent.getParkingPassId() != null) {
                     parkingEvent.setParkingPassId(oldParkingEvent.getParkingPassId());
                 }
+                if(parkingSubLot.getCollectionModel().equalsIgnoreCase("PREPAID")){
+                   parkingEvent.setCost(parkingSubLot.getAutoCheckoutCost());
+                }else{
                 parkingEvent.setCost(
                         BigDecimal.valueOf(
                                 PricingFunction.calculateTotalCost(pricingSlotMap,oldParkingEvent.getEventTime(),parkingEvent.getEventTime())
                         )
                 );
+                }
                 parkingEvent.setUpdatedTime(DateTime.now());
                 parkingEventDAO.saveOrUpdateParkingEvent(parkingEvent);
                 count ++;
