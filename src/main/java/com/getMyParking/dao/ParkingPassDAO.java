@@ -103,6 +103,7 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         projectionList.add(Projections.groupProperty("parkingPassMaster.id"));
         Criteria criteria = criteria().add(Restrictions.gt("validTime", DateTime.now()))
+                                      .add(Restrictions.le("validFrom", DateTime.now()))
                                       .add(Restrictions.eq("isDeleted", 0))
                                       .add(Restrictions.in("parkingPassMaster.id", parkingPassMasterIds))
                                       .setProjection(projectionList);
