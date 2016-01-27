@@ -113,6 +113,9 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         result.stream().forEach(objects -> {
             PassReport passReport = new PassReport();
             passReport.setActivePassCount((Long) objects[0]);
+            passReport.setPaidPassCount(0L);
+            passReport.setCollectedAmount(BigDecimal.ZERO);
+            passReport.setBalanceAmount(BigDecimal.ZERO);
             passReport.setParkingPassMasterId((Integer) objects[1]);
             passReportMap.put(passReport.getParkingPassMasterId(),passReport);
         });
@@ -128,8 +131,10 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         result.stream().forEach(objects -> {
             PassReport passReport = passReportMap.get(objects[1]);
-            passReport.setPaidPassCount((Long) objects[0]);
-            passReport.setCollectedAmount(new BigDecimal((Long) objects[0] * masterPrice.get(objects[1])));
+            if (passReport != null) {
+                passReport.setPaidPassCount((Long) objects[0]);
+                passReport.setCollectedAmount(new BigDecimal((Long) objects[0] * masterPrice.get(objects[1])));
+            }
         });
 
         result = criteria().add(Restrictions.eq("isPaid", 0))
@@ -138,7 +143,9 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
 
         result.stream().forEach(objects -> {
             PassReport passReport = passReportMap.get(objects[1]);
-            passReport.setBalanceAmount(new BigDecimal((Long) objects[0] * masterPrice.get(objects[1])));
+            if (passReport != null) {
+                passReport.setBalanceAmount(new BigDecimal((Long) objects[0] * masterPrice.get(objects[1])));
+            }
         });
 
         return passReportMap.values().stream().collect(Collectors.toList());
