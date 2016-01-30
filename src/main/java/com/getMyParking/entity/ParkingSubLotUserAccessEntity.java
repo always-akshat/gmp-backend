@@ -8,7 +8,7 @@ import javax.persistence.*;
  * Created by rahulgupta.s on 16/08/15.
  */
 @Entity
-@Table(name = "parking_sub_lot_user_access", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "parking_sub_lot_user_access", schema = "", catalog = "get_my_parking_v3")
 public class ParkingSubLotUserAccessEntity {
     private int id;
     private int parkingSubLotId;

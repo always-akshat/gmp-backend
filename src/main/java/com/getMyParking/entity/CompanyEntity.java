@@ -8,7 +8,7 @@ import java.util.Set;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "company", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "company", schema = "", catalog = "get_my_parking_v3")
 public class CompanyEntity {
     private Integer id;
     private String name;

@@ -15,7 +15,7 @@ import java.util.Comparator;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "parking_event", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "parking_event", schema = "", catalog = "get_my_parking_v3")
 public class ParkingEventEntity implements Comparable<ParkingEventEntity>{
     private BigInteger id;
     @NotNull

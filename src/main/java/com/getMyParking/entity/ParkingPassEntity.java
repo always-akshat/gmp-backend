@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "parking_pass", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "parking_pass", schema = "", catalog = "get_my_parking_v3")
 public class ParkingPassEntity {
     private Integer id;
     @NotNull
@@ -191,7 +191,7 @@ public class ParkingPassEntity {
     }
 
     @Basic
-    @Column(name = "is_deleted", nullable = false, insertable = true, updatable = true)
+    @Column(name = "deleted", nullable = false, insertable = true, updatable = true)
     public Integer getIsDeleted() {
         return isDeleted;
     }

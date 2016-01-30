@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * Created by rahulgupta.s on 13/09/15.
  */
 @Entity
-@Table(name = "sub_lot_type", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "sub_lot_type", schema = "", catalog = "get_my_parking_v3")
 public class SubLotTypeEntity {
     private String typeName;
 

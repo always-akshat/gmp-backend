@@ -5,7 +5,6 @@ import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingPassEntity;
-import com.getMyParking.service.auth.GMPUser;
 import com.google.inject.Inject;
 import org.joda.time.DateTime;
 import org.joda.time.Days;

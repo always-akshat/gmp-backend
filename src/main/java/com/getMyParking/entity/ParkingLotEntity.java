@@ -12,14 +12,12 @@ import java.util.Set;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "parking_lot", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "parking_lot", schema = "", catalog = "get_my_parking_v3")
 public class ParkingLotEntity {
     private Integer id;
     private String name;
     private Time openTime;
     private Time closeTime;
-    private BigDecimal longitude;
-    private BigDecimal latitude;
     private Set<ParkingSubLotEntity> parkingSubLots;
     @JsonIgnore
     private ParkingEntity parking;
@@ -65,26 +63,6 @@ public class ParkingLotEntity {
         this.closeTime = closeTime;
     }
 
-    @Basic
-    @Column(name = "longitude", nullable = false, insertable = true, updatable = true, precision = 4)
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
-
-    @Basic
-    @Column(name = "latitude", nullable = false, insertable = true, updatable = true, precision = 4)
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,8 +74,9 @@ public class ParkingLotEntity {
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (openTime != null ? !openTime.equals(that.openTime) : that.openTime != null) return false;
         if (closeTime != null ? !closeTime.equals(that.closeTime) : that.closeTime != null) return false;
-        if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
-        return !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null);
+        if (parkingSubLots != null ? !parkingSubLots.equals(that.parkingSubLots) : that.parkingSubLots != null)
+            return false;
+        return !(parking != null ? !parking.equals(that.parking) : that.parking != null);
 
     }
 
@@ -107,8 +86,7 @@ public class ParkingLotEntity {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (openTime != null ? openTime.hashCode() : 0);
         result = 31 * result + (closeTime != null ? closeTime.hashCode() : 0);
-        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
-        result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
+        result = 31 * result + (parkingSubLots != null ? parkingSubLots.hashCode() : 0);
         result = 31 * result + (parking != null ? parking.hashCode() : 0);
         return result;
     }
