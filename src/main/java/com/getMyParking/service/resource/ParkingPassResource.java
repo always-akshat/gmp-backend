@@ -107,7 +107,7 @@ public class ParkingPassResource {
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     public List<ParkingPassEntity> searchParkingPass(@QueryParam("parkingId")IntParam parkingId,
-                                                         @QueryParam("registrationNumber") String registrationNumber,
+                                                         @QueryParam("registrationNumber") Optional<String> registrationNumber,
                                                         @QueryParam("isDeleted") Optional<IntParam> isDeleted,
                                                          @QueryParam("pageNumber") @DefaultValue("0") IntParam pageNumberParam,
                                                          @QueryParam("pageSize") @DefaultValue("30") IntParam pageSizeParam,

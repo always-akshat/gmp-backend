@@ -162,22 +162,29 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
         return list(criteria().add(Restrictions.in("id",parkingPassIdInts)));
     }
 
-    public List<ParkingPassEntity> searchParkingPass(Integer parkingId, String registrationNumber,
+    public List<ParkingPassEntity> searchParkingPass(Integer parkingId, Optional<String> registrationNumber,
                                                      Optional<IntParam> isDeleted,
                                                      Integer integer, Integer pageSize) {
 
         Query q;
-        if (isDeleted.isPresent()) {
+        if (registrationNumber.isPresent() && isDeleted.isPresent()) {
             q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
                     "AND registrationNumber = :registrationNumber AND isDeleted = :isDeleted");
             q.setInteger("isDeleted",isDeleted.get().get());
-        } else {
+            q.setString("registrationNumber", registrationNumber.get());
+        } else if (registrationNumber.isPresent() && !isDeleted.isPresent()) {
             q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
                     "AND registrationNumber = :registrationNumber");
+            q.setString("registrationNumber", registrationNumber.get());
+        } else if (!registrationNumber.isPresent() && isDeleted.isPresent()) {
+            q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId " +
+                    " AND isDeleted = :isDeleted");
+            q.setInteger("isDeleted",isDeleted.get().get());
+        } else {
+            q = currentSession().createQuery(" FROM ParkingPassEntity WHERE parkingPassMaster.parking.id = :parkingId");
         }
 
         q.setInteger("parkingId",parkingId);
-        q.setString("registrationNumber", registrationNumber);
 
         q.setFirstResult((integer-1) * pageSize);
         q.setMaxResults(pageSize);
