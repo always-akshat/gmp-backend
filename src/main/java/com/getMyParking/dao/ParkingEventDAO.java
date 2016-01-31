@@ -4,9 +4,7 @@ import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
-import com.getMyParking.entity.reports.ParkingReport;
-import com.getMyParking.entity.reports.ParkingReportBySubLotType;
-import com.getMyParking.entity.reports.ParkingReportByUser;
+import com.getMyParking.entity.reports.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -21,6 +19,7 @@ import org.hibernate.criterion.*;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.CustomType;
+import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
@@ -488,5 +487,16 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .setMaxResults(1)
                 .setFirstResult(0)
         );
+    }
+
+    public List<PassEventReport> passEventReport(Integer parkingId, DateTime fromDate, DateTime toDate) {
+        SQLQuery query = currentSession().createSQLQuery("SELECT sum(`parking_event`.`cost`) AS collectedAmount, " +
+                "parking_pass.parking_pass_master_id AS parkingPassMasterId, parking_event.event_time as eventDate " +
+                "FROM parking_event INNER JOIN parking_pass ON parking_event.parking_pass_id = parking_pass.id " +
+                "GROUP BY parking_pass.parking_pass_master_id AND DATE(parking_event.event_time)");
+        query.addScalar("collectedAmount", BigDecimalType.INSTANCE);
+        query.addScalar("parkingPassMasterId", IntegerType.INSTANCE);
+        query.addScalar("eventDate", new CustomType(new PersistentDateTime()));
+        return query.list();
     }
 }

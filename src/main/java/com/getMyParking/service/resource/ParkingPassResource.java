@@ -2,11 +2,13 @@ package com.getMyParking.service.resource;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingPassMasterDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
 import com.getMyParking.entity.ParkingPassEntity;
 import com.getMyParking.entity.ParkingPassMasterEntity;
+import com.getMyParking.entity.reports.PassEventReport;
 import com.getMyParking.entity.reports.PassReport;
 import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
@@ -17,6 +19,7 @@ import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.jersey.params.DateTimeParam;
 import io.dropwizard.jersey.params.IntParam;
 
 import javax.validation.Valid;
@@ -39,14 +42,17 @@ public class ParkingPassResource {
     private ParkingPassMasterDAO parkingPassMasterDAO;
     private ParkingEventProcessor parkingEventProcessor;
     private ParkingSubLotDAO parkingSubLotDAO;
+    private ParkingEventDAO parkingEventDAO;
 
     @Inject
     public ParkingPassResource(ParkingPassDAO parkingPassDAO, ParkingPassMasterDAO parkingPassMasterDAO,
-                               ParkingEventProcessor parkingEventProcessor, ParkingSubLotDAO parkingSubLotDAO) {
+                               ParkingEventProcessor parkingEventProcessor, ParkingSubLotDAO parkingSubLotDAO,
+                               ParkingEventDAO parkingEventDAO) {
         this.parkingPassDAO = parkingPassDAO;
         this.parkingPassMasterDAO = parkingPassMasterDAO;
         this.parkingEventProcessor = parkingEventProcessor;
         this.parkingSubLotDAO = parkingSubLotDAO;
+        this.parkingEventDAO = parkingEventDAO;
     }
 
     @GET
@@ -140,6 +146,28 @@ public class ParkingPassResource {
         }
 
         return parkingPassDAO.passReport(parkingPassMasterDAO.getPassMasters(parkingId.get()));
+    }
+
+    @GET
+    @Path("/event_report")
+    @Timed
+    @ExceptionMetered
+    @UnitOfWork
+    @ApiOperation(value = "Pass Reports by parking id for parking events", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+    })
+    public List<PassEventReport> parkingPassEventReport(@QueryParam("parkingId") IntParam parkingId,
+                                                        @QueryParam("fromDate") DateTimeParam fromDate,
+                                                        @QueryParam("toDate") DateTimeParam toDate,
+                                                        @Auth GMPUser gmpUser) {
+
+        if (!gmpUser.getParkingIds().contains(parkingId.get())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+
+        return parkingEventDAO.passEventReport(parkingId.get(),fromDate.get(),toDate.get());
     }
 
     @POST
