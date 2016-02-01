@@ -53,12 +53,13 @@ database:
   password: gmp2016
 
   # the JDBC URL
-  url: jdbc:mysql://52.77.1.60:3306/get_my_parking_v3?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://52.77.1.60:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
+
 
   # the maximum amount of time to wait on an empty pool before throwing an exception
   maxWaitForConnection: 1s
@@ -82,7 +83,7 @@ flyway:
   encoding: UTF-8
   # The schemas managed by Flyway. (default: default schema of the connection)
   schemas:
-    - get_my_parking_v3
+    - get_my_parking_v2
   # The name of the schema metadata table that will be used by Flyway. (default: schema_version)
   metaDataTableName: schema_version
   # The file name prefix for sql migrations (default: V)

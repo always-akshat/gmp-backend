@@ -8,7 +8,7 @@ import javax.persistence.*;
  * Created by rahulgupta.s on 16/09/15.
  */
 @Entity
-@Table(name = "foc_reasons_has_parking_lot", schema = "", catalog = "get_my_parking_v3")
+@Table(name = "foc_reasons_has_parking_lot", schema = "", catalog = "get_my_parking_v2")
 public class FocReasonsForParkingLotEntity {
     @JsonIgnore
     private Integer id;

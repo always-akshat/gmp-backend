@@ -9,7 +9,7 @@ import java.util.Set;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "parking_pass_master", schema = "", catalog = "get_my_parking_v3")
+@Table(name = "parking_pass_master", schema = "", catalog = "get_my_parking_v2")
 public class ParkingPassMasterEntity {
     private Integer id;
     private String name;

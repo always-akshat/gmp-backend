@@ -8,7 +8,7 @@ import java.util.Set;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "user_b2b", schema = "", catalog = "get_my_parking_v3")
+@Table(name = "user_b2b", schema = "", catalog = "get_my_parking_v2")
 public class UserB2BEntity {
     @NotNull
     private String username;
@@ -93,7 +93,7 @@ public class UserB2BEntity {
     }
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_access", catalog = "get_my_parking_v3", joinColumns = {
+    @JoinTable(name = "user_access", catalog = "get_my_parking_v2", joinColumns = {
             @JoinColumn(name = "username", nullable = false, updatable = false) },
             inverseJoinColumns = { @JoinColumn(name = "access_title",
                     nullable = false, updatable = false) })

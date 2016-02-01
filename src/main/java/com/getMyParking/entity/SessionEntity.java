@@ -10,7 +10,7 @@ import javax.persistence.*;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "session", schema = "", catalog = "get_my_parking_v3")
+@Table(name = "session", schema = "", catalog = "get_my_parking_v2")
 public class SessionEntity {
     private Integer id;
     private String authToken;

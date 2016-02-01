@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Created by rahulgupta.s on 20/08/15.
  */
 @Entity
-@Table(name = "style_master", schema = "", catalog = "get_my_parking_v3")
+@Table(name = "style_master", schema = "", catalog = "get_my_parking_v2")
 public class StyleMasterEntity {
     private String title;
     private String font;
