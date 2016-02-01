@@ -18,6 +18,8 @@ import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -25,6 +27,8 @@ import java.util.List;
  * Created by rahulgupta.s on 06/12/15.
  */
 public class AutoPassRenewalJob implements Job {
+
+    private static final Logger logger = LoggerFactory.getLogger(AutoPassRenewalJob.class);
 
     private ParkingPassDAO parkingPassDAO;
     private ParkingPassMasterDAO parkingPassMasterDAO;
@@ -52,6 +56,7 @@ public class AutoPassRenewalJob implements Job {
 
             passMasters.forEach(passMaster -> {
                 List<ParkingPassEntity> activePasses = parkingPassDAO.getToBeExpiredPassesByPassMasterId(passMaster.getId());
+                logger.info("Pass Master Id : {} Number of Active Passes {}", passMaster.getId(), activePasses.size());
                 activePasses.forEach( pass -> {
                     ParkingPassEntity parkingPass = parkingPassDAO.getLastPassByRegistrationNumberAndMasterId(
                             pass.getRegistrationNumber(),pass.getParkingPassMaster().getId());
