@@ -220,12 +220,18 @@ public class ParkingPassDAO extends AbstractDAO<ParkingPassEntity> {
     }
 
     public List<ParkingPassEntity> getToBeExpiredPassesByPassMasterId(Integer parkingPassMasterId) {
-        return list(
-                criteria().add(Restrictions.eq("parkingPassMaster.id", parkingPassMasterId))
-                .add(Restrictions.between("validTime", DateTime.now(), DateTime.now().plusDays(1)))
-                .add(Restrictions.eq("isDeleted",0))
-                .add(Restrictions.ne("status","discontinued"))
-        );
+
+        SQLQuery query = currentSession().createSQLQuery("select * from `parking_pass` " +
+                "where `parking_pass`.`parking_pass_master_id` = :passMasterId and valid_time " +
+                "between :fromDate and :toDate " +
+                "and is_deleted = 0 and status != 'discontinued'");
+        query.setParameter("passMasterId",parkingPassMasterId);
+        query.setParameter("fromDate",DateTime.now());
+        query.setParameter("toDate",DateTime.now().plusDays(1));
+        query.addEntity(ParkingPassEntity.class);
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        return list(query);
     }
 
     public ParkingPassEntity getLastPassByRegistrationNumberAndMasterId(String registrationNumber, Integer parkingPassMasterId) {
