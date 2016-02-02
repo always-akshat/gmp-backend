@@ -50,10 +50,10 @@ database:
   user: root
 
   # the password
-  password: gmp2016
+  password: gmp2015
 
   # the JDBC URL
-  url: jdbc:mysql://52.77.1.60:3306/get_my_parking_v2?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://54.255.195.228:3306/get_my_parking_v3?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
@@ -83,7 +83,7 @@ flyway:
   encoding: UTF-8
   # The schemas managed by Flyway. (default: default schema of the connection)
   schemas:
-    - get_my_parking_v2
+    - get_my_parking_v3
   # The name of the schema metadata table that will be used by Flyway. (default: schema_version)
   metaDataTableName: schema_version
   # The file name prefix for sql migrations (default: V)

@@ -8,7 +8,7 @@ import javax.persistence.*;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "price_grid", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "price_grid", schema = "", catalog = "get_my_parking_v3")
 public class PriceGridEntity {
     private Integer id;
     private String priceStructure;

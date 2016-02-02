@@ -11,7 +11,7 @@ import java.util.Set;
  * Created by rahulgupta.s on 13/08/15.
  */
 @Entity
-@Table(name = "parking", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "parking", schema = "", catalog = "get_my_parking_v3")
 public class ParkingEntity {
     private Integer id;
     private String name;

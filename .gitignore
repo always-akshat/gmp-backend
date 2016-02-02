@@ -4,4 +4,4 @@ src/main/main.iml
 *.log
 /out
 /target
-
+*.DS_Store

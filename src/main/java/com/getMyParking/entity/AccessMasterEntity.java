@@ -9,7 +9,7 @@ import java.util.Set;
  * Created by rahulgupta.s on 28/10/15.
  */
 @Entity
-@Table(name = "access_master", schema = "", catalog = "get_my_parking_v2")
+@Table(name = "access_master", schema = "", catalog = "get_my_parking_v3")
 public class AccessMasterEntity {
 
     private String accessTitle;

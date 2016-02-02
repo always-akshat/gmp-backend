@@ -144,6 +144,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         cors.setInitParameter("allowedCredentials", "true");
         // Add URL mapping
         cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        
 
         List<ParkingSubLotEntity> parkingSubLots = parkingSubLotDAO.getAllAutoCheckoutParkingLots();
         for (ParkingSubLotEntity parkingSubLot : parkingSubLots) {
@@ -185,5 +186,6 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         ScheduledExecutorService executorService = environment.lifecycle().scheduledExecutorService("session-save").build();
         executorService.scheduleAtFixedRate(guiceBundle.getInjector().getInstance(SessionSaveTask.class), 2, 2, TimeUnit.MINUTES);
+
     }
 }

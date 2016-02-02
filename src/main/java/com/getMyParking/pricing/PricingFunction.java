@@ -120,7 +120,7 @@ public class PricingFunction {
             }
         }
 
-        while (currentTime.isBefore(checkoutTime)) {
+        while (currentTime.isBefore(checkoutTime.minusMinutes(1))) {
 
             cost += currentPriceGrid.getCost();
             DateTime newCurrentTime = currentTime.plusMinutes(currentPriceGrid.getDuration());
@@ -179,13 +179,14 @@ public class PricingFunction {
 
     private static Double flatDaysCost(PricingSlotEntity pricingSlot, DateTime checkInTime, DateTime checkoutTime) {
         double cost = 0;
-        DateTime currentTime = checkInTime;
+        DateTime currentTime = checkInTime ;
         List<PriceGridEntity> currentPriceGrids = Lists.newArrayList(pricingSlot.getPriceGrids());
         Collections.sort(currentPriceGrids, priceGridComparator);
         PriceGridEntity currentPriceGrid = currentPriceGrids.get(0);
         int priceGridIndex = 0;
 
-        while (currentTime.isBefore(checkoutTime)) {
+
+        while (currentTime.isBefore(checkoutTime.minusMinutes(1))) {  // minusMinutes(1) is to give a buffer of 1 min
             cost += currentPriceGrid.getCost();
             DateTime newCurrentTime = currentTime.plusMinutes(currentPriceGrid.getDuration());
             if ((newCurrentTime.getMillis() - checkInTime.getMillis()) % DateTimeConstants.MILLIS_PER_DAY == 0) {
