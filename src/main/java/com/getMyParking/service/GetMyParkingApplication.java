@@ -134,8 +134,9 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         ManagedSessionContext.bind(session);
         ParkingSubLotDAO parkingSubLotDAO = guiceBundle.getInjector().getInstance(ParkingSubLotDAO.class);
 
+
         final FilterRegistration.Dynamic cors =
-                environment.servlets().addFilter("CORSFilter", CorsFilter.class);
+                environment.servlets().addFilter("CORSFilter", new CorsFilter(guiceBundle.getInjector().getInstance(SessionFactory.class).getCurrentSession()));
 
         // Configure CORS parameters
         cors.setInitParameter("allowedOrigins", "*");
@@ -173,7 +174,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 .forJob(jobDetail)
                 .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                 .build();
-        scheduler.scheduleJob(jobDetail,trigger);
+        scheduler.scheduleJob(jobDetail, trigger);
 
         JobDetail passRenewalJobDetail = newJob(AutoPassRenewalJob.class).build();
         String passRenewalCronExpression = "0 30 23 * * ?";

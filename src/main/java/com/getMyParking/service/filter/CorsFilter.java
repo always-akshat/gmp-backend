@@ -1,5 +1,8 @@
 package com.getMyParking.service.filter;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import javax.inject.Singleton;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +14,12 @@ import java.io.IOException;
 @Singleton
 public class CorsFilter implements Filter{
 
+    private Session session;
+
+    public CorsFilter(Session session) {
+        this.session = session;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain filterChain) throws IOException, ServletException {
@@ -18,6 +27,12 @@ public class CorsFilter implements Filter{
         if(response instanceof HttpServletResponse){
             HttpServletResponse alteredResponse = ((HttpServletResponse)response);
             addCorsHeader(alteredResponse);
+            if(this.session!=null){
+                if(this.session.isOpen()){
+                    this.session.close();
+                }
+                System.out.println("closing session if existed");
+            }
         }
 
         filterChain.doFilter(request, response);
