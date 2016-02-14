@@ -21,28 +21,9 @@ public class ParkingSubLotUserAccessDAO extends AbstractDAO<ParkingSubLotUserAcc
         super(sessionFactory);
     }
 
-    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToParking(Integer parkingId) {
+    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToSubLots(List<Integer> subLotIds) {
         return Lists.newArrayList(Sets.newHashSet(list(currentSession().createCriteria(ParkingSubLotUserAccessEntity.class)
-                .add(Restrictions.eq("parkingId", parkingId)))));
-    }
-
-    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToParkingLot(Integer parkingLotId) {
-        return Lists.newArrayList(Sets.newHashSet(list(currentSession().createCriteria(ParkingSubLotUserAccessEntity.class)
-                .add(Restrictions.eq("parkingLotId", parkingLotId)))));
-    }
-
-    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToParkingSubLot(Integer parkingSubLotId) {
-        return Lists.newArrayList(Sets.newHashSet(list(currentSession().createCriteria(ParkingSubLotUserAccessEntity.class)
-                .add(Restrictions.eq("parkingSubLotId", parkingSubLotId)))));
-    }
-
-    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToParkingSubLots(List<Integer> parkingSublotIds) {
-        return list(criteria().add(Restrictions.in("parkingSubLotId", parkingSublotIds)));
-    }
-
-    public List<ParkingSubLotUserAccessEntity> getAllUsersWithAccessToCompany(Integer companyId) {
-        return Lists.newArrayList(Sets.newHashSet(list(currentSession().createCriteria(ParkingSubLotUserAccessEntity.class)
-                .add(Restrictions.eq("companyId", companyId)))));
+                .add(Restrictions.in("parkingSubLotId", subLotIds)))));
     }
 
     public void deleteByParkingId(Integer parkingId){

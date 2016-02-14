@@ -5,7 +5,7 @@ import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.reports.ParkingReport;
-import com.getMyParking.entity.reports.ParkingReportBySubLotType;
+import com.getMyParking.entity.reports.ParkingReportByQuery;
 import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -21,11 +21,10 @@ import org.hibernate.criterion.*;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.BigDecimalType;
 import org.hibernate.type.CustomType;
+import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,151 +103,72 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
     public ParkingReport createParkingSubLotReport(Integer parkingSubLotId, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingSubLotId",parkingSubLotId),fromDate,toDate,null);
+        return createReport("parking_sub_lot_id = " + parkingSubLotId,fromDate,toDate);
     }
 
-    public ParkingReport createParkingLotReport(Integer parkingLotId, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingLotId", parkingLotId), fromDate, toDate, null);
-    }
+    public ParkingReport createReport(String fetchCriteria, DateTime fromDate, DateTime toDate) {
 
-    public ParkingReport createParkingReport(Integer parkingId, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("parkingId", parkingId),fromDate,toDate,null);
-    }
+        SQLQuery query = currentSession().createSQLQuery("select COUNT(*) as count, SUM(cost) as cost, `type` as type" +
+                ", special as special, event_type as eventType from parking_event " +
+                "where "+ fetchCriteria +" AND event_type in ('CHECKED_IN','CHECKED_OUT') AND `event_time` between :fromDate AND :toDate " +
+                "Group by event_type, special, `type`");
 
-    public ParkingReport createCompanyReport(Integer companyId, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("companyId", companyId),fromDate,toDate,null);
-    }
+        query.setParameter("toDate", toDate.toString());
+        query.setParameter("fromDate", fromDate.toString());
+        query.addScalar("count", LongType.INSTANCE);
+        query.addScalar("cost", BigDecimalType.INSTANCE);
+        query.addScalar("type", StringType.INSTANCE);
+        query.addScalar("special", StringType.INSTANCE);
+        query.addScalar("eventType", StringType.INSTANCE);
 
-    public ParkingReport createUserReport(String operatorName, DateTime fromDate, DateTime toDate) {
-        return createReport(Restrictions.eq("operatorName", operatorName), fromDate, toDate, null);
-    }
+        query.setResultTransformer(Transformers.aliasToBean(ParkingReportByQuery.class));
 
-    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
-
-        ProjectionList projectionList = Projections.projectionList();
-        projectionList.add(Projections.rowCount());
-        projectionList.add(Projections.sum("cost"));
-
-        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType","CHECKED_IN"))
-                .setProjection(projectionList);
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        List<Object[]> list = criteria.list();
-        Object[] row = list.get(0);
-
+        List<ParkingReportByQuery> reports = query.list();
         Integer checkInCount = 0;
-        if (row != null) checkInCount = ((Long)row[0]).intValue();
-
-        BigDecimal checkInRevenue = null;
-        if (row != null) checkInRevenue = (BigDecimal) row[1];
-        if (checkInRevenue == null) checkInRevenue = new BigDecimal(0);
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .setProjection(projectionList);
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        list = criteria.list();
-        row = list.get(0);
-
         Integer checkOutCount = 0;
-        if (row != null) checkOutCount = ((Long)row[0]).intValue();
-
-        BigDecimal checkOutRevenue = null;
-        if (row != null) checkOutRevenue = (BigDecimal) row[1];
-        if (checkOutRevenue == null) checkOutRevenue = new BigDecimal(0);
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .add(Restrictions.eq("special", "FOC"))
-                .setProjection(Projections.rowCount());
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        Long focCount = (Long) criteria.list().get(0);
-        if (focCount == null) focCount = 0L;
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .add(Restrictions.eq("special","TT"))
-                .setProjection(Projections.rowCount());
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        Long ttCount = (Long) criteria.list().get(0);
-        if (ttCount == null) ttCount = 0L;
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .add(Restrictions.eq("special", "AC"))
-                .setProjection(Projections.rowCount());
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        Long acCount = (Long) criteria.list().get(0);
-        if (acCount == null) acCount = 0L;
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_IN"))
-                .add(Restrictions.eq("type","PASS"))
-                .setProjection(Projections.rowCount());
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        Long passCheckInCount = (Long) criteria.list().get(0);
-        if (passCheckInCount == null) passCheckInCount = 0L;
-
-        criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .add(Restrictions.eq("eventType", "CHECKED_OUT"))
-                .add(Restrictions.eq("type","PASS"))
-                .setProjection(Projections.rowCount());
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-        Long passCheckOutCount = (Long) criteria.list().get(0);
-        if (passCheckOutCount == null) passCheckOutCount = 0L;
-
-        return new ParkingReport(checkInCount,checkOutCount,
-                focCount.intValue(),ttCount.intValue(),
-                passCheckInCount.intValue(),passCheckOutCount.intValue(),
-                checkInRevenue,checkOutRevenue, acCount.intValue());
-
-    }
-
-    public List<ParkingReportBySubLotType> createParkingReportByTypes(Integer parkingId, DateTime from, DateTime to,
-                                                               List<String> typesList) {
-
-        List<ParkingReportBySubLotType> parkingReportGroup = Lists.newArrayList();
-
-        for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate().plusDays(1)); date = date.plusDays(1)) {
-            List<ParkingReport> parkingReports = Lists.newArrayList();
-            for (String type : typesList) {
-                ParkingReport parkingReport =
-                        createReport(Restrictions.eq("parkingId",parkingId),date.toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30)),
-                                date.plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5,30)),type);
-                parkingReport.setType(type);
-                parkingReports.add(parkingReport);
+        BigDecimal checkInRevenue = BigDecimal.ZERO;
+        BigDecimal checkOutRevenue = BigDecimal.ZERO;
+        Integer focCount = 0;
+        Integer acCount = 0;
+        Integer ttCount = 0;
+        Integer passCheckInCount = 0;
+        Integer passCheckOutCount = 0;
+        for (ParkingReportByQuery report : reports) {
+            if (report.getEventType().equalsIgnoreCase("CHECKED_IN")) {
+                checkInCount += report.getCount().intValue();
+                checkInRevenue = checkInRevenue.add(report.getCost());
+                if (report.getType().equalsIgnoreCase("PASS")) {
+                    passCheckInCount += report.getCount().intValue();
+                }
+            } else {
+                checkOutCount += report.getCount().intValue();
+                checkOutRevenue = checkOutRevenue.add(report.getCost());
+                if (report.getType().equalsIgnoreCase("PASS")) {
+                    passCheckOutCount += report.getCount().intValue();
+                }
             }
-            parkingReportGroup.add(new ParkingReportBySubLotType(date,parkingReports));
+
+            if (report.getSpecial() != null) {
+                if (report.getSpecial().equalsIgnoreCase("FOC")) {
+                    focCount += report.getCount().intValue();
+                } else if (report.getSpecial().equalsIgnoreCase("TT")) {
+                    ttCount += report.getCount().intValue();
+                } else if (report.getSpecial().equalsIgnoreCase("AC")) {
+                    acCount += report.getCount().intValue();
+                }
+            }
         }
-        return parkingReportGroup;
+
+        return new ParkingReport(checkInCount,checkOutCount, focCount, ttCount, passCheckInCount,
+                passCheckOutCount, checkInRevenue,checkOutRevenue, acCount);
+
     }
 
     public List<ParkingReportByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
                                                                      List<ParkingSubLotUserAccessEntity> users) {
 
-        List<ParkingSubLotUserAccessEntity> filteredUsers = users.stream().filter(userAccessEntity ->
-                userAccessEntity.getUserB2B().getUserAccesses().stream().map(
-                        AccessMasterEntity::getAccessTitle
-                ).anyMatch(
-                        s -> s.equalsIgnoreCase("CHECKED_IN") || s.equalsIgnoreCase("CHECKED_OUT")
-                )).collect(Collectors.toList());
-
         Map<String,ParkingReportByUser> parkingReports = Maps.newHashMap();
-        for (ParkingSubLotUserAccessEntity user : filteredUsers) {
+        for (ParkingSubLotUserAccessEntity user : users) {
             String username = user.getUserB2B().getUsername();
             ParkingReportByUser userParkingReport;
             if (parkingReports.containsKey(username)) {
@@ -263,108 +183,14 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 parkingReports.put(username,userParkingReport);
             }
             ParkingReport parkingReport =
-                    createReport(Restrictions.and(Restrictions.eq("parkingSubLotId", user.getParkingSubLotId()),
-                            Restrictions.eq("operatorName",username)),fromDateTime,toDateTime,null);
+                    createReport("parking_sub_lot_id = " + user.getParkingSubLotId() + " AND operator_name = '" + username +"' ",
+            fromDateTime,toDateTime);
             parkingReport.setParkingSubLotId(user.getParkingSubLotId());
             userParkingReport.getParkingReports().add(parkingReport);
         }
 
         return Lists.newArrayList(parkingReports.values());
     }
-
-    /*
-    public ParkingReport createReport(Criterion fetchCriteria, DateTime fromDate, DateTime toDate, String type) {
-
-        ProjectionList projectionList = Projections.projectionList();
-        projectionList.add(Projections.rowCount(),"count");
-        projectionList.add(Projections.sum("cost"),"revenue");
-        projectionList.add(Projections.groupProperty("type"),"parkingType");
-        projectionList.add(Projections.groupProperty("eventType"),"eventType");
-        projectionList.add(Projections.groupProperty("subLotType"),"subLotType");
-
-        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(fetchCriteria)
-                .add(Restrictions.between("eventTime", fromDate, toDate))
-                .setProjection(projectionList);
-        if (type != null) criteria.add(Restrictions.eq("subLotType",type));
-
-        criteria.setResultTransformer(Transformers.aliasToBean(ReportDetails.class));
-
-        return new ParkingReport(criteria.list());
-
-    }
-
-    public List<ParkingReportBySubLotType> createParkingReportByTypes(Integer parkingId, DateTime from, DateTime to,
-                                            List<String> typesList) {
-
-        List<ParkingReportBySubLotType> parkingReportGroup = Lists.newArrayList();
-
-        for (LocalDate date = from.toLocalDate(); date.isBefore(to.toLocalDate().plusDays(1)); date = date.plusDays(1)) {
-            ProjectionList projectionList = Projections.projectionList();
-            projectionList.add(Projections.rowCount(),"count");
-            projectionList.add(Projections.sum("cost"),"revenue");
-            projectionList.add(Projections.groupProperty("eventType"),"eventType");
-            projectionList.add(Projections.groupProperty("subLotType"),"subLotType");
-
-            Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                    .add(Restrictions.between("eventTime", date.toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30)),
-                            date.plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.forOffsetHoursMinutes(5, 30))))
-                    .add(Restrictions.eq("parkingId", parkingId))
-                    .setProjection(projectionList);
-            criteria.setResultTransformer(Transformers.aliasToBean(SubLotReportDetails.class));
-            List<SubLotReportDetails> reportDetails = criteria.list();
-            parkingReportGroup.add(new ParkingReportBySubLotType(date,reportDetails));
-        }
-        return parkingReportGroup;
-    }
-
-    public List<ParkingReportByUser> createParkingReportByUsers(DateTime fromDateTime, DateTime toDateTime,
-                                                               List<ParkingSubLotUserAccessEntity> users) {
-
-        List<ParkingSubLotUserAccessEntity> filteredUsers = users.stream().filter(userAccessEntity ->
-                userAccessEntity.getUserB2B().getUserAccesses().stream().map(
-                    AccessMasterEntity::getAccessTitle
-                ).anyMatch(
-                        s -> s.equalsIgnoreCase("CHECKED_IN") || s.equalsIgnoreCase("CHECKED_OUT")
-                )).collect(Collectors.toList());
-
-        ProjectionList projectionList = Projections.projectionList();
-        projectionList.add(Projections.rowCount(),"count");
-        projectionList.add(Projections.sum("cost"),"revenue");
-        projectionList.add(Projections.groupProperty("special"), "special");
-        projectionList.add(Projections.groupProperty("eventType"),"eventType");
-        projectionList.add(Projections.groupProperty("parkingSubLotId"),"parkingSubLotId");
-        projectionList.add(Projections.groupProperty("operatorName"),"operatorName");
-
-        Criteria criteria = currentSession().createCriteria(ParkingEventEntity.class)
-                .add(Restrictions.between("eventTime", fromDateTime, toDateTime))
-                .add(Restrictions.in("operatorName",
-                        filteredUsers.stream().map(user -> user.getUserB2B().getUsername()).collect(Collectors.toList())))
-                .add(Restrictions.in("parkingSubLotId",
-                        filteredUsers.stream().map(ParkingSubLotUserAccessEntity::getParkingSubLotId).collect(Collectors.toList())))
-                .setProjection(projectionList);
-        criteria.setResultTransformer(Transformers.aliasToBean(UserParkingReportDetails.class));
-        List<UserParkingReportDetails> detailsList = criteria.list();
-
-        Map<String,List<UserParkingReportDetails>> userDetailsMap =
-                detailsList.stream().collect(Collectors.groupingBy(UserParkingReportDetails::getOperatorName));
-
-        Map<String,List<ParkingSubLotUserAccessEntity>> userAccessEntityMap =
-                filteredUsers.stream().collect(Collectors.groupingBy(user -> user.getUserB2B().getUsername()));
-        List<ParkingReportByUser> parkingReports = Lists.newArrayList();
-        userDetailsMap.forEach((user, reportDetails) -> {
-            ParkingSubLotUserAccessEntity userAccess = userAccessEntityMap.get(user).get(0);
-            ParkingReportByUser userParkingReport = new ParkingReportByUser();
-            userParkingReport.setUsername(user);
-            userParkingReport.setCompanyId(userAccess.getCompanyId());
-            userParkingReport.setParkingId(userAccess.getParkingId());
-            userParkingReport.setParkingLotId(userAccess.getParkingLotId());
-            userParkingReport.setReportDetails(reportDetails);
-            parkingReports.add(userParkingReport);
-        });
-        return parkingReports;
-    } */
-
 
     public void deleteSubLotByParkingId(Integer parkingId) {
         Query q = currentSession().createQuery("delete from ParkingEventEntity where parking_id =:id");

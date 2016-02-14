@@ -162,20 +162,4 @@ public class ParkingSubLotResource {
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         return parkingEventDAO.createParkingSubLotReport(parkingSubLotId,fromDate.get(),toDate.get());
     }
-
-    @Path("/user")
-    @GET
-    @Timed
-    @UnitOfWork
-    @ApiOperation(value = "Report by parking lot for all operators ", response = List.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public List<ParkingSubLotUserAccessEntity> subLotUsers( @QueryParam("parkingSubLotIds") String ids) {
-        List<String> parkingSubLotIds = Splitter.on(",").splitToList(ids);
-        List<Integer> parkingSubLotsIdInts = parkingSubLotIds.stream()
-                .map(Integer::parseInt).collect(Collectors.toList());
-        return parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingSubLots(parkingSubLotsIdInts);
-    }
 }

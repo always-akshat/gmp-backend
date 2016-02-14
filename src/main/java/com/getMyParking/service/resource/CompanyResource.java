@@ -9,8 +9,10 @@ import com.getMyParking.dao.ParkingSubLotUserAccessDAO;
 import com.getMyParking.entity.CompanyEntity;
 import com.getMyParking.entity.reports.ParkingReport;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
+import com.getMyParking.service.auth.GMPUser;
 import com.google.inject.Inject;
 import com.wordnik.swagger.annotations.*;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
 
@@ -86,20 +88,6 @@ public class CompanyResource {
         companyDAO.deleteById(companyId);
     }
 
-    @Path("/{companyId}/report")
-    @GET
-    @Timed
-    @UnitOfWork
-    @ApiOperation(value = "Report by company", response = ParkingReport.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public ParkingReport report( @PathParam("companyId") Integer companyId,
-                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        return parkingEventDAO.createCompanyReport(companyId,fromDate.get(),toDate.get());
-    }
-
     @Path("/{companyId}/userReport/details")
     @GET
     @Timed
@@ -109,9 +97,9 @@ public class CompanyResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 400, message = "Bad Request"),
     })
-    public List<ParkingReportByUser> userReport( @PathParam("companyId") Integer companyId,
+    public List<ParkingReportByUser> userReport( @PathParam("companyId") Integer companyId, @Auth GMPUser gmpUser,
                                                       @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToCompany(companyId);
+        List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToSubLots(gmpUser.getParkingSubLotIds());
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
     }
 

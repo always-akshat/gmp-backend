@@ -212,18 +212,4 @@ public class UserResource {
         return responseCompanies;
     }
 
-    @Path("/{operatorName}/report")
-    @GET
-    @Timed
-    @UnitOfWork
-    @ApiOperation(value = "Report by Operator Name", response = ParkingReport.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public ParkingReport report( @PathParam("operatorName") String operatorName,
-                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        return parkingEventDAO.createUserReport(operatorName,fromDate.get(),toDate.get());
-    }
-
 }

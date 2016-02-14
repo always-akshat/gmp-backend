@@ -108,33 +108,4 @@ public class ParkingLotResource {
         parkingLotDAO.deleteById(parkingLotId);
     }
 
-    @Path("/{parkingLotId}/report")
-    @GET
-    @Timed
-    @UnitOfWork
-    @ApiOperation(value = "Report by parking lot", response = ParkingReport.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public ParkingReport report( @PathParam("parkingLotId") Integer parkingLotId,
-                                 @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        return parkingEventDAO.createParkingLotReport(parkingLotId,fromDate.get(),toDate.get());
-    }
-
-    @Path("/{parkingLotId}/userReport/details")
-    @GET
-    @Timed
-    @UnitOfWork
-    @ApiOperation(value = "Report by parking lot for all operators ", response = ParkingReport.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-    })
-    public List<ParkingReportByUser> userReport( @PathParam("parkingLotId") Integer parkingLotId,
-                                                      @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToParkingLot(parkingLotId);
-        return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
-    }
-
 }

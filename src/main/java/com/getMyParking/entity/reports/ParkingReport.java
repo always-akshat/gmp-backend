@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ParkingReport {
 
-    private String type;
     private Integer parkingSubLotId;
     private Integer checkInCount;
     private Integer checkOutCount;
@@ -77,14 +76,6 @@ public class ParkingReport {
 
     public void setParkingSubLotId(Integer parkingSubLotId) {
         this.parkingSubLotId = parkingSubLotId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public Integer getCheckInCount() {
