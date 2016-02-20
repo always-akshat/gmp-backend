@@ -15,12 +15,14 @@ import com.wordnik.swagger.annotations.*;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.DateTimeParam;
+import org.joda.time.DateTime;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -101,6 +103,21 @@ public class CompanyResource {
                                                       @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
         List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToSubLots(gmpUser.getParkingSubLotIds());
         return parkingEventDAO.createParkingReportByUsers(fromDate.get(), toDate.get(), userAccessList);
+    }
+
+    @Path("/{companyId}/reportRange")
+    @GET
+    @Timed
+    @UnitOfWork
+    @ApiOperation(value = "Report by company for all operators by dates", response = ParkingReport.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+    })
+    public Map<DateTime,List<ParkingReportByUser>> rangeReport(@PathParam("companyId") Integer companyId, @Auth GMPUser gmpUser,
+                                                          @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
+        List<ParkingSubLotUserAccessEntity> userAccessList = parkingSubLotUserAccessDAO.getAllUsersWithAccessToSubLots(gmpUser.getParkingSubLotIds());
+        return parkingEventDAO.createParkingReportByDates(fromDate.get(), toDate.get(), userAccessList);
     }
 
 

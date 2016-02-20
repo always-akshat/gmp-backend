@@ -5,6 +5,7 @@ import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.reports.ParkingReport;
+import com.getMyParking.entity.reports.ParkingReportByDates;
 import com.getMyParking.entity.reports.ParkingReportByQuery;
 import com.getMyParking.entity.reports.ParkingReportByUser;
 import com.google.common.collect.Lists;
@@ -19,10 +20,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
 import org.hibernate.transform.Transformers;
-import org.hibernate.type.BigDecimalType;
-import org.hibernate.type.CustomType;
-import org.hibernate.type.LongType;
-import org.hibernate.type.StringType;
+import org.hibernate.type.*;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -314,5 +312,113 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
                 .setMaxResults(1)
                 .setFirstResult(0)
         );
+    }
+
+    public Map<DateTime,List<ParkingReportByUser>> createParkingReportByDates(DateTime fromDate, DateTime toDate,
+                                                                List<ParkingSubLotUserAccessEntity> userAccessList) {
+
+        List<Integer> parkingSubLotIds = Lists.newArrayList();
+        userAccessList.stream()
+                .filter(entity -> !parkingSubLotIds.contains(entity.getParkingSubLotId()))
+                .forEach(entity -> parkingSubLotIds.add(entity.getParkingSubLotId()));
+
+        SQLQuery query = currentSession().createSQLQuery("select COUNT(*) as count, SUM(cost) as cost, `type` as type" +
+                ", special as special, event_type as eventType, DATE(`event_time`) as eventDate, operator_name as operatorName, " +
+                " parking_sub_lot_id as parkingSubLotId, parking_id as parkingId, parking_lot_id as parkingLotId," +
+                " company_id as companyId from parking_event where event_type in ('CHECKED_IN','CHECKED_OUT') " +
+                " AND parking_sub_lot_id in :parkingSubLotIDs AND `event_time` between :fromDate AND :toDate " +
+                "Group by event_type, special, `type`, DATE(`event_time`), operator_name, parking_sub_lot_id ");
+
+        query.setParameter("toDate", toDate.toString());
+        query.setParameter("fromDate", fromDate.toString());
+        query.setParameterList("parkingSubLotIDs",parkingSubLotIds);
+        query.addScalar("count", LongType.INSTANCE);
+        query.addScalar("cost", BigDecimalType.INSTANCE);
+        query.addScalar("type", StringType.INSTANCE);
+        query.addScalar("special", StringType.INSTANCE);
+        query.addScalar("eventType", StringType.INSTANCE);
+        query.addScalar("eventDate", new CustomType(new PersistentDateTime()));
+        query.addScalar("operatorName", StringType.INSTANCE);
+        query.addScalar("parkingSubLotId", IntegerType.INSTANCE);
+        query.addScalar("parkingId", IntegerType.INSTANCE);
+        query.addScalar("parkingLotId", IntegerType.INSTANCE);
+        query.addScalar("companyId", IntegerType.INSTANCE);
+
+        query.setResultTransformer(Transformers.aliasToBean(ParkingReportByDates.class));
+
+        List<ParkingReportByDates> list = query.list();
+
+        Map<DateTime,List<ParkingReportByUser>> result = Maps.newHashMap();
+
+        Map<DateTime,List<ParkingReportByDates>> reportDateMap =
+                list.stream().collect(Collectors.groupingBy(ParkingReportByDates::getEventDate));
+
+        for (Map.Entry<DateTime,List<ParkingReportByDates>> entry : reportDateMap.entrySet()) {
+
+            List<ParkingReportByDates> reportList = entry.getValue();
+            Map<String, List<ParkingReportByDates>> userReportMap =
+                    reportList.stream().collect(Collectors.groupingBy(ParkingReportByDates::getOperatorName));
+
+            List<ParkingReportByUser> parkingReportByDates = new ArrayList<>();
+            for (Map.Entry<String,List<ParkingReportByDates>> userEntry : userReportMap.entrySet()) {
+
+                List<ParkingReportByDates> userReportList = userEntry.getValue();
+                Map<Integer, List<ParkingReportByDates>> subLotReportMap =
+                        userReportList.stream().collect(Collectors.groupingBy(ParkingReportByDates::getParkingSubLotId));
+
+                ParkingReportByUser parkingReportByUser = new ParkingReportByUser();
+                parkingReportByUser.setUsername(userEntry.getKey());
+                parkingReportByUser.setCompanyId(userReportList.get(0).getCompanyId());
+                parkingReportByUser.setParkingId(userReportList.get(0).getParkingId());
+                parkingReportByUser.setParkingLotId(userReportList.get(0).getParkingLotId());
+                parkingReportByUser.setParkingReports(Lists.newArrayList());
+                List<ParkingReport> parkingReports = parkingReportByUser.getParkingReports();
+                for (Map.Entry<Integer, List<ParkingReportByDates>> subLotEntry : subLotReportMap.entrySet()) {
+
+                    List<ParkingReportByDates> reportBySubLots = subLotEntry.getValue();
+                    Integer checkInCount = 0;
+                    Integer checkOutCount = 0;
+                    BigDecimal checkInRevenue = BigDecimal.ZERO;
+                    BigDecimal checkOutRevenue = BigDecimal.ZERO;
+                    Integer focCount = 0;
+                    Integer acCount = 0;
+                    Integer ttCount = 0;
+                    Integer passCheckInCount = 0;
+                    Integer passCheckOutCount = 0;
+                    for (ParkingReportByDates report : reportBySubLots) {
+                        if (report.getEventType().equalsIgnoreCase("CHECKED_IN")) {
+                            checkInCount += report.getCount().intValue();
+                            checkInRevenue = checkInRevenue.add(report.getCost());
+                            if (report.getType().equalsIgnoreCase("PASS")) {
+                                passCheckInCount += report.getCount().intValue();
+                            }
+                        } else {
+                            checkOutCount += report.getCount().intValue();
+                            checkOutRevenue = checkOutRevenue.add(report.getCost());
+                            if (report.getType().equalsIgnoreCase("PASS")) {
+                                passCheckOutCount += report.getCount().intValue();
+                            }
+                        }
+
+                        if (report.getSpecial() != null) {
+                            if (report.getSpecial().equalsIgnoreCase("FOC")) {
+                                focCount += report.getCount().intValue();
+                            } else if (report.getSpecial().equalsIgnoreCase("TT")) {
+                                ttCount += report.getCount().intValue();
+                            } else if (report.getSpecial().equalsIgnoreCase("AC")) {
+                                acCount += report.getCount().intValue();
+                            }
+                        }
+                    }
+                    parkingReports.add(new ParkingReport(checkInCount,checkOutCount, focCount, ttCount, passCheckInCount,
+                            passCheckOutCount, checkInRevenue,checkOutRevenue, acCount));
+                }
+                parkingReportByDates.add(parkingReportByUser);
+
+            }
+            result.put(entry.getKey(),parkingReportByDates);
+        }
+
+        return result;
     }
 }
