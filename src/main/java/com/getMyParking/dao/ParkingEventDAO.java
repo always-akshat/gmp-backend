@@ -1,7 +1,6 @@
 package com.getMyParking.dao;
 
 import com.getMyParking.dto.ParkingEventDumpDTO;
-import com.getMyParking.entity.AccessMasterEntity;
 import com.getMyParking.entity.ParkingEventEntity;
 import com.getMyParking.entity.ParkingSubLotUserAccessEntity;
 import com.getMyParking.entity.reports.ParkingReport;
@@ -18,7 +17,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.*;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
@@ -75,7 +76,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
     }
 
 
-    public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime fromDate, DateTime toDate) {
+    public List<ParkingEventEntity> getParkingEvents(int parkingLotId, DateTime fromDate, DateTime toDate, Optional<IntParam> pageSize,
+                                                     Optional<IntParam> pageNum) {
 
         SQLQuery query = currentSession().createSQLQuery("SELECT * from `parking_event` where `event_type` = 'CHECKED_IN' " +
                 "AND parking_sub_lot_id = :id AND`event_time` between :fromDate AND :toDate AND `serial_number` NOT IN " +
@@ -87,6 +89,11 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
         query.setParameter("toDate", toDate.toString());
         query.addEntity(ParkingEventEntity.class);
         query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        if (pageSize.isPresent() && pageNum.isPresent()) {
+            query.setFirstResult((pageNum.get().get() -1) * pageSize.get().get());
+            query.setMaxResults(pageSize.get().get());
+        }
 
         return list(query);
     }

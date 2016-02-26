@@ -5,10 +5,10 @@ import com.codahale.metrics.annotation.Timed;
 import com.getMyParking.dao.ParkingEventDAO;
 import com.getMyParking.dao.ParkingPassDAO;
 import com.getMyParking.dao.ParkingSubLotDAO;
-import com.getMyParking.dto.ParkingEventDumpDTO;
 import com.getMyParking.entity.*;
 import com.getMyParking.processor.ParkingEventProcessor;
 import com.getMyParking.service.auth.GMPUser;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.Optional;
 
 /**
  * Created by rahulgupta.s on 31/05/15.
@@ -67,14 +66,23 @@ public class ParkingEventResource {
             @ApiResponse(code = 401, message = "UnAuthorized"),
     })
     public List<GetParkingEventResponse> getActiveParkingEventById(@QueryParam("duration")IntParam duration,
-                                                             @Auth GMPUser gmpUser) {
-        List<Integer> parkingSubLotIds = gmpUser.getParkingSubLotIds();
+                                                                   @QueryParam("pageSize")Optional<IntParam> pageSize,
+                                                                   @QueryParam("pageNum")Optional<IntParam> pageNum,
+                                                                   @QueryParam("parkingSubLotIds")Optional<String> ids,
+                                                                   @Auth GMPUser gmpUser) {
+        List<Integer> parkingSubLotIds;
+        if (ids.isPresent()) {
+            parkingSubLotIds = Splitter.on(",").splitToList(ids.get()).stream().map(Integer::parseInt).collect(Collectors.toList());
+        } else {
+            parkingSubLotIds = gmpUser.getParkingSubLotIds();
+        }
         List<GetParkingEventResponse> parkingEventsResponseList = Lists.newArrayList();
         for (Integer parkingSubLotId : parkingSubLotIds) {
             GetParkingEventResponse parkingEventResponse = new GetParkingEventResponse();
             parkingEventResponse.setParkingSubLotId(parkingSubLotId);
             List<ParkingEventEntity> parkingEvents =
-                    parkingEventDAO.getParkingEvents(parkingSubLotId,DateTime.now().minusDays(duration.get()),DateTime.now());
+                    parkingEventDAO.getParkingEvents(parkingSubLotId, DateTime.now().minusDays(duration.get()),
+                            DateTime.now(), pageSize, pageNum);
             parkingEvents = Lists.newArrayList(Sets.newHashSet(parkingEvents));
             for (ParkingEventEntity parkingEvent : parkingEvents) {
                 parkingEvent.setParkingSubLotId(parkingSubLotId);

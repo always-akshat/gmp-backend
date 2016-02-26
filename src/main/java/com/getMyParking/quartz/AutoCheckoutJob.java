@@ -23,6 +23,7 @@ import org.quartz.JobExecutionException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +51,8 @@ public class AutoCheckoutJob implements Job {
         fromDate = fromDate.minusSeconds(fromDate.getSecondOfDay());
         Session session = sessionFactory.openSession();
         ManagedSessionContext.bind(session);
-        List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingSubLotId, fromDate, toDate);
+        List<ParkingEventEntity> parkingEvents = parkingEventDAO.getParkingEvents(parkingSubLotId, fromDate, toDate, Optional.empty(),
+                Optional.empty());
         ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
         int count = 0;
 
