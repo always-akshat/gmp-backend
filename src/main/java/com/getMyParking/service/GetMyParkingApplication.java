@@ -167,13 +167,13 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
             scheduler.scheduleJob(jobDetail,trigger);
         }
 
-        /*JobDetail jobDetail = newJob(ParkingEventsEMailingJob.class).build();
+        JobDetail jobDetail = newJob(ParkingEventsEMailingJob.class).build();
         String cronExpression = "0 0 0 * * ?";
         Trigger trigger = newTrigger()
                 .forJob(jobDetail)
                 .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                 .build();
-        scheduler.scheduleJob(jobDetail,trigger);*/
+        scheduler.scheduleJob(jobDetail,trigger);
 
         JobDetail passRenewalJobDetail = newJob(AutoPassRenewalJob.class).build();
         String passRenewalCronExpression = "0 52 17 * * ?";
