@@ -32,8 +32,8 @@ database:
   # the password
   password: gmp2016
 
-    # the JDBC URL
-    url: jdbc:mysql://52.77.1.60:3306/
+  # the JDBC URL
+  url: jdbc:mysql://52.77.1.60:3306/
 
   # any properties specific to your JDBC driver:
   properties:
