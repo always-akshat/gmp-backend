@@ -176,7 +176,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
         scheduler.scheduleJob(jobDetail,trigger);
 
         JobDetail passRenewalJobDetail = newJob(AutoPassRenewalJob.class).build();
-        String passRenewalCronExpression = "0 52 17 * * ?";
+        String passRenewalCronExpression = "0 30 23 * * ?";
         Trigger passRenewalTrigger = newTrigger()
                 .forJob(passRenewalJobDetail)
                 .withSchedule(cronSchedule(passRenewalCronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
