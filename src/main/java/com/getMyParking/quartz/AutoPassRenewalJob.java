@@ -74,8 +74,10 @@ public class AutoPassRenewalJob implements Job {
                         }
                         parkingPassDAO.saveOrUpdateParkingPass(renewedPass);
                         ParkingEventEntity parkingEventEntity = parkingEventDAO.findByParkingPassId(pass.getId());
-                        parkingEventProcessor.createParkingPassEvents(renewedPass,parkingEventEntity.getCompanyId(),
-                                parkingEventEntity.getParkingLotId(),parkingEventEntity.getParkingSubLotId(),"PASS_CREATE");
+                        if (parkingEventEntity!=null) {
+                            parkingEventProcessor.createParkingPassEvents(renewedPass,parkingEventEntity.getCompanyId(),
+                                    parkingEventEntity.getParkingLotId(),parkingEventEntity.getParkingSubLotId(),"PASS_CREATE");
+                        }
                     }
                 });
             });

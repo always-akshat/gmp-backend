@@ -50,10 +50,10 @@ database:
   user: root
 
   # the password
-  password: gmp2015
+  password: gmpdev
 
   # the JDBC URL
-  url: jdbc:mysql://54.255.195.228:3306/get_my_parking_v3?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://52.77.45.54:3306/get_my_parking_v3?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:
