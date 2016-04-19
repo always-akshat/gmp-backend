@@ -5,6 +5,7 @@ import com.getMyParking.entity.*;
 import com.getMyParking.quartz.AutoCheckoutJob;
 import com.getMyParking.quartz.AutoPassRenewalJob;
 import com.getMyParking.quartz.ParkingEventsEMailingJob;
+import com.getMyParking.quartz.ParkingEventsKumbhEMailingJob;
 import com.getMyParking.service.auth.GMPAuthFactory;
 import com.getMyParking.service.auth.GMPAuthenticator;
 import com.getMyParking.service.configuration.GetMyParkingConfiguration;
@@ -33,6 +34,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.context.internal.ManagedSessionContext;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.slf4j.LoggerFactory;
 
@@ -174,6 +176,13 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
                 .withSchedule(cronSchedule(cronExpression).inTimeZone(TimeZone.getTimeZone("IST")))
                 .build();
         scheduler.scheduleJob(jobDetail,trigger);
+
+        JobDetail jobDetailKumbh = newJob(ParkingEventsKumbhEMailingJob.class).build();
+        Trigger triggerKumbh = newTrigger()
+                .forJob(jobDetail)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(1).repeatForever())
+                .build();
+        scheduler.scheduleJob(jobDetailKumbh,triggerKumbh);
 
         JobDetail passRenewalJobDetail = newJob(AutoPassRenewalJob.class).build();
         String passRenewalCronExpression = "0 30 22 * * ?";
