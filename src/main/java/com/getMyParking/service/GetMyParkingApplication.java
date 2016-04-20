@@ -179,7 +179,7 @@ public class GetMyParkingApplication extends Application<GetMyParkingConfigurati
 
         JobDetail jobDetailKumbh = newJob(ParkingEventsKumbhEMailingJob.class).build();
         Trigger triggerKumbh = newTrigger()
-                .forJob(jobDetail)
+                .forJob(jobDetailKumbh)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(1).repeatForever())
                 .build();
         scheduler.scheduleJob(jobDetailKumbh,triggerKumbh);
