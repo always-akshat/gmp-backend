@@ -47,13 +47,13 @@ database:
   driverClass: com.mysql.jdbc.Driver
 
   # the username
-  user: gmp
+  user: root
 
   # the password
-  password: gmpDB_prod
+  password: gmpdev
 
   # the JDBC URL
-  url: jdbc:mysql://52.77.30.247:3306/get_my_parking_v3?autoReconnect=true&relaxAutoCommit=true
+  url: jdbc:mysql://52.77.45.54:3306/get_my_parking_v3?autoReconnect=true&relaxAutoCommit=true
 
   # any properties specific to your JDBC driver:
   properties:

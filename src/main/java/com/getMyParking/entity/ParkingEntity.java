@@ -19,6 +19,9 @@ public class ParkingEntity {
     private String city;
     private String contactNumber;
     private Set<ParkingLotEntity> parkingLots;
+    private float nFactor;
+
+
     @JsonIgnore
     private CompanyEntity company;
     private Set<ParkingPassMasterEntity> parkingPasses;
@@ -60,8 +63,19 @@ public class ParkingEntity {
         return city;
     }
 
+
     public void setCity(String city) {
         this.city = city;
+    }
+
+    @Basic
+    @Column(name = "n_factor", nullable = true, insertable = true, updatable = true)
+    public float getnFactor() {
+        return nFactor;
+    }
+
+    public void setnFactor(float nFactor) {
+        this.nFactor = nFactor;
     }
 
     @Basic

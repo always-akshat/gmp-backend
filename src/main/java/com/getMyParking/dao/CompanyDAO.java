@@ -40,7 +40,7 @@ public class CompanyDAO extends AbstractDAO<CompanyEntity> {
 
     public List<CompanyEntity> getAllCompaniesWithEmailID(){
         return list(
-                criteria().add(Restrictions.neOrIsNotNull("email",null)).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                criteria().add(Restrictions.neOrIsNotNull("email","")).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
         );
     }
 }
