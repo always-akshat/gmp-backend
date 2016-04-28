@@ -1,6 +1,5 @@
 package com.getMyParking.quartz;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.getMyParking.client.SMTPClient;
 import com.getMyParking.dao.CompanyDAO;
 import com.getMyParking.dao.ParkingEventDAO;
@@ -12,7 +11,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.sendgrid.SendGrid;
-import io.dropwizard.jackson.Jackson;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -66,9 +64,7 @@ public class ParkingEventsEMailingJob implements Job {
         Session session = sessionFactory.openSession();
         ManagedSessionContext.bind(session);
 
-        System.out.println("email job started");
         List<CompanyEntity> companies = companyDAO.getAllCompaniesWithEmailID();
-        System.out.println("companies found");
         for (CompanyEntity company : companies) {
             for (ParkingEntity parking : company.getParkings()) {
                 DateTime reportDate = DateTime.now().toDateTime(DateTimeZone.forOffsetHoursMinutes(5,30)).minusDays(1);
@@ -101,6 +97,8 @@ public class ParkingEventsEMailingJob implements Job {
                         row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue(
                                 parkingEvent.getCheckInEventTime().withZone(DateTimeZone.forOffsetHoursMinutes(5, 30)).toString("dd-MM-YY HH:mm:ss")
                         );
+                    }else{
+                        row.createCell(columnNumber++, Cell.CELL_TYPE_STRING).setCellValue("NA");
                     }
 
                     if (parkingEvent.getCheckInCost() != null) {
@@ -170,7 +168,6 @@ public class ParkingEventsEMailingJob implements Job {
 
                     String attachmentFileName = "report_"+parking.getName()+"_"+reportDate.toString("ddMMYY")+".xlsx";
                     smtpClient.sendEmail(emailAddress,email.getSMTPAPI().rawJsonString(),workBookInputStream, attachmentFileName);
-                    System.out.println("email sent");
 
                 } catch (Exception ex) {
                     logger.error("Email Exception ",ex);
