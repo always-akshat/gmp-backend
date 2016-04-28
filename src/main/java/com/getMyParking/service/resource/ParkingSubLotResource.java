@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -160,6 +161,11 @@ public class ParkingSubLotResource {
     })
     public ParkingReport report( @PathParam("parkingSubLotId") Integer parkingSubLotId,
                                  @QueryParam("from")DateTimeParam fromDate, @QueryParam("to")DateTimeParam toDate) {
-        return parkingEventDAO.createParkingSubLotReport(parkingSubLotId,fromDate.get(),toDate.get());
+        ParkingSubLotEntity parkingSubLot = parkingSubLotDAO.findById(parkingSubLotId);
+        BigDecimal nFactor = new BigDecimal(Float.toString(parkingSubLot.getParkingLot().getParking().getnFactor()));
+        ParkingReport parkingReport = parkingEventDAO.createParkingSubLotReport(parkingSubLotId,fromDate.get(),toDate.get());
+        parkingReport.setCheckOutRevenue(parkingReport.getCheckOutRevenue().multiply(nFactor));
+        parkingReport.setCheckInRevenue(parkingReport.getCheckInRevenue().multiply(nFactor));
+        return parkingReport;
     }
 }
