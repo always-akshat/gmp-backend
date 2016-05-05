@@ -24,6 +24,7 @@ import org.hibernate.transform.Transformers;
 import org.hibernate.type.*;
 import org.jadira.usertype.dateandtime.joda.PersistentDateTime;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,7 +251,8 @@ public class ParkingEventDAO extends AbstractDAO<ParkingEventEntity> {
 
     public List<ParkingEventDumpDTO> getParkingEventsDump(Integer parkingId, DateTime date) {
 
-        DateTime startDateTime = date.withTime(0, 0, 0, 0);
+        // converting to UTC becase Mysql TIMESTAMP does not support query with timezone
+        DateTime startDateTime = date.withTime(0, 0, 0, 0).toDateTime(DateTimeZone.UTC);
         DateTime endDateTime = startDateTime.plusDays(1).minusSeconds(1);
 
         logger.info("Parking event Dump Start Time {} , End Time {}", startDateTime.toString(), endDateTime.toString());
